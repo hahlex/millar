@@ -1,0 +1,348 @@
+[
+  {
+    "id": "button",
+    "name": "Button",
+    "category": "actions",
+    "register": "shared",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "Primary action control with 7 semantic variants, async double-click protection (aria-busy), high-contrast outlined danger variant, and 2px keyboard focus ring.",
+    "importPath": "@hahlex/millar-ui",
+    "props": [
+      { "name": "variant", "type": "\"primary\" | \"secondary\" | \"white\" | \"ghost\" | \"danger\" | \"success\" | \"row\"", "defaultValue": "\"white\"", "description": "Visual role mapped strictly to Millar surface and contrast tokens." },
+      { "name": "size", "type": "\"sm\" | \"md\" | \"lg\"", "defaultValue": "\"md\"", "description": "Heights: sm=32px, md=40px, lg=44px." },
+      { "name": "pill", "type": "boolean", "defaultValue": "false", "description": "Applies --radius-pill (9999px) for starter or filter pill buttons." },
+      { "name": "iconOnly", "type": "boolean", "defaultValue": "false", "description": "Square icon button; REQUIRES explicit aria-label." },
+      { "name": "loading", "type": "boolean", "defaultValue": "false", "description": "External loading state (also auto-enabled while async onClick Promise settles)." },
+      { "name": "icon", "type": "ReactNode", "description": "Leading semantic icon from @hahlex/millar-ui/icons (1.5px stroke)." }
+    ],
+    "validVariants": ["primary", "secondary", "white", "ghost", "danger", "success", "row"],
+    "invalidPropGuardrails": [
+      "Do NOT pass variant='destructive', variant='outline', or variant='link' (use 'danger', 'white', or 'ghost').",
+      "Do NOT render iconOnly={true} without a descriptive aria-label.",
+      "Do NOT apply CSS gradients or drop shadows to Button.",
+      "Do NOT render solid crimson background with white text in dark mode (fails contrast at 2.51:1); 'danger' uses outlined --status-error."
+    ],
+    "tokenDependencies": ["--accent", "--fg-on-accent", "--bg-surface", "--border-default", "--status-error", "--focus-ring", "--radius-control"],
+    "usageGuidelines": {
+      "whenToUse": [
+        "Use 'primary' at most once per PageHeader or Dialog footer for the single main action.",
+        "Use 'white' or 'secondary' for supporting actions and toolbar buttons.",
+        "Use 'danger' paired with ConfirmDialog for irreversible destructive actions."
+      ],
+      "whenNotToUse": [
+        "Do not use Button for pure route navigation when a semantic <a> link belongs.",
+        "Do not place more than 1 primary Button in the same visual header."
+      ]
+    },
+    "responsiveBehavior": "Maintains >= 40px default height (44px lg) and >= 32px icon-only dimensions; wraps cleanly inside PageHeader action groups below 640px.",
+    "accessibility": {
+      "wcagTarget": "WCAG 2.1/2.2 AA",
+      "apgPattern": "Button",
+      "rolesAndAttributes": ["Native <button type='button'> default", "aria-busy during async submit without dropping focus", "Required aria-label when iconOnly={true}"],
+      "keyboard": [
+        { "key": "Tab / Shift+Tab", "behavior": "Moves focus with 2px high-contrast .millar-focus ring." },
+        { "key": "Enter / Space", "behavior": "Activates button unless disabled or busy." }
+      ]
+    },
+    "exampleCode": "import { Button, IconAdd } from \"@hahlex/millar-ui\";\n\n<Button variant=\"primary\" icon={<IconAdd size=\"md\" />} onClick={handleCreate}>\n  Create workspace\n</Button>",
+    "sourcePath": "packages/ui/src/components/Button.tsx"
+  },
+  {
+    "id": "input",
+    "name": "Input & Form Controls",
+    "category": "forms",
+    "register": "product",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "Accessible Input, TextArea, Select, Switch, Checkbox, ChoiceToggle, and HelpTooltip controls with 2px visible focus rings, decoupled help hints, and role='alert' validation errors.",
+    "importPath": "@hahlex/millar-ui",
+    "props": [
+      { "name": "label", "type": "string", "description": "Programmatically bound via <label htmlFor>." },
+      { "name": "hint", "type": "string", "description": "Optional 1-2 sentence explanation rendered in a click/hover/focus HelpTooltip outside <label>." },
+      { "name": "error", "type": "string", "description": "Validation message linked via aria-describedby and announced via role='alert'." }
+    ],
+    "invalidPropGuardrails": [
+      "Never rely on placeholder text as a substitute for label.",
+      "Never suppress focus outline with outline: none without replacing with .millar-focus.",
+      "In ChoiceToggle / checked pills on --accent-soft, ALWAYS use --fg-on-accent-soft (#362218), NEVER --fg-accent."
+    ],
+    "tokenDependencies": ["--bg-surface", "--border-default", "--fg-default", "--fg-muted", "--status-error", "--focus-ring", "--accent-soft", "--fg-on-accent-soft"],
+    "usageGuidelines": {
+      "whenToUse": ["All operational forms, filters, settings, and inline editors."],
+      "whenNotToUse": ["Never render raw <input> directly inside feature views when Input or Select applies."]
+    },
+    "responsiveBehavior": "Full-width fluid inputs at 40px height; HelpTooltip supports click/tap on touch devices with >= 24x24px target.",
+    "accessibility": {
+      "wcagTarget": "WCAG 2.1/2.2 AA",
+      "apgPattern": "Form Controls & Switch",
+      "rolesAndAttributes": ["aria-invalid when error is set", "aria-describedby pointing to role='alert' error paragraph", "role='switch' with aria-checked on Switch"],
+      "keyboard": [
+        { "key": "Tab", "behavior": "Moves focus sequentially with visible 2px .millar-focus ring." },
+        { "key": "Space / Enter", "behavior": "Toggles Switch, Checkbox, ChoiceToggle, or HelpTooltip." },
+        { "key": "Escape", "behavior": "Dismisses active HelpTooltip." }
+      ]
+    },
+    "exampleCode": "import { Input } from \"@hahlex/millar-ui\";\n\n<Input\n  label=\"Workspace slug\"\n  hint=\"Used in permanent API URLs.\"\n  placeholder=\"hahlex-studio\"\n  error={slugError}\n/>",
+    "sourcePath": "packages/ui/src/components/FormControls.tsx"
+  },
+  {
+    "id": "choice-toggle",
+    "name": "ChoiceToggle",
+    "category": "forms",
+    "register": "shared",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "High-contrast option switch (e.g., Light/Dark or EN/VI) pairing --accent-soft with --fg-on-accent-soft (7.69:1 AAA across both themes).",
+    "importPath": "@hahlex/millar-ui",
+    "props": [
+      { "name": "label", "type": "string", "required": true, "description": "Accessible group name (aria-label)." },
+      { "name": "value", "type": "T", "required": true, "description": "Active option value." },
+      { "name": "onChange", "type": "(next: T) => void", "required": true, "description": "Selection callback." },
+      { "name": "options", "type": "Array<{ value: T; label: string }>", "required": true, "description": "Discrete mutually exclusive options." }
+    ],
+    "invalidPropGuardrails": ["Never style active state with --fg-accent on --accent-soft (1.00:1 invisible in dark mode)."],
+    "tokenDependencies": ["--accent-soft", "--fg-on-accent-soft", "--border-default", "--bg-surface-2"],
+    "usageGuidelines": {
+      "whenToUse": ["Compact binary or ternary preferences (Theme, Locale, Register, Viewport)."],
+      "whenNotToUse": ["Do not use for more than 4 options; use Select or Tabs instead."]
+    },
+    "responsiveBehavior": "Compact inline control with 30px internal buttons inside a 38px bordered tray.",
+    "accessibility": {
+      "wcagTarget": "WCAG 2.1/2.2 AA",
+      "apgPattern": "Toggle Button Group",
+      "rolesAndAttributes": ["role='group' with aria-label", "aria-pressed on each option button"],
+      "keyboard": [{ "key": "Tab + Enter/Space", "behavior": "Selects the focused option." }]
+    },
+    "exampleCode": "import { ChoiceToggle } from \"@hahlex/millar-ui\";\n\n<ChoiceToggle\n  label=\"Theme\"\n  value={theme}\n  onChange={setTheme}\n  options={[{ value: \"light\", label: \"Light\" }, { value: \"dark\", label: \"Dark\" }]}\n/>",
+    "sourcePath": "packages/ui/src/components/FormControls.tsx"
+  },
+  {
+    "id": "card",
+    "name": "Card",
+    "category": "layout",
+    "register": "shared",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "Single-elevation structural surface (base, inset, or raised) with 1px warm-sand border and canonical 16px/18px interior padding.",
+    "importPath": "@hahlex/millar-ui",
+    "props": [
+      { "name": "surface", "type": "\"base\" | \"inset\" | \"raised\"", "defaultValue": "\"base\"", "description": "Selects Surface Role fill and border/shadow pairing." },
+      { "name": "padding", "type": "\"default\" | \"compact\" | \"none\"", "defaultValue": "\"default\"", "description": "Interior padding preset." }
+    ],
+    "invalidPropGuardrails": [
+      "Never nest Cards inside Cards.",
+      "Never wrap a primary page DataTable inside an extra outer Card.",
+      "Never attach a one-sided thick accent border down the side of a rounded Card."
+    ],
+    "tokenDependencies": ["--bg-surface", "--bg-surface-2", "--bg-elevated", "--border-default", "--radius-lg", "--shadow-card"],
+    "usageGuidelines": {
+      "whenToUse": ["Grouping related metrics, settings panels, or record detail facets."],
+      "whenNotToUse": ["Do not use equal-sized Card grids as the default marketing layout."]
+    },
+    "responsiveBehavior": "Fluid block container with consistent padding across breakpoints.",
+    "accessibility": {
+      "wcagTarget": "WCAG 2.1/2.2 AA",
+      "rolesAndAttributes": ["Plain container; nest semantic headings and buttons inside rather than making the entire div a fake button."],
+      "keyboard": [{ "key": "Tab", "behavior": "Focuses interactive elements inside the card directly." }]
+    },
+    "exampleCode": "import { Card } from \"@hahlex/millar-ui\";\n\n<Card surface=\"base\">\n  <h3>Workspace health</h3>\n  <p>All token contrast gates passed.</p>\n</Card>",
+    "sourcePath": "packages/ui/src/components/SurfacesAndData.tsx"
+  },
+  {
+    "id": "badge",
+    "name": "Badge",
+    "category": "data-display",
+    "register": "shared",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "Pill-shaped status and governance tag combining border, soft wash, and leading indicator dot/icon so color is never the sole signal.",
+    "importPath": "@hahlex/millar-ui",
+    "props": [
+      { "name": "tone", "type": "\"neutral\" | \"brand\" | \"sand\" | \"sage\" | \"success\" | \"warning\" | \"error\"", "defaultValue": "\"neutral\"", "description": "Semantic status or category tone." },
+      { "name": "dot", "type": "boolean", "defaultValue": "true", "description": "Renders a 6px status indicator dot alongside the text label." }
+    ],
+    "invalidPropGuardrails": ["Never render bare unstyled colored text for statuses; always wrap in Badge."],
+    "tokenDependencies": ["--radius-pill", "--tone-brand-soft", "--status-success-soft", "--status-warning-soft", "--status-error-soft"],
+    "usageGuidelines": {
+      "whenToUse": ["Lifecycle labels (Draft, Approved, Deprecated), operational statuses, and compact counts."],
+      "whenNotToUse": ["Do not use Badge as a clickable button; use Button pill instead."]
+    },
+    "responsiveBehavior": "Inline-flex with nowrap text; wraps cleanly inside flex badge rows.",
+    "accessibility": {
+      "wcagTarget": "WCAG 2.1/2.2 AA",
+      "rolesAndAttributes": ["Pairs text + dot/icon so color-blind users never rely on hue alone."],
+      "keyboard": []
+    },
+    "exampleCode": "import { Badge } from \"@hahlex/millar-ui\";\n\n<Badge tone=\"success\">Approved</Badge>\n<Badge tone=\"brand\">Draft</Badge>",
+    "sourcePath": "packages/ui/src/components/SurfacesAndData.tsx"
+  },
+  {
+    "id": "stat",
+    "name": "Stat",
+    "category": "data-display",
+    "register": "product",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "Operational KPI tile using full-box color mixing, tinted IconBox, --text-kpi (24px tabular-nums), and optional solid progress bar.",
+    "importPath": "@hahlex/millar-ui",
+    "props": [
+      { "name": "label", "type": "string", "required": true, "description": "Metric label." },
+      { "name": "value", "type": "string | number", "required": true, "description": "Primary tabular figure rendered with --text-kpi." },
+      { "name": "delta", "type": "string", "description": "Optional comparison caption." },
+      { "name": "tone", "type": "MillarIconBoxTone", "defaultValue": "\"brand\"", "description": "Tinted IconBox tone." },
+      { "name": "progressPercent", "type": "number", "description": "Optional 0-100 solid progress indicator." }
+    ],
+    "invalidPropGuardrails": ["Never color only a bare digit without container framing.", "Never use CSS gradients on the progress bar."],
+    "tokenDependencies": ["--text-kpi", "--chart-brand", "--chart-neutral", "--tone-brand-soft"],
+    "usageGuidelines": {
+      "whenToUse": ["Operational dashboard KPI rows and report summaries."],
+      "whenNotToUse": ["Do not use as a generic marketing hero-metric box."]
+    },
+    "responsiveBehavior": "Stacks cleanly in 1/2/4-column CSS grids across mobile, tablet, and desktop.",
+    "accessibility": {
+      "wcagTarget": "WCAG 2.1/2.2 AA",
+      "rolesAndAttributes": ["Progress bar exposes role='progressbar', aria-valuenow, aria-valuemin, aria-valuemax, aria-label."],
+      "keyboard": []
+    },
+    "exampleCode": "import { Stat, IconShield } from \"@hahlex/millar-ui\";\n\n<Stat label=\"Contrast checks\" value=\"80 / 80\" delta=\"WCAG 2.1 AA\" tone=\"success\" icon={<IconShield size=\"md\" />} progressPercent={100} />",
+    "sourcePath": "packages/ui/src/components/SurfacesAndData.tsx"
+  },
+  {
+    "id": "tabs",
+    "name": "Tabs & Segmented",
+    "category": "navigation",
+    "register": "shared",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "APG-compliant Tabs with full Arrow/Home/End keyboard navigation and Segmented option rail.",
+    "importPath": "@hahlex/millar-ui",
+    "props": [
+      { "name": "items", "type": "TabItem[]", "required": true, "description": "Tab definitions with id, label, and panel content." },
+      { "name": "activeId", "type": "string", "required": true, "description": "Currently selected tab ID." },
+      { "name": "onChange", "type": "(id: string) => void", "required": true, "description": "Tab selection handler." },
+      { "name": "ariaLabel", "type": "string", "required": true, "description": "Accessible tablist label." }
+    ],
+    "invalidPropGuardrails": ["Do not omit ariaLabel on Tabs.", "Do not trap Tab key inside tablist (Arrow keys move between tabs; Tab moves to panel)."],
+    "tokenDependencies": ["--fg-accent", "--fg-default", "--border-default", "--tone-brand-soft"],
+    "usageGuidelines": {
+      "whenToUse": ["Component doc views (Playground | Guidelines | Code | Accessibility) and Record Detail facets."],
+      "whenNotToUse": ["Do not use Tabs for top-level site navigation."]
+    },
+    "responsiveBehavior": "Flex-wraps cleanly on compact viewports without horizontal overflow scrollbars.",
+    "accessibility": {
+      "wcagTarget": "WCAG 2.1/2.2 AA",
+      "apgPattern": "Tabs",
+      "rolesAndAttributes": ["role='tablist'", "role='tab' with aria-selected & aria-controls", "role='tabpanel' with aria-labelledby"],
+      "keyboard": [
+        { "key": "ArrowLeft / ArrowRight", "behavior": "Moves focus and activates adjacent tab." },
+        { "key": "Home / End", "behavior": "Jumps to first or last tab." },
+        { "key": "Tab", "behavior": "Moves focus from active tab into tabpanel content." }
+      ]
+    },
+    "exampleCode": "import { Tabs } from \"@hahlex/millar-ui\";\n\n<Tabs ariaLabel=\"Component details\" activeId={tab} onChange={setTab} items={items} />",
+    "sourcePath": "packages/ui/src/components/SurfacesAndData.tsx"
+  },
+  {
+    "id": "data-table",
+    "name": "DataTable & FilterBar",
+    "category": "data-display",
+    "register": "product",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "Zero-scrollbar semantic DataTable with '-' empty cells, tabular numeric alignment, and mobileCard mode, paired with immediate-apply FilterBar.",
+    "importPath": "@hahlex/millar-ui",
+    "props": [
+      { "name": "columns", "type": "DataTableColumn<T>[]", "required": true, "description": "Column schema with optional numeric alignment and custom cell renderer." },
+      { "name": "rows", "type": "T[]", "required": true, "description": "Dataset rows for the current page." },
+      { "name": "mobileCard", "type": "(row: T) => ReactNode", "description": "Card layout rendered for compact phone viewports (< 640px)." }
+    ],
+    "invalidPropGuardrails": [
+      "Never add horizontal or vertical inner scrollbars to primary page DataTables; fit columns and paginate.",
+      "Never render U+2014 em-dash in empty table cells; render '-'."
+    ],
+    "tokenDependencies": ["--bg-surface", "--bg-surface-2", "--border-default", "--border-soft", "--row-padding-block", "--row-padding-inline"],
+    "usageGuidelines": {
+      "whenToUse": ["Directories, token explorers, audit logs, and structured operational records."],
+      "whenNotToUse": ["Do not use DataTable for purely visual marketing grids."]
+    },
+    "responsiveBehavior": "Fixed-layout zero-scrollbar table on desktop/tablet; switches to mobileCard list below 640px.",
+    "accessibility": {
+      "wcagTarget": "WCAG 2.1/2.2 AA",
+      "apgPattern": "Table",
+      "rolesAndAttributes": ["Semantic <table>, <caption>, <th scope='col'>, tabular-nums on numeric columns"],
+      "keyboard": [{ "key": "Tab", "behavior": "Moves through FilterBar controls, active filter pill dismiss buttons, and row actions." }]
+    },
+    "exampleCode": "import { DataTable } from \"@hahlex/millar-ui\";\n\n<DataTable caption=\"Token inventory\" columns={columns} rows={rows} rowKey={(r) => r.id} />",
+    "sourcePath": "packages/ui/src/components/SurfacesAndData.tsx"
+  },
+  {
+    "id": "dialog",
+    "name": "Dialog, ConfirmDialog & Feedback",
+    "category": "feedback",
+    "register": "product",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "Accessible modal Dialog (Escape close, focus restoration, dirty-form backdrop lock), destructive ConfirmDialog, Alert, solid Skeleton, EmptyState, and LoadFailed.",
+    "importPath": "@hahlex/millar-ui",
+    "props": [
+      { "name": "open", "type": "boolean", "required": true, "description": "Controls modal visibility." },
+      { "name": "onClose", "type": "() => void", "required": true, "description": "Dismiss callback." },
+      { "name": "title", "type": "string", "required": true, "description": "Accessible dialog title bound via aria-labelledby." },
+      { "name": "dirty", "type": "boolean", "defaultValue": "false", "description": "Prevents accidental backdrop click dismissal when form has unsaved edits." }
+    ],
+    "invalidPropGuardrails": [
+      "Never open a destructive action without ConfirmDialog tone='danger'.",
+      "Never use gradient shimmer on Skeleton; use solid --bg-surface-2 fills."
+    ],
+    "tokenDependencies": ["--bg-elevated", "--shadow-popover", "--z-modal-backdrop", "--z-dialog", "--status-error"],
+    "usageGuidelines": {
+      "whenToUse": ["Tasks requiring protected focus or explicit confirmation before irreversible change."],
+      "whenNotToUse": ["Do not open a modal for non-interruptive info that fits inline or in a Drawer."]
+    },
+    "responsiveBehavior": "Max 85dvh centered modal on desktop; compact padded modal on phone screens.",
+    "accessibility": {
+      "wcagTarget": "WCAG 2.1/2.2 AA",
+      "apgPattern": "Dialog (Modal)",
+      "rolesAndAttributes": ["role='dialog' aria-modal='true' aria-labelledby", "role='alert' on error Alerts and LoadFailed", "Restores focus to trigger element on close"],
+      "keyboard": [
+        { "key": "Escape", "behavior": "Closes dialog and restores focus." },
+        { "key": "Tab", "behavior": "Navigates controls inside dialog." }
+      ]
+    },
+    "exampleCode": "import { ConfirmDialog } from \"@hahlex/millar-ui\";\n\n<ConfirmDialog\n  open={confirmOpen}\n  onClose={() => setConfirmOpen(false)}\n  onConfirm={handleDelete}\n  title=\"Archive workspace\"\n  message=\"Archived workspaces stop serving tokens immediately.\"\n  tone=\"danger\"\n/>",
+    "sourcePath": "packages/ui/src/components/OverlaysAndFeedback.tsx"
+  },
+  {
+    "id": "app-shell",
+    "name": "AppShell & PageHeader",
+    "category": "layout",
+    "register": "product",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "Product-agnostic application workspace frame with skip-to-main link, semantic sidebar navigation, and decluttered PageHeader.",
+    "importPath": "@hahlex/millar-ui",
+    "props": [
+      { "name": "brand", "type": "ReactNode", "required": true, "description": "Canonical Hahlex lockup or tenant workspace switcher." },
+      { "name": "navItems", "type": "AppShellNavItem[]", "required": true, "description": "Navigation entries with active aria-current='page' state." }
+    ],
+    "invalidPropGuardrails": [
+      "Never hardcode education-specific routes or labels inside AppShell.",
+      "Never omit the skip-to-main-content anchor."
+    ],
+    "tokenDependencies": ["--bg-app", "--bg-sidebar", "--border-default", "--tone-brand-soft", "--tone-brand-fg"],
+    "usageGuidelines": {
+      "whenToUse": ["Root chrome of every Hahlex operational web application."],
+      "whenNotToUse": ["Do not use AppShell for public marketing landing pages."]
+    },
+    "responsiveBehavior": "Fixed 240px left rail with fluid main workspace; mobile menu trigger toggles compact navigation.",
+    "accessibility": {
+      "wcagTarget": "WCAG 2.1/2.2 AA",
+      "apgPattern": "Landmark Regions",
+      "rolesAndAttributes": ["Skip link to #millar-main-content", "<aside>, <nav aria-label>, <main tabIndex={-1}>", "aria-current='page' on active nav item"],
+      "keyboard": [{ "key": "Tab", "behavior": "First focusable element is Skip to main content." }]
+    },
+    "exampleCode": "import { AppShell, PageHeader, Button } from \"@hahlex/millar-ui\";\n\n<AppShell brand={<span>Hahlex</span>} navItems={items}>\n  <PageHeader title=\"Directory\" primaryAction={<Button variant=\"primary\">New item</Button>} />\n</AppShell>",
+    "sourcePath": "packages/ui/src/components/Layout.tsx"
+  }
+]

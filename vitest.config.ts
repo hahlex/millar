@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     globals: false,
     environment: "node",
+    environmentMatchGlobs: [["**/*.test.tsx", "jsdom"]],
     include: ["packages/**/*.test.{ts,tsx}", "apps/**/*.test.{ts,tsx}", "scripts/**/*.test.{ts,mjs}"],
     exclude: ["**/node_modules/**", "**/dist/**", "**/.next/**", "**/e2e/**"],
   },

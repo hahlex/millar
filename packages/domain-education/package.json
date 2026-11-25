@@ -1,0 +1,25 @@
+{
+  "name": "@hahlex/millar-domain-education",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Optional Hahlex Education Domain Extension for Millar (4-Skill IELTS tones, learner highlighter, education icon aliases).",
+  "exports": {
+    ".": "./src/index.tsx"
+  },
+  "dependencies": {
+    "@hahlex/millar-tokens": "workspace:*",
+    "@hahlex/millar-ui": "workspace:*",
+    "lucide-react": "^0.511.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.4",
+    "react": "^19.1.0"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  }
+}
