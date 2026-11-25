@@ -1,0 +1,170 @@
+{
+  "$description": "Millar Semantic Tokens: Light Theme (White-First Product surfaces + Editorial Cream Marketing surfaces, WCAG 2.1 AA contrast verified).",
+  "semantic": {
+    "color": {
+      "$type": "color",
+      "bg-app": { "$value": "{color.neutral.white}", "$description": "Main viewport canvas (Product default)." },
+      "bg-sidebar": { "$value": "{color.neutral.sidebar-light}", "$description": "Sidebar navigation rail surface." },
+      "bg-surface": { "$value": "{color.neutral.white}", "$description": "Default card, table, input, and dialog surface." },
+      "bg-surface-2": { "$value": "{color.neutral.surface-inset-light}", "$description": "Warm-sand inset surface for table headers, filter wells, and code blocks." },
+      "bg-elevated": { "$value": "{color.neutral.white}", "$description": "Floating overlays, popovers, and dropdown menus." },
+      "bg-elevated-hover": { "$value": "{color.neutral.surface-hover-light}", "$description": "Interactive row, menu item, and control hover fill." },
+      "bg-editorial": { "$value": "{color.neutral.cream-50}", "$description": "Marketing primary Editorial Cream paper canvas." },
+      "bg-editorial-alt": { "$value": "{color.neutral.cream-100}", "$description": "Marketing alternating warm cream surface." },
+      "bg-editorial-card": { "$value": "{color.neutral.sand-card}", "$description": "Marketing warm sand feature card surface." },
+      "bg-stage-dark": { "$value": "{color.brand.espresso-900}", "$description": "Marketing dark espresso showcase stage (invariant across themes)." },
+      "bg-stage-dark-deep": { "$value": "{color.brand.espresso-950}", "$description": "Marketing deepest espresso backdrop/footer." },
+      "bg-stage-dark-card": { "$value": "{color.brand.espresso-800}", "$description": "Card surface seated inside dark editorial stages." },
+
+      "fg-default": {
+        "$value": "{color.brand.charcoal}",
+        "$description": "Primary heading & body ink (16.03:1 on white).",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-app", "semantic.color.bg-surface", "semantic.color.bg-editorial", "semantic.color.bg-editorial-card"], "minContrast": 4.5 } }
+      },
+      "fg-muted": {
+        "$value": "{color.neutral.ink-muted-light}",
+        "$description": "Secondary prose, form labels, and table headers (7.84:1 on white).",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-app", "semantic.color.bg-surface", "semantic.color.bg-surface-2", "semantic.color.bg-editorial"], "minContrast": 4.5 } }
+      },
+      "fg-subtle": {
+        "$value": "{color.neutral.ink-subtle-light}",
+        "$description": "Captions, placeholders, and metadata (>= 5.33:1 across all light surfaces).",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-app", "semantic.color.bg-surface", "semantic.color.bg-elevated-hover", "semantic.color.bg-editorial"], "minContrast": 4.5 } }
+      },
+      "fg-on-stage-dark": {
+        "$value": "{color.neutral.paper}",
+        "$description": "Warm ivory ink on dark editorial espresso stages (17.44:1).",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-stage-dark", "semantic.color.bg-stage-dark-deep", "semantic.color.bg-stage-dark-card"], "minContrast": 4.5 } }
+      },
+      "fg-muted-on-stage-dark": {
+        "$value": "{color.neutral.paper-muted}",
+        "$description": "Muted ivory prose on dark editorial stages.",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-stage-dark", "semantic.color.bg-stage-dark-card"], "minContrast": 4.5 } }
+      },
+      "fg-accent-on-stage-dark": {
+        "$value": "{color.brand.bronze-400}",
+        "$description": "Luminous bronze text/eyebrow accent on dark editorial stages (6.10:1).",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-stage-dark", "semantic.color.bg-stage-dark-deep"], "minContrast": 4.5 } }
+      },
+
+      "border-soft": { "$value": "{color.neutral.border-soft-light}", "$description": "Subtle internal row divider." },
+      "border-default": { "$value": "{color.neutral.border-default-light}", "$description": "Canonical 1px warm-sand border." },
+      "border-strong": { "$value": "{color.neutral.border-strong-light}", "$description": "Control hover/active border." },
+      "border-stage-dark": { "$value": "{color.brand.espresso-700}", "$description": "Hairline border inside dark editorial stages." },
+
+      "accent": {
+        "$value": "{color.brand.cta-brown}",
+        "$description": "Primary CTA button fill (12.09:1 AAA with white label)."
+      },
+      "accent-hover": {
+        "$value": "{color.brand.cta-brown-hover}",
+        "$description": "Primary CTA hover fill (15.01:1 AAA with white label)."
+      },
+      "accent-editorial": {
+        "$value": "{color.brand.bronze-700}",
+        "$description": "AA/AAA editorial bronze button fill on light marketing surfaces (7.17:1 with white)."
+      },
+      "accent-editorial-hover": {
+        "$value": "{color.brand.bronze-600}",
+        "$description": "AA editorial bronze hover fill (5.58:1 with white; fixes 2.86:1 failure from legacy site)."
+      },
+      "fg-on-accent": {
+        "$value": "{color.neutral.white}",
+        "$description": "Ink on primary and editorial CTA buttons.",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.accent", "semantic.color.accent-hover", "semantic.color.accent-editorial", "semantic.color.accent-editorial-hover"], "minContrast": 4.5 } }
+      },
+      "accent-soft": {
+        "$value": "{color.brand.soft-sand}",
+        "$description": "Theme-invariant soft sand chip fill."
+      },
+      "fg-on-accent-soft": {
+        "$value": "{color.brand.cta-brown-hover}",
+        "$description": "Required ink on accent-soft chips and active toggles (7.69:1 AAA; fixes 1.00:1 dark toggle bug).",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.accent-soft"], "minContrast": 4.5 } }
+      },
+      "fg-accent": {
+        "$value": "{color.brand.deep-sand}",
+        "$description": "Brand ink for links, active indicators, eyebrows, and icons on light surfaces.",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-app", "semantic.color.bg-surface", "semantic.color.bg-editorial"], "minContrast": 4.5 } }
+      },
+      "fg-accent-hover": {
+        "$value": "{color.brand.cta-brown}",
+        "$description": "Hover ink for brand links."
+      },
+      "focus-ring": {
+        "$value": "{color.brand.cta-brown}",
+        "$description": "2px high-contrast keyboard focus ring (>= 3:1 across all surfaces).",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-app", "semantic.color.bg-sidebar", "semantic.color.bg-surface-2", "semantic.color.bg-editorial"], "minContrast": 3.0 } }
+      },
+
+      "status-success": {
+        "$value": "{color.status.moss-600}",
+        "$description": "Success text and solid status fill.",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-surface", "semantic.color.status-success-soft"], "minContrast": 4.5 } }
+      },
+      "status-success-soft": { "$value": "{color.status.moss-50}", "$description": "Success soft wash." },
+      "status-success-border": { "$value": "{color.status.moss-200}", "$description": "Success border." },
+      "status-success-solid": { "$value": "{color.status.moss-600}", "$description": "Solid success button fill." },
+      "status-success-on-solid": {
+        "$value": "{color.neutral.white}",
+        "$description": "Ink on solid success button.",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.status-success-solid"], "minContrast": 4.5 } }
+      },
+
+      "status-warning": {
+        "$value": "{color.status.ochre-600}",
+        "$description": "Warning text and icon.",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-surface", "semantic.color.status-warning-soft"], "minContrast": 4.5 } }
+      },
+      "status-warning-soft": { "$value": "{color.status.ochre-50}", "$description": "Warning soft wash." },
+      "status-warning-border": { "$value": "{color.status.ochre-200}", "$description": "Warning border." },
+
+      "status-error": {
+        "$value": "{color.status.crimson-600}",
+        "$description": "Error, destructive action, and problem metric ink.",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-surface", "semantic.color.status-error-soft", "semantic.color.bg-editorial"], "minContrast": 4.5 } }
+      },
+      "status-error-soft": { "$value": "{color.status.crimson-50}", "$description": "Error soft wash." },
+      "status-error-border": { "$value": "{color.status.crimson-200}", "$description": "Error border." },
+
+      "tone-brand": { "$value": "{color.brand.bronze-500}", "$description": "Non-skill brand bronze indicator." },
+      "tone-brand-soft": { "$value": "{color.brand.cream}", "$description": "Brand soft wash for active nav & badges." },
+      "tone-brand-border": { "$value": "{color.brand.tan}", "$description": "Brand soft border." },
+      "tone-brand-fg": {
+        "$value": "{color.brand.deep-sand}",
+        "$description": "Brand badge foreground ink.",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.tone-brand-soft"], "minContrast": 4.5 } }
+      },
+
+      "tone-sand": { "$value": "{color.brand.caramel}", "$description": "Sand indicator accent." },
+      "tone-sand-soft": { "$value": "{color.brand.sand}", "$description": "Sand soft badge wash." },
+      "tone-sand-border": { "$value": "{color.brand.tan}", "$description": "Sand badge border." },
+      "tone-sand-fg": {
+        "$value": "{color.brand.deep-sand}",
+        "$description": "Sand badge foreground ink.",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.tone-sand-soft"], "minContrast": 4.5 } }
+      },
+
+      "tone-sage": { "$value": "{color.categorical.sage-600}", "$description": "Supporting sage category indicator." },
+      "tone-sage-soft": { "$value": "{color.categorical.sage-50}", "$description": "Sage soft wash." },
+      "tone-sage-border": { "$value": "{color.categorical.sage-200}", "$description": "Sage border." },
+      "tone-sage-fg": {
+        "$value": "{color.categorical.sage-700}",
+        "$description": "Sage badge ink.",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.tone-sage-soft"], "minContrast": 4.5 } }
+      },
+
+      "chart-brand": { "$value": "{color.categorical.chart-brand-light}", "$description": "Primary single-series data-viz fill." },
+      "chart-neutral": { "$value": "{color.categorical.chart-neutral-light}", "$description": "Neutral comparison series." },
+      "chart-1": { "$value": "{color.categorical.chart-1-light}", "$description": "Multi-series slot 1 (Plum)." },
+      "chart-2": { "$value": "{color.categorical.chart-2-light}", "$description": "Multi-series slot 2 (Teal)." },
+      "chart-3": { "$value": "{color.categorical.chart-3-light}", "$description": "Multi-series slot 3 (Ink Blue)." },
+      "chart-ring-next": { "$value": "{color.categorical.chart-accent-ring-light}", "$description": "Target guide ring." }
+    },
+    "shadow": {
+      "$type": "string",
+      "card": { "$value": "0 1px 3px rgba(61, 42, 28, 0.06)", "$description": "Warm-tinted whisper shadow for lifted cards." },
+      "popover": { "$value": "0 1px 3px rgba(61, 42, 28, 0.10), 0 8px 24px rgba(61, 42, 28, 0.16)", "$description": "Warm-tinted overlay elevation for popovers, menus, and dialogs." }
+    }
+  }
+}

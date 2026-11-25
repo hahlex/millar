@@ -1,0 +1,12 @@
+{
+  "$description": "Millar Register Modifier: Product/App operational defaults (high scannability, zero CSS gradients).",
+  "register": {
+    "meta": {
+      "$type": "string",
+      "name": { "$value": "product", "$description": "Product/App operational register." },
+      "gradientPolicy": { "$value": "forbidden", "$description": "Zero CSS gradients on Product UI surfaces, cards, buttons, and skeletons." },
+      "containerMaxWidth": { "$value": "1280px", "$description": "Standard operational workspace frame (max-w-7xl)." },
+      "motionProfile": { "$value": "productive", "$description": "Fast, crisp operational transitions (140-320ms)." }
+    }
+  }
+}

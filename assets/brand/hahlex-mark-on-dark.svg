@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 282" fill="none" role="img" aria-label="Hahlex Brand Mark (On Dark)">
+  <title>Hahlex</title>
+  <circle cx="150" cy="44" r="15" fill="#E4CBAF" />
+  <path d="M47 185A103 103 0 0 1 253 185" stroke="#D6B48A" stroke-width="11" stroke-linecap="round" />
+  <circle cx="47" cy="186" r="10.5" fill="#D6B48A" />
+  <circle cx="253" cy="186" r="10.5" fill="#D6B48A" />
+  <rect x="84" y="158" width="22" height="98" rx="11" fill="#FAF8F5" />
+  <rect x="138" y="122" width="24" height="134" rx="12" fill="#D6B48A" />
+  <rect x="194" y="158" width="22" height="98" rx="11" fill="#C08A4A" />
+</svg>

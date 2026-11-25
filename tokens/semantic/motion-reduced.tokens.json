@@ -1,0 +1,14 @@
+{
+  "$description": "Millar Motion Reduced Modifier (prefers-reduced-motion: reduce): Static-first instant transitions.",
+  "motion": {
+    "duration": {
+      "$type": "duration",
+      "productive-fast": { "$value": { "value": 0, "unit": "ms" }, "$description": "Instant state swap under reduced motion." },
+      "productive-base": { "$value": { "value": 0, "unit": "ms" }, "$description": "Instant theme/tab swap under reduced motion." },
+      "productive-slow": { "$value": { "value": 0, "unit": "ms" }, "$description": "Instant disclosure under reduced motion." },
+      "expressive-moderate": { "$value": { "value": 0, "unit": "ms" }, "$description": "Instant editorial transition under reduced motion." },
+      "expressive-slow": { "$value": { "value": 0, "unit": "ms" }, "$description": "Static final visual state under reduced motion." },
+      "expressive-editorial": { "$value": { "value": 0, "unit": "ms" }, "$description": "Static final hero state under reduced motion." }
+    }
+  }
+}

@@ -1,0 +1,73 @@
+{
+  "$description": "Millar Shared Foundations: Unified Geist Sans + Inter + Geist Mono typography system (Q1 Accepted).",
+  "font": {
+    "family": {
+      "$type": "fontFamily",
+      "display": {
+        "$value": ["Geist", "Inter", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+        "$description": "Display headlines (>= 28px at weight 300-400), operational headings (16-22px at weight 500-600), and canonical Title Case Hahlex wordmark (600)."
+      },
+      "sans": {
+        "$value": ["Inter", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "sans-serif"],
+        "$description": "Body prose, UI controls, tables, buttons, and slim opsz-24 AI assistant prose."
+      },
+      "mono": {
+        "$value": ["Geist Mono", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"],
+        "$description": "Code snippets, coordinate indices, keyboard shortcuts, IDs, and technical metadata."
+      }
+    },
+    "size": {
+      "$type": "dimension",
+      "display-poster": { "$value": { "value": 4.5, "unit": "rem" }, "$description": "72px monumental marketing display statement (Geist 300)." },
+      "display-hero": { "$value": { "value": 3, "unit": "rem" }, "$description": "48px primary display hero (Geist 300)." },
+      "display-section": { "$value": { "value": 2.25, "unit": "rem" }, "$description": "36px section display heading (Geist 300-400)." },
+      "display-card": { "$value": { "value": 2, "unit": "rem" }, "$description": "32px featured display card title (Geist 300-400)." },
+      "display-sm": { "$value": { "value": 1.75, "unit": "rem" }, "$description": "28px compact display greeting (Geist 300-400)." },
+      "kpi": { "$value": { "value": 1.5, "unit": "rem" }, "$description": "24px tabular-nums KPI anchor (replaces ad-hoc text-2xl overrides)." },
+      "page-title": { "$value": { "value": 1.375, "unit": "rem" }, "$description": "22px dense SaaS page h1 (Geist 600)." },
+      "lead": { "$value": { "value": 1.25, "unit": "rem" }, "$description": "20px lead introductory paragraph (Inter 400)." },
+      "section-title": { "$value": { "value": 1.125, "unit": "rem" }, "$description": "18px operational section h2 (Geist 600)." },
+      "card-title": { "$value": { "value": 1, "unit": "rem" }, "$description": "16px operational card h3 (Geist 500-600)." },
+      "body": { "$value": { "value": 0.9375, "unit": "rem" }, "$description": "15px default document & product reading body (Inter 400)." },
+      "body-sm": { "$value": { "value": 0.875, "unit": "rem" }, "$description": "14px dense UI controls, buttons, and table rows." },
+      "meta": { "$value": { "value": 0.8125, "unit": "rem" }, "$description": "13px badges, captions, code blocks, and form labels." },
+      "eyebrow": { "$value": { "value": 0.75, "unit": "rem" }, "$description": "12px uppercase section eyebrows and coordinate indices." },
+      "micro": { "$value": { "value": 0.75, "unit": "rem" }, "$description": "12px minimum legible UI micro-label (strictly never below 12px)." }
+    },
+    "weight": {
+      "$type": "fontWeight",
+      "display": { "$value": 300, "$description": "Whisper-light monumental display weight (>= 28px)." },
+      "chat-light": { "$value": 380, "$description": "Slim variable Inter optical chat prose weight (light theme)." },
+      "chat-dark": { "$value": 370, "$description": "Slim variable Inter optical chat prose weight (dark theme)." },
+      "regular": { "$value": 400, "$description": "Standard body prose, table cells, and code." },
+      "medium": { "$value": 500, "$description": "Buttons, navigation items, form labels, h3 cards." },
+      "semibold": { "$value": 600, "$description": "Operational h1/h2, active tabs, and Hahlex wordmark." },
+      "bold": { "$value": 700, "$description": "KPI anchor numerals and score totals." }
+    },
+    "leading": {
+      "$type": "number",
+      "display-hero": { "$value": 1.08, "$description": "English hero display leading (widens to 1.20 under :lang(vi))." },
+      "display": { "$value": 1.14, "$description": "English section display leading (widens to 1.22 under :lang(vi))." },
+      "heading": { "$value": 1.24, "$description": "Operational h1 leading (1.28 under :lang(vi))." },
+      "section": { "$value": 1.28, "$description": "Operational h2 leading (1.32 under :lang(vi))." },
+      "card": { "$value": 1.32, "$description": "Operational h3 leading (1.36 under :lang(vi))." },
+      "snug": { "$value": 1.35, "$description": "Lead intros and compact nav labels (1.38 under :lang(vi))." },
+      "body": { "$value": 1.55, "$description": "Calm default reading rhythm." },
+      "chat": { "$value": 1.62, "$description": "Slim AI assistant prose rhythm." },
+      "mono": { "$value": 1.85, "$description": "Multi-line code block vertical clarity." }
+    },
+    "tracking": {
+      "$type": "dimension",
+      "display": { "$value": { "value": -0.02, "unit": "em" }, "$description": "Tight display compression (-0.012em under :lang(vi))." },
+      "tight": { "$value": { "value": -0.015, "unit": "em" }, "$description": "Operational h1/h2 and KPI compression (-0.008em under :lang(vi))." },
+      "subhead": { "$value": { "value": -0.008, "unit": "em" }, "$description": "Card heading tracking (0em under :lang(vi))." },
+      "chat": { "$value": { "value": -0.006, "unit": "em" }, "$description": "Compact assistant prose tracking (0em under :lang(vi))." },
+      "normal": { "$value": { "value": 0, "unit": "em" }, "$description": "Controls, code, and tabular numeric cells." },
+      "body": { "$value": { "value": 0.01, "unit": "em" }, "$description": "Crisp Inter UI/body positive tracking." },
+      "lead": { "$value": { "value": 0.011, "unit": "em" }, "$description": "Editorial lead paragraph tracking." },
+      "wide": { "$value": { "value": 0.04, "unit": "em" }, "$description": "Form field labels and secondary metadata." },
+      "cta-upper": { "$value": { "value": 0.05, "unit": "em" }, "$description": "Uppercase CTA accent tracking." },
+      "wider": { "$value": { "value": 0.08, "unit": "em" }, "$description": "Uppercase eyebrows and coordinate labels." }
+    }
+  }
+}

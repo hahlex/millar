@@ -1,0 +1,74 @@
+{
+  "$description": "Optional Domain Extension (@hahlex/millar-domain-education): 4-Skill IELTS & Sub-Skill tones + learner highlighter cleanly decoupled from Millar Shared Foundations (ADR-0002).",
+  "education": {
+    "$type": "color",
+    "light": {
+      "skill-listening": { "$value": { "colorSpace": "oklch", "components": [0.530, 0.056, 244.0], "alpha": 1, "hex": "#4f6f8a" }, "$description": "Steel: Nghe (Listening) base." },
+      "skill-listening-soft": { "$value": { "colorSpace": "oklch", "components": [0.962, 0.008, 244.0], "alpha": 1, "hex": "#f1f5f8" } },
+      "skill-listening-border": { "$value": { "colorSpace": "oklch", "components": [0.870, 0.024, 244.0], "alpha": 1, "hex": "#cbd8e3" } },
+      "skill-listening-fg": { "$value": { "colorSpace": "oklch", "components": [0.442, 0.054, 244.0], "alpha": 1, "hex": "#3a5870" } },
+
+      "skill-reading": { "$value": { "colorSpace": "oklch", "components": [0.548, 0.095, 118.0], "alpha": 1, "hex": "#6b7a2e" }, "$description": "Olive: Đọc (Reading) base." },
+      "skill-reading-soft": { "$value": { "colorSpace": "oklch", "components": [0.968, 0.014, 118.0], "alpha": 1, "hex": "#f5f6ea" } },
+      "skill-reading-border": { "$value": { "colorSpace": "oklch", "components": [0.892, 0.044, 118.0], "alpha": 1, "hex": "#d9deb6" } },
+      "skill-reading-fg": { "$value": { "colorSpace": "oklch", "components": [0.438, 0.082, 118.0], "alpha": 1, "hex": "#4f5b1e" } },
+
+      "skill-writing": { "$value": { "colorSpace": "oklch", "components": [0.642, 0.118, 76.0], "alpha": 1, "hex": "#b9832c" }, "$description": "Caramel: Viết (Writing) base." },
+      "skill-writing-soft": { "$value": { "colorSpace": "oklch", "components": [0.972, 0.018, 82.0], "alpha": 1, "hex": "#fcf6e9" } },
+      "skill-writing-border": { "$value": { "colorSpace": "oklch", "components": [0.888, 0.064, 80.0], "alpha": 1, "hex": "#efd9ab" } },
+      "skill-writing-fg": { "$value": { "colorSpace": "oklch", "components": [0.478, 0.105, 72.0], "alpha": 1, "hex": "#85590f" } },
+
+      "skill-speaking": { "$value": { "colorSpace": "oklch", "components": [0.468, 0.118, 358.0], "alpha": 1, "hex": "#96395a" }, "$description": "Mulberry: Nói (Speaking) base." },
+      "skill-speaking-soft": { "$value": { "colorSpace": "oklch", "components": [0.960, 0.014, 358.0], "alpha": 1, "hex": "#fbf0f3" } },
+      "skill-speaking-border": { "$value": { "colorSpace": "oklch", "components": [0.854, 0.044, 358.0], "alpha": 1, "hex": "#ecc6d2" } },
+      "skill-speaking-fg": { "$value": { "colorSpace": "oklch", "components": [0.392, 0.108, 358.0], "alpha": 1, "hex": "#7a2745" } },
+
+      "subskill-grammar": { "$value": { "colorSpace": "oklch", "components": [0.506, 0.056, 278.0], "alpha": 1, "hex": "#5e6488" }, "$description": "Dusk: Grammar/Language base." },
+      "subskill-grammar-soft": { "$value": { "colorSpace": "oklch", "components": [0.962, 0.008, 278.0], "alpha": 1, "hex": "#f3f3f8" } },
+      "subskill-grammar-border": { "$value": { "colorSpace": "oklch", "components": [0.870, 0.022, 278.0], "alpha": 1, "hex": "#d3d5e4" } },
+      "subskill-grammar-fg": { "$value": { "colorSpace": "oklch", "components": [0.415, 0.056, 278.0], "alpha": 1, "hex": "#464b6e" } },
+
+      "subskill-vocab": { "$value": { "colorSpace": "oklch", "components": [0.542, 0.128, 42.0], "alpha": 1, "hex": "#b4532a" }, "$description": "Terracotta: Vocabulary/Pronunciation base." },
+      "subskill-vocab-soft": { "$value": { "colorSpace": "oklch", "components": [0.964, 0.015, 42.0], "alpha": 1, "hex": "#fcf1ec" } },
+      "subskill-vocab-border": { "$value": { "colorSpace": "oklch", "components": [0.868, 0.048, 42.0], "alpha": 1, "hex": "#f0cdbd" } },
+      "subskill-vocab-fg": { "$value": { "colorSpace": "oklch", "components": [0.448, 0.110, 42.0], "alpha": 1, "hex": "#8e3d1c" } },
+
+      "mark-learner": { "$value": { "colorSpace": "oklch", "components": [0.924, 0.120, 95.0], "alpha": 1, "hex": "#fde68a" }, "$description": "Learner reading-passage highlighter fill (light)." },
+      "fg-on-mark-learner": { "$value": "{color.brand.charcoal}", "$description": "Ink on learner highlight (light)." }
+    },
+    "dark": {
+      "skill-listening": { "$value": { "colorSpace": "oklch", "components": [0.700, 0.068, 244.0], "alpha": 1, "hex": "#7fa3c2" } },
+      "skill-listening-soft": { "$value": { "colorSpace": "oklch", "components": [0.242, 0.022, 244.0], "alpha": 1, "hex": "#19212a" } },
+      "skill-listening-border": { "$value": { "colorSpace": "oklch", "components": [0.362, 0.042, 244.0], "alpha": 1, "hex": "#2f4152" } },
+      "skill-listening-fg": { "$value": { "colorSpace": "oklch", "components": [0.808, 0.050, 244.0], "alpha": 1, "hex": "#a9c6de" } },
+
+      "skill-reading": { "$value": { "colorSpace": "oklch", "components": [0.735, 0.105, 118.0], "alpha": 1, "hex": "#a5b55e" } },
+      "skill-reading-soft": { "$value": { "colorSpace": "oklch", "components": [0.246, 0.024, 118.0], "alpha": 1, "hex": "#1f2216" } },
+      "skill-reading-border": { "$value": { "colorSpace": "oklch", "components": [0.376, 0.048, 118.0], "alpha": 1, "hex": "#3d4426" } },
+      "skill-reading-fg": { "$value": { "colorSpace": "oklch", "components": [0.835, 0.088, 118.0], "alpha": 1, "hex": "#c6d38a" } },
+
+      "skill-writing": { "$value": { "colorSpace": "oklch", "components": [0.768, 0.124, 76.0], "alpha": 1, "hex": "#e0a94f" } },
+      "skill-writing-soft": { "$value": { "colorSpace": "oklch", "components": [0.258, 0.028, 76.0], "alpha": 1, "hex": "#2a2214" } },
+      "skill-writing-border": { "$value": { "colorSpace": "oklch", "components": [0.394, 0.056, 76.0], "alpha": 1, "hex": "#50401f" } },
+      "skill-writing-fg": { "$value": { "colorSpace": "oklch", "components": [0.854, 0.098, 76.0], "alpha": 1, "hex": "#efc77f" } },
+
+      "skill-speaking": { "$value": { "colorSpace": "oklch", "components": [0.656, 0.112, 358.0], "alpha": 1, "hex": "#d67896" } },
+      "skill-speaking-soft": { "$value": { "colorSpace": "oklch", "components": [0.240, 0.028, 358.0], "alpha": 1, "hex": "#2a1a20" } },
+      "skill-speaking-border": { "$value": { "colorSpace": "oklch", "components": [0.354, 0.056, 358.0], "alpha": 1, "hex": "#523040" } },
+      "skill-speaking-fg": { "$value": { "colorSpace": "oklch", "components": [0.785, 0.082, 358.0], "alpha": 1, "hex": "#eaa3ba" } },
+
+      "subskill-grammar": { "$value": { "colorSpace": "oklch", "components": [0.708, 0.068, 278.0], "alpha": 1, "hex": "#9a9fcc" } },
+      "subskill-grammar-soft": { "$value": { "colorSpace": "oklch", "components": [0.238, 0.026, 278.0], "alpha": 1, "hex": "#1d1e2a" } },
+      "subskill-grammar-border": { "$value": { "colorSpace": "oklch", "components": [0.362, 0.052, 278.0], "alpha": 1, "hex": "#3a3d58" } },
+      "subskill-grammar-fg": { "$value": { "colorSpace": "oklch", "components": [0.832, 0.048, 278.0], "alpha": 1, "hex": "#c4c7e6" } },
+
+      "subskill-vocab": { "$value": { "colorSpace": "oklch", "components": [0.692, 0.118, 42.0], "alpha": 1, "hex": "#e08a63" } },
+      "subskill-vocab-soft": { "$value": { "colorSpace": "oklch", "components": [0.246, 0.028, 42.0], "alpha": 1, "hex": "#2c1c15" } },
+      "subskill-vocab-border": { "$value": { "colorSpace": "oklch", "components": [0.376, 0.062, 42.0], "alpha": 1, "hex": "#5a3424" } },
+      "subskill-vocab-fg": { "$value": { "colorSpace": "oklch", "components": [0.810, 0.082, 42.0], "alpha": 1, "hex": "#f0b597" } },
+
+      "mark-learner": { "$value": { "colorSpace": "oklch", "components": [0.476, 0.112, 80.0], "alpha": 1, "hex": "#854d0e" }, "$description": "Learner reading-passage highlighter fill (dark)." },
+      "fg-on-mark-learner": { "$value": { "colorSpace": "oklch", "components": [0.988, 0.026, 102.0], "alpha": 1, "hex": "#fefce8" }, "$description": "Ink on learner highlight (dark)." }
+    }
+  }
+}

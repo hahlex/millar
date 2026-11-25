@@ -1,0 +1,12 @@
+{
+  "$description": "Millar Register Modifier: Marketing editorial defaults (generous whitespace, approved-asset-only gradient policy, expressive motion).",
+  "register": {
+    "meta": {
+      "$type": "string",
+      "name": { "$value": "marketing", "$description": "Marketing/Editorial storytelling register." },
+      "gradientPolicy": { "$value": "approved-visual-assets-only", "$description": "Gradients allowed strictly inside purposeful, explicitly approved Visual Assets; forbidden as arbitrary UI decoration." },
+      "containerMaxWidth": { "$value": "1320px", "$description": "Editorial stage grid frame." },
+      "motionProfile": { "$value": "expressive", "$description": "Measured editorial motion (280-640ms) with mandatory static-first reduced-motion fallback." }
+    }
+  }
+}

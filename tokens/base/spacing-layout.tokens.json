@@ -1,0 +1,63 @@
+{
+  "$description": "Millar Shared Foundations: 4px/8px Spacing Scale, Container Rhythm, Unified Breakpoints, Radii, and Canonical 17-Tier Z-Index Ladder.",
+  "space": {
+    "$type": "dimension",
+    "1": { "$value": { "value": 4, "unit": "px" }, "$description": "Tight micro-gap (icon-to-badge)." },
+    "2": { "$value": { "value": 8, "unit": "px" }, "$description": "Base spatial grid unit (button icon gap, chip cluster)." },
+    "3": { "$value": { "value": 12, "unit": "px" }, "$description": "Form field rhythm, compact stack." },
+    "4": { "$value": { "value": 16, "unit": "px" }, "$description": "Mobile page gutter and default section stack." },
+    "5": { "$value": { "value": 20, "unit": "px" }, "$description": "Desktop operational vertical rhythm." },
+    "6": { "$value": { "value": 24, "unit": "px" }, "$description": "Desktop page gutter and modal body rhythm." },
+    "8": { "$value": { "value": 32, "unit": "px" }, "$description": "Major section separation and empty-state padding." },
+    "12": { "$value": { "value": 48, "unit": "px" }, "$description": "Mobile editorial section pacing and showcase gap." },
+    "16": { "$value": { "value": 64, "unit": "px" }, "$description": "Tablet editorial section vertical pacing." },
+    "24": { "$value": { "value": 96, "unit": "px" }, "$description": "Desktop editorial section vertical pacing." },
+    "card-padding-block": { "$value": { "value": 16, "unit": "px" }, "$description": "Standard card top/bottom interior padding." },
+    "card-padding-inline": { "$value": { "value": 18, "unit": "px" }, "$description": "Standard card left/right interior padding." },
+    "card-gap": { "$value": { "value": 14, "unit": "px" }, "$description": "Internal vertical rhythm inside cards." },
+    "section-gap": { "$value": { "value": 18, "unit": "px" }, "$description": "Gap between cards inside operational sections." },
+    "row-padding-block": { "$value": { "value": 11, "unit": "px" }, "$description": "Dense table/list row vertical padding." },
+    "row-padding-inline": { "$value": { "value": 14, "unit": "px" }, "$description": "Dense table/list row horizontal padding." },
+    "row-gap": { "$value": { "value": 10, "unit": "px" }, "$description": "Gap between stacked bordered rows." },
+    "drawer-padding-block": { "$value": { "value": 18, "unit": "px" }, "$description": "Drawer top/bottom padding." },
+    "drawer-padding-inline": { "$value": { "value": 20, "unit": "px" }, "$description": "Drawer left/right padding." }
+  },
+  "breakpoint": {
+    "$type": "dimension",
+    "sm": { "$value": { "value": 640, "unit": "px" }, "$description": "Mobile phone -> large phone / bottom-sheet & mobile-card handoff." },
+    "md": { "$value": { "value": 768, "unit": "px" }, "$description": "Tablet portrait / schematic rail reflow." },
+    "lg": { "$value": { "value": 1024, "unit": "px" }, "$description": "Desktop sidebar & 2-column split." },
+    "xl": { "$value": { "value": 1280, "unit": "px" }, "$description": "Standard Product workspace max-width frame." },
+    "2xl": { "$value": { "value": 1440, "unit": "px" }, "$description": "Wide Marketing editorial stage frame." }
+  },
+  "radius": {
+    "$type": "dimension",
+    "xs": { "$value": { "value": 4, "unit": "px" }, "$description": "Inline code chips and structural micro-indicators." },
+    "sm": { "$value": { "value": 8, "unit": "px" }, "$description": "Small 32px controls and menu rows." },
+    "control": { "$value": { "value": 10, "unit": "px" }, "$description": "Default Button, Input, Select, IconBox, DatePicker." },
+    "md": { "$value": { "value": 12, "unit": "px" }, "$description": "Popovers, dropdown menus, inset wells." },
+    "lg": { "$value": { "value": 16, "unit": "px" }, "$description": "Cards, dialogs, data table frames, product visualization frames." },
+    "xl": { "$value": { "value": 22, "unit": "px" }, "$description": "Hero showcase panels and floating composers." },
+    "pill": { "$value": { "value": 9999, "unit": "px" }, "$description": "Badges, choice tags, switches, progress rails." }
+  },
+  "zIndex": {
+    "$type": "number",
+    "base": { "$value": 1, "$description": "Base content plane." },
+    "raised": { "$value": 2, "$description": "Slightly elevated inline cards or badges." },
+    "docked": { "$value": 10, "$description": "Docked toolbars and sticky column headers." },
+    "dropdown": { "$value": 20, "$description": "Inline dropdown panels." },
+    "sticky-low": { "$value": 30, "$description": "Secondary sticky bars." },
+    "sticky": { "$value": 40, "$description": "Primary sticky headers and section nav." },
+    "guide": { "$value": 45, "$description": "Guided spotlight overlays." },
+    "backdrop": { "$value": 50, "$description": "Drawer backdrop." },
+    "nav": { "$value": 60, "$description": "Top sticky navigation bar." },
+    "mobile-nav": { "$value": 80, "$description": "Off-canvas mobile navigation drawer." },
+    "drawer": { "$value": 100, "$description": "Side drawers." },
+    "drawer-raised": { "$value": 105, "$description": "Secondary overlays inside drawers." },
+    "modal-backdrop": { "$value": 9000, "$description": "Modal backdrop dimmer." },
+    "dialog": { "$value": 10001, "$description": "Modal dialogs and confirm dialogs." },
+    "assistant": { "$value": 10500, "$description": "Floating AI assistant shell." },
+    "popover": { "$value": 11000, "$description": "Tooltips, popovers, command palette." },
+    "toast": { "$value": 12000, "$description": "Toast notifications (highest non-debug layer)." }
+  }
+}

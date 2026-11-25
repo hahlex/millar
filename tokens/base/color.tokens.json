@@ -1,0 +1,224 @@
+{
+  "$description": "Millar Shared Foundations: Unified OKLCH-calibrated Warm Sand, Bronze, Espresso, Status, and Product-Agnostic Data-Viz color primitives (W3C DTCG 2025.10 Color Module).",
+  "color": {
+    "$type": "color",
+    "brand": {
+      "charcoal": {
+        "$value": { "colorSpace": "oklch", "components": [0.256, 0.025, 58.6], "alpha": 1, "hex": "#2b1f16" },
+        "$description": "Primary warm espresso ink on light surfaces (16.03:1 on white)."
+      },
+      "espresso-950": {
+        "$value": { "colorSpace": "oklch", "components": [0.165, 0.015, 56.0], "alpha": 1, "hex": "#120c08" },
+        "$description": "Deepest editorial espresso backdrop for marketing stages and footers."
+      },
+      "espresso-900": {
+        "$value": { "colorSpace": "oklch", "components": [0.198, 0.018, 56.8], "alpha": 1, "hex": "#1a130d" },
+        "$description": "Primary dark editorial espresso stage canvas."
+      },
+      "espresso-800": {
+        "$value": { "colorSpace": "oklch", "components": [0.254, 0.021, 58.0], "alpha": 1, "hex": "#2a2018" },
+        "$description": "Raised card surface on dark editorial espresso stages."
+      },
+      "espresso-700": {
+        "$value": { "colorSpace": "oklch", "components": [0.328, 0.023, 57.4], "alpha": 1, "hex": "#3e3128" },
+        "$description": "Border and hairline divider on dark editorial espresso stages."
+      },
+      "espresso-600": {
+        "$value": { "colorSpace": "oklch", "components": [0.305, 0.031, 57.5], "alpha": 1, "hex": "#3d2a1c" },
+        "$description": "Bold brand ramp espresso anchor and primary single-series chart fill."
+      },
+      "cta-brown": {
+        "$value": { "colorSpace": "oklch", "components": [0.335, 0.041, 49.0], "alpha": 1, "hex": "#4a3022" },
+        "$description": "High-contrast dark brown primary CTA fill on light surfaces (12.09:1 AAA with white)."
+      },
+      "cta-brown-hover": {
+        "$value": { "colorSpace": "oklch", "components": [0.273, 0.032, 49.5], "alpha": 1, "hex": "#362218" },
+        "$description": "Hover/active primary CTA fill and high-contrast ink on soft sand chips (7.69:1 AAA)."
+      },
+      "deep-sand": {
+        "$value": { "colorSpace": "oklch", "components": [0.440, 0.055, 58.2], "alpha": 1, "hex": "#6b4d35" },
+        "$description": "Logo root brown, light text/icon brand accent (7.67:1), and dark primary CTA fill."
+      },
+      "deep-sand-hover": {
+        "$value": { "colorSpace": "oklch", "components": [0.376, 0.047, 57.6], "alpha": 1, "hex": "#543a28" },
+        "$description": "Deep sand hover state."
+      },
+      "bronze-700": {
+        "$value": { "colorSpace": "oklch", "components": [0.464, 0.095, 67.4], "alpha": 1, "hex": "#7a4e16" },
+        "$description": "AA/AAA editorial bronze for marketing text, labels, and bronze CTAs on light surfaces (7.01:1 on cream)."
+      },
+      "bronze-600": {
+        "$value": { "colorSpace": "oklch", "components": [0.514, 0.105, 67.2], "alpha": 1, "hex": "#8f5b1e" },
+        "$description": "Bronze interactive hover and accent border on light surfaces (5.58:1 on cream)."
+      },
+      "bronze-500": {
+        "$value": { "colorSpace": "oklch", "components": [0.562, 0.114, 67.8], "alpha": 1, "hex": "#a56b23" },
+        "$description": "Warm bronze brand accent for icons, active bars, borders, and large display >= 24px (do not use for small light-mode body text)."
+      },
+      "bronze-400": {
+        "$value": { "colorSpace": "oklch", "components": [0.668, 0.095, 68.4], "alpha": 1, "hex": "#c08a4a" },
+        "$description": "Luminous warm bronze highlight for text and accents on dark espresso/obsidian (6.10:1 on espresso)."
+      },
+      "caramel": {
+        "$value": { "colorSpace": "oklch", "components": [0.735, 0.080, 69.5], "alpha": 1, "hex": "#d1a068" },
+        "$description": "Caramel highlights, ring indicators, and sand badges."
+      },
+      "soft-sand": {
+        "$value": { "colorSpace": "oklch", "components": [0.785, 0.062, 72.1], "alpha": 1, "hex": "#d6b48a" },
+        "$description": "Soft warm sand chip fill, dark-mode brand text/focus accent (9.7:1 on obsidian)."
+      },
+      "tan": {
+        "$value": { "colorSpace": "oklch", "components": [0.854, 0.044, 73.2], "alpha": 1, "hex": "#e4cbaf" },
+        "$description": "Warm tan pill borders, brand mark center bar, and divider strokes."
+      },
+      "sand": {
+        "$value": { "colorSpace": "oklch", "components": [0.928, 0.032, 82.5], "alpha": 1, "hex": "#f2e6cd" },
+        "$description": "Warm sand secondary fills and editorial highlight blocks."
+      },
+      "cream": {
+        "$value": { "colorSpace": "oklch", "components": [0.967, 0.015, 74.0], "alpha": 1, "hex": "#faf3ea" },
+        "$description": "Soft warm brand wash for active navigation and highlight plates."
+      }
+    },
+    "neutral": {
+      "white": {
+        "$value": { "colorSpace": "oklch", "components": [1.0, 0, 0], "alpha": 1, "hex": "#ffffff" },
+        "$description": "Pure white canvas for White-First product surfaces."
+      },
+      "cream-50": {
+        "$value": { "colorSpace": "oklch", "components": [0.992, 0.006, 76.0], "alpha": 1, "hex": "#fffcf8" },
+        "$description": "Warm paper cream primary canvas for editorial marketing surfaces."
+      },
+      "cream-100": {
+        "$value": { "colorSpace": "oklch", "components": [0.981, 0.009, 75.5], "alpha": 1, "hex": "#fcf8f3" },
+        "$description": "Secondary warm paper surface for alternating marketing sections."
+      },
+      "paper": {
+        "$value": { "colorSpace": "oklch", "components": [0.982, 0.011, 74.0], "alpha": 1, "hex": "#fff8f0" },
+        "$description": "Warm ivory ink on dark editorial espresso stages (17.44:1 on espresso-900)."
+      },
+      "paper-muted": {
+        "$value": { "colorSpace": "oklch", "components": [0.793, 0.031, 69.0], "alpha": 1, "hex": "#c9b8a4" },
+        "$description": "Muted warm paper ink on dark editorial espresso stages (9.44:1 on espresso-900)."
+      },
+      "sidebar-light": {
+        "$value": { "colorSpace": "oklch", "components": [0.980, 0.006, 75.0], "alpha": 1, "hex": "#faf8f5" },
+        "$description": "Product light sidebar rail surface."
+      },
+      "surface-inset-light": {
+        "$value": { "colorSpace": "oklch", "components": [0.970, 0.010, 74.0], "alpha": 1, "hex": "#f9f5ef" },
+        "$description": "Product light inset surface (table headers, filter wells, inline code)."
+      },
+      "surface-hover-light": {
+        "$value": { "colorSpace": "oklch", "components": [0.955, 0.014, 73.0], "alpha": 1, "hex": "#f5efe6" },
+        "$description": "Product light hover fill for rows and controls."
+      },
+      "sand-card": {
+        "$value": { "colorSpace": "oklch", "components": [0.946, 0.022, 72.5], "alpha": 1, "hex": "#f6ebde" },
+        "$description": "Editorial warm sand card surface on cream pages."
+      },
+      "border-soft-light": {
+        "$value": { "colorSpace": "oklch", "components": [0.948, 0.011, 74.0], "alpha": 1, "hex": "#f3eee6" },
+        "$description": "Internal subtle divider in light mode."
+      },
+      "border-default-light": {
+        "$value": { "colorSpace": "oklch", "components": [0.916, 0.017, 73.0], "alpha": 1, "hex": "#ebe3d7" },
+        "$description": "Default 1px warm-sand border in light mode."
+      },
+      "border-strong-light": {
+        "$value": { "colorSpace": "oklch", "components": [0.728, 0.032, 72.0], "alpha": 1, "hex": "#b5a48e" },
+        "$description": "Strong hover/active control border in light mode."
+      },
+      "ink-muted-light": {
+        "$value": { "colorSpace": "oklch", "components": [0.432, 0.026, 65.0], "alpha": 1, "hex": "#5f4f40" },
+        "$description": "Secondary muted ink in light mode (7.84:1 on white)."
+      },
+      "ink-subtle-light": {
+        "$value": { "colorSpace": "oklch", "components": [0.494, 0.028, 66.0], "alpha": 1, "hex": "#715f4d" },
+        "$description": "Subtle metadata/placeholder ink in light mode (>= 5.33:1 across surfaces)."
+      },
+      "obsidian-950": {
+        "$value": { "colorSpace": "oklch", "components": [0.191, 0.002, 67.0], "alpha": 1, "hex": "#141413" },
+        "$description": "Product Warm Obsidian dark app canvas."
+      },
+      "obsidian-900": {
+        "$value": { "colorSpace": "oklch", "components": [0.205, 0.004, 67.0], "alpha": 1, "hex": "#181715" },
+        "$description": "Product dark sidebar surface."
+      },
+      "obsidian-850": {
+        "$value": { "colorSpace": "oklch", "components": [0.217, 0.006, 56.0], "alpha": 1, "hex": "#1c1917" },
+        "$description": "Product dark card/panel/modal surface."
+      },
+      "obsidian-800": {
+        "$value": { "colorSpace": "oklch", "components": [0.258, 0.008, 60.0], "alpha": 1, "hex": "#262320" },
+        "$description": "Product dark inset/elevated surface."
+      },
+      "obsidian-750": {
+        "$value": { "colorSpace": "oklch", "components": [0.295, 0.009, 60.0], "alpha": 1, "hex": "#302c28" },
+        "$description": "Product dark hover surface."
+      },
+      "ink-dark": {
+        "$value": { "colorSpace": "oklch", "components": [0.985, 0.002, 67.0], "alpha": 1, "hex": "#fafaf9" },
+        "$description": "Primary ink on dark obsidian surfaces (16.74:1 on surface)."
+      },
+      "ink-muted-dark": {
+        "$value": { "colorSpace": "oklch", "components": [0.869, 0.005, 56.0], "alpha": 1, "hex": "#d6d3d1" },
+        "$description": "Secondary muted ink on dark obsidian surfaces (11.74:1)."
+      },
+      "ink-subtle-dark": {
+        "$value": { "colorSpace": "oklch", "components": [0.716, 0.010, 56.0], "alpha": 1, "hex": "#a8a29e" },
+        "$description": "Subtle metadata/placeholder ink on dark surfaces (>= 5.49:1 on hover)."
+      },
+      "black": {
+        "$value": { "colorSpace": "oklch", "components": [0, 0, 0], "alpha": 1, "hex": "#000000" },
+        "$description": "Pure black endpoint."
+      }
+    },
+    "status": {
+      "moss-600": { "$value": { "colorSpace": "oklch", "components": [0.535, 0.100, 134.0], "alpha": 1, "hex": "#4f7a34" }, "$description": "Success moss light text/solid fill (5.04:1 with white)." },
+      "moss-700": { "$value": { "colorSpace": "oklch", "components": [0.478, 0.095, 134.0], "alpha": 1, "hex": "#3f6a28" }, "$description": "Success moss solid fill in dark mode (6.09:1 with #fafaf9)." },
+      "moss-300": { "$value": { "colorSpace": "oklch", "components": [0.788, 0.092, 134.0], "alpha": 1, "hex": "#9cc77c" }, "$description": "Success moss ink on dark surfaces." },
+      "moss-50": { "$value": { "colorSpace": "oklch", "components": [0.966, 0.018, 130.0], "alpha": 1, "hex": "#f1f6ea" }, "$description": "Success moss soft wash (light)." },
+      "moss-200": { "$value": { "colorSpace": "oklch", "components": [0.884, 0.044, 130.0], "alpha": 1, "hex": "#cfe0bd" }, "$description": "Success moss border (light)." },
+      "moss-950": { "$value": { "colorSpace": "oklch", "components": [0.252, 0.028, 134.0], "alpha": 1, "hex": "#1c2617" }, "$description": "Success moss soft wash (dark)." },
+      "moss-900": { "$value": { "colorSpace": "oklch", "components": [0.365, 0.045, 134.0], "alpha": 1, "hex": "#34472a" }, "$description": "Success moss border (dark)." },
+
+      "ochre-600": { "$value": { "colorSpace": "oklch", "components": [0.505, 0.112, 65.0], "alpha": 1, "hex": "#965a14" }, "$description": "Warning ochre text (light)." },
+      "ochre-300": { "$value": { "colorSpace": "oklch", "components": [0.790, 0.108, 72.0], "alpha": 1, "hex": "#e8b46a" }, "$description": "Warning ochre text (dark)." },
+      "ochre-50": { "$value": { "colorSpace": "oklch", "components": [0.968, 0.022, 78.0], "alpha": 1, "hex": "#fdf4e6" }, "$description": "Warning ochre soft wash (light)." },
+      "ochre-200": { "$value": { "colorSpace": "oklch", "components": [0.875, 0.062, 76.0], "alpha": 1, "hex": "#f0d4a8" }, "$description": "Warning ochre border (light)." },
+      "ochre-950": { "$value": { "colorSpace": "oklch", "components": [0.262, 0.032, 68.0], "alpha": 1, "hex": "#2b2214" }, "$description": "Warning ochre soft wash (dark)." },
+      "ochre-900": { "$value": { "colorSpace": "oklch", "components": [0.392, 0.056, 70.0], "alpha": 1, "hex": "#50401f" }, "$description": "Warning ochre border (dark)." },
+
+      "crimson-600": { "$value": { "colorSpace": "oklch", "components": [0.478, 0.192, 26.0], "alpha": 1, "hex": "#b3121b" }, "$description": "Error crimson strictly reserved for errors, destructive actions, and explicit problem metrics (6.96:1 on white)." },
+      "crimson-300": { "$value": { "colorSpace": "oklch", "components": [0.710, 0.128, 24.0], "alpha": 1, "hex": "#f0857f" }, "$description": "Error crimson text/border on dark surfaces (6.97:1 on obsidian-850; never use white text on crimson-300)." },
+      "crimson-50": { "$value": { "colorSpace": "oklch", "components": [0.958, 0.018, 20.0], "alpha": 1, "hex": "#fcefee" }, "$description": "Error crimson soft wash (light)." },
+      "crimson-200": { "$value": { "colorSpace": "oklch", "components": [0.854, 0.052, 20.0], "alpha": 1, "hex": "#f1c4c2" }, "$description": "Error crimson border (light)." },
+      "crimson-950": { "$value": { "colorSpace": "oklch", "components": [0.244, 0.035, 24.0], "alpha": 1, "hex": "#2e1a19" }, "$description": "Error crimson soft wash (dark)." },
+      "crimson-900": { "$value": { "colorSpace": "oklch", "components": [0.354, 0.072, 24.0], "alpha": 1, "hex": "#5b2a28" }, "$description": "Error crimson border (dark)." }
+    },
+    "categorical": {
+      "sage-600": { "$value": { "colorSpace": "oklch", "components": [0.548, 0.056, 165.0], "alpha": 1, "hex": "#4f7d6e" }, "$description": "Supporting neutral-warm sage tone (light base)." },
+      "sage-700": { "$value": { "colorSpace": "oklch", "components": [0.456, 0.052, 165.0], "alpha": 1, "hex": "#3a6154" }, "$description": "Supporting sage foreground ink (light)." },
+      "sage-50": { "$value": { "colorSpace": "oklch", "components": [0.962, 0.012, 165.0], "alpha": 1, "hex": "#eef5f2" }, "$description": "Supporting sage soft wash (light)." },
+      "sage-200": { "$value": { "colorSpace": "oklch", "components": [0.875, 0.028, 165.0], "alpha": 1, "hex": "#c4dcd3" }, "$description": "Supporting sage border (light)." },
+      "sage-300": { "$value": { "colorSpace": "oklch", "components": [0.735, 0.062, 165.0], "alpha": 1, "hex": "#7fb5a3" }, "$description": "Supporting sage base (dark)." },
+      "sage-200-dark": { "$value": { "colorSpace": "oklch", "components": [0.835, 0.048, 165.0], "alpha": 1, "hex": "#a9d4c5" }, "$description": "Supporting sage foreground ink (dark)." },
+      "sage-950": { "$value": { "colorSpace": "oklch", "components": [0.240, 0.022, 165.0], "alpha": 1, "hex": "#172420" }, "$description": "Supporting sage soft wash (dark)." },
+      "sage-900": { "$value": { "colorSpace": "oklch", "components": [0.365, 0.036, 165.0], "alpha": 1, "hex": "#2e4a40" }, "$description": "Supporting sage border (dark)." },
+
+      "chart-brand-light": { "$value": { "colorSpace": "oklch", "components": [0.305, 0.031, 57.5], "alpha": 1, "hex": "#3d2a1c" }, "$description": "Primary single-series chart fill (light)." },
+      "chart-brand-dark": { "$value": { "colorSpace": "oklch", "components": [0.908, 0.036, 77.0], "alpha": 1, "hex": "#efe0c6" }, "$description": "Primary single-series chart fill (dark)." },
+      "chart-neutral-light": { "$value": { "colorSpace": "oklch", "components": [0.642, 0.011, 58.0], "alpha": 1, "hex": "#938c87" }, "$description": "Secondary neutral stone series (light)." },
+      "chart-neutral-dark": { "$value": { "colorSpace": "oklch", "components": [0.542, 0.011, 58.0], "alpha": 1, "hex": "#746d67" }, "$description": "Secondary neutral stone series (dark)." },
+      "chart-1-light": { "$value": { "colorSpace": "oklch", "components": [0.556, 0.118, 312.0], "alpha": 1, "hex": "#965eac" }, "$description": "Multi-series slot 1: Plum (light, color-blind verified)." },
+      "chart-1-dark": { "$value": { "colorSpace": "oklch", "components": [0.562, 0.118, 315.0], "alpha": 1, "hex": "#9a5fac" }, "$description": "Multi-series slot 1: Plum (dark)." },
+      "chart-2-light": { "$value": { "colorSpace": "oklch", "components": [0.630, 0.108, 172.0], "alpha": 1, "hex": "#359d87" }, "$description": "Multi-series slot 2: Teal (light, color-blind verified)." },
+      "chart-2-dark": { "$value": { "colorSpace": "oklch", "components": [0.625, 0.105, 168.0], "alpha": 1, "hex": "#38987b" }, "$description": "Multi-series slot 2: Teal (dark)." },
+      "chart-3-light": { "$value": { "colorSpace": "oklch", "components": [0.432, 0.125, 265.0], "alpha": 1, "hex": "#304a96" }, "$description": "Multi-series slot 3: Ink Blue (light, color-blind verified)." },
+      "chart-3-dark": { "$value": { "colorSpace": "oklch", "components": [0.600, 0.125, 265.0], "alpha": 1, "hex": "#5b7cce" }, "$description": "Multi-series slot 3: Ink Blue (dark)." },
+      "chart-accent-ring-light": { "$value": { "colorSpace": "oklch", "components": [0.735, 0.080, 69.5], "alpha": 1, "hex": "#d1a068" }, "$description": "Guide/target milestone ring (light)." },
+      "chart-accent-ring-dark": { "$value": { "colorSpace": "oklch", "components": [0.672, 0.014, 58.0], "alpha": 1, "hex": "#9c948c" }, "$description": "Guide/target milestone ring (dark)." }
+    }
+  }
+}

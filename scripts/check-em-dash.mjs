@@ -11,6 +11,10 @@ const ROOT = process.cwd();
 const IGNORE_DIRS = new Set([
   ".git",
   ".agents",
+  "agent",
+  ".claude",
+  ".cursor",
+  ".windsurf",
   "node_modules",
   ".next",
   "dist",

@@ -1,0 +1,22 @@
+{
+  "$description": "Millar Shared Foundations: Productive (Product/App) vs. Expressive (Marketing/Editorial) Motion Tokens (W3C DTCG 2025.10).",
+  "motion": {
+    "duration": {
+      "$type": "duration",
+      "productive-fast": { "$value": { "value": 140, "unit": "ms" }, "$description": "Button hover/press, input border, menu highlight." },
+      "productive-base": { "$value": { "value": 200, "unit": "ms" }, "$description": "Theme switch, tab indicator, popover entrance." },
+      "productive-slow": { "$value": { "value": 320, "unit": "ms" }, "$description": "Drawer/sheet slide and progressive disclosure." },
+      "expressive-moderate": { "$value": { "value": 280, "unit": "ms" }, "$description": "Marketing tab panel transitions and interactive stage swaps." },
+      "expressive-slow": { "$value": { "value": 420, "unit": "ms" }, "$description": "Editorial reveal entrances and schematic emphasis." },
+      "expressive-editorial": { "$value": { "value": 640, "unit": "ms" }, "$description": "Hero narrative staging (always bypassed under prefers-reduced-motion)." }
+    },
+    "easing": {
+      "$type": "cubicBezier",
+      "productive-standard": { "$value": [0.2, 0, 0, 1], "$description": "Crisp, zero-overshoot operational easing." },
+      "productive-entrance": { "$value": [0, 0, 0.38, 0.9], "$description": "Swift deceleration for incoming dialogs and drawers." },
+      "productive-exit": { "$value": [0.2, 0, 1, 0.9], "$description": "Clean acceleration for dismissed surfaces." },
+      "expressive-standard": { "$value": [0.4, 0.14, 0.3, 1], "$description": "Measured editorial curve with poised momentum." },
+      "expressive-entrance": { "$value": [0, 0, 0.3, 1], "$description": "Unhurried editorial reveal." }
+    }
+  }
+}

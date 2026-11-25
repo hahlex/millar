@@ -1,0 +1,58 @@
+{
+  "$schema": "https://www.designtokens.org/schemas/2025.10/resolver.json",
+  "version": "2025.10",
+  "name": "Millar Design Token Resolver",
+  "description": "Orthogonal W3C DTCG 2025.10 token resolution for Hahlex Millar across Theme (light/dark), Register (product/marketing), Locale (en/vi), and Motion (default/reduced).",
+  "sets": {
+    "base": {
+      "sources": [
+        { "$ref": "./base/color.tokens.json" },
+        { "$ref": "./base/typography.tokens.json" },
+        { "$ref": "./base/spacing-layout.tokens.json" },
+        { "$ref": "./base/motion.tokens.json" }
+      ]
+    },
+    "extensionEducation": {
+      "sources": [
+        { "$ref": "./extensions/education.tokens.json" }
+      ]
+    }
+  },
+  "modifiers": {
+    "theme": {
+      "default": "light",
+      "contexts": {
+        "light": [{ "$ref": "./semantic/light.tokens.json" }],
+        "dark": [{ "$ref": "./semantic/dark.tokens.json" }]
+      }
+    },
+    "register": {
+      "default": "product",
+      "contexts": {
+        "product": [{ "$ref": "./semantic/register-product.tokens.json" }],
+        "marketing": [{ "$ref": "./semantic/register-marketing.tokens.json" }]
+      }
+    },
+    "locale": {
+      "default": "en",
+      "contexts": {
+        "en": [],
+        "vi": [{ "$ref": "./semantic/locale-vi.tokens.json" }]
+      }
+    },
+    "motion": {
+      "default": "default",
+      "contexts": {
+        "default": [],
+        "reduced": [{ "$ref": "./semantic/motion-reduced.tokens.json" }]
+      }
+    }
+  },
+  "resolutionOrder": [
+    { "$ref": "#/sets/base" },
+    { "$ref": "#/modifiers/theme" },
+    { "$ref": "#/modifiers/register" },
+    { "$ref": "#/modifiers/locale" },
+    { "$ref": "#/modifiers/motion" }
+  ]
+}

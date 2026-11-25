@@ -1,0 +1,21 @@
+{
+  "$description": "Millar Locale Modifier (:root:lang(vi)): Widens display/heading leading and relaxes negative tracking so stacked Vietnamese diacritics (Ắ, Ấ, Ể, Ổ, Ẵ, Ự) and ư/ơ horns never clip or collide.",
+  "font": {
+    "leading": {
+      "$type": "number",
+      "display-hero": { "$value": 1.20, "$description": "Clears g + Ắ multi-line wraps in Vietnamese." },
+      "display": { "$value": 1.22, "$description": "Section/card display leading for Vietnamese." },
+      "heading": { "$value": 1.28, "$description": "Operational h1 leading for Vietnamese." },
+      "section": { "$value": 1.32, "$description": "Operational h2 leading for Vietnamese." },
+      "card": { "$value": 1.36, "$description": "Operational h3 leading for Vietnamese." },
+      "snug": { "$value": 1.38, "$description": "Lead & compact nav leading for Vietnamese." }
+    },
+    "tracking": {
+      "$type": "dimension",
+      "display": { "$value": { "value": -0.012, "unit": "em" }, "$description": "Keeps ư/ơ horns clear of adjacent stems." },
+      "tight": { "$value": { "value": -0.008, "unit": "em" }, "$description": "Relaxed h1/h2 tracking for Vietnamese." },
+      "subhead": { "$value": { "value": 0, "unit": "em" }, "$description": "Neutral card heading tracking for Vietnamese." },
+      "chat": { "$value": { "value": 0, "unit": "em" }, "$description": "Neutral assistant prose tracking for Vietnamese." }
+    }
+  }
+}

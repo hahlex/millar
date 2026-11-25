@@ -1,0 +1,20 @@
+{
+  "name": "@hahlex/millar-tokens",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Compiled Millar Design Tokens (CSS custom properties, Tailwind v4 @theme inline, Tailwind v3 preset, literal TS/AntD mirrors, DTCG 2025.10 JSON, and SSoT Registry).",
+  "exports": {
+    ".": "./dist/tokens.js",
+    "./ts": "./dist/tokens.ts",
+    "./css": "./dist/tokens.css",
+    "./tailwind": "./dist/tailwind.css",
+    "./tailwind-v3": "./dist/tailwind.preset.cjs",
+    "./dtcg": "./dist/dtcg.json",
+    "./registry": "./dist/millar-registry.json",
+    "./education.css": "./dist/education.css"
+  },
+  "scripts": {
+    "build": "node -e \"const fs=require('fs'); if(!fs.existsSync('dist/tokens.css')) { console.error('Run pnpm compile first'); process.exit(1); }\"",
+    "typecheck": "tsc --noEmit"
+  }
+}

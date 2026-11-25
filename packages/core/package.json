@@ -1,0 +1,13 @@
+{
+  "name": "@hahlex/millar-core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "compile": "tsx src/cli.ts",
+    "typecheck": "tsc --noEmit"
+  }
+}
