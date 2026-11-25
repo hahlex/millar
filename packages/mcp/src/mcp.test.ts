@@ -76,6 +76,8 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
     expect(uris).toContain("millar://skills/millar-design/references/style-dna-contract.md");
     expect(uris).toContain("millar://skills/millar-web-workflow/references/creative-divergence-protocol.md");
     expect(uris).toContain("millar://skills/millar-verify-web/references/five-layer-qa-gate.md");
+    expect(uris).toContain("millar://skills/millar-create-image/references/procedural-gallery-craft.md");
+    expect(uris).toContain("millar://skills/millar-create-image/references/human-editorial-photography.md");
 
     const inv = await client.readResource({ uri: "millar://guidelines/invariants" });
     const invFirst = inv.contents[0];
@@ -249,7 +251,20 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
     });
     expect(wfPrompt.messages.length).toBe(3);
     expect(JSON.stringify(wfPrompt.messages)).toContain("millar://skills/millar-web-workflow");
-    expect(JSON.stringify(wfPrompt.messages)).toContain("Tiếng Việt");
+    expect(JSON.stringify(wfPrompt.messages)).toContain("Vietnamese");
+    expect(JSON.stringify(wfPrompt.messages)).toContain("Research any named brand first");
     expect(JSON.stringify(wfPrompt.messages)).toContain("Track L");
+
+    const procRef = await client.readResource({
+      uri: "millar://skills/millar-create-image/references/procedural-gallery-craft.md",
+    });
+    const procFirst = procRef.contents[0];
+    expect(procFirst && "text" in procFirst ? procFirst.text : "").toContain("Zero-Addition Pass 2");
+
+    const humanRef = await client.readResource({
+      uri: "millar://skills/millar-create-image/references/human-editorial-photography.md",
+    });
+    const humanFirst = humanRef.contents[0];
+    expect(humanFirst && "text" in humanFirst ? humanFirst.text : "").toContain("AI Wax Skin");
   });
 });

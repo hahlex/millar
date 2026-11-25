@@ -415,7 +415,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Agent Skills Suite Index",
       description:
-        "Catalog of composable Hahlex/Millar agent skills (millar-design, millar-deep-research, millar-create-image, millar-animation) with progressive-disclosure reference URIs and multi-skill recipes.",
+        "Catalog of all 7 composable Millar web & design agent skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web) with 17 progressive-disclosure references and standalone Zero-MCP audit CLI.",
       mimeType: "application/json",
     },
     async (uri) => ({
@@ -1013,19 +1013,24 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
   );
 
   /* ==========================================================================
-   * 3. TEN USER-CONTROLLED MCP PROMPTS (Bilingual VI / EN · 3 Core + 7 Skills)
+   * 3. TEN USER-CONTROLLED MCP PROMPTS (English Prompts · 3 Core + 7 Skills)
    * ========================================================================== */
 
   const langArg = z
     .enum(["vi", "en"])
     .optional()
-    .describe("Prompt language mode: 'vi' (Tiếng Việt) or 'en' (English, default).");
+    .describe("Optional output locale for user-facing explanations & visible UI/artwork copy ('en' default, 'vi' for Vietnamese). All agent and image-generation prompts remain in crisp English.");
+
+  const localeLine = (lang?: "vi" | "en") =>
+    lang === "vi"
+      ? "Locale: Write user-facing replies and visible UI/artwork copy in Vietnamese (full UTF-8 diacritics, :lang(vi) headroom); keep ALL internal image-generation prompts, art specs, and technical briefs in English."
+      : "";
 
   server.registerPrompt(
     "millar-build-marketing",
     {
       title: "Build Photo-Free Marketing Surface with Millar",
-      description: "Guides an AI agent to compose a high-craft Hahlex marketing page using diverse Composition Patterns and code-native Visual Assets, then self-audit via validate_design (supports VI / EN).",
+      description: "Compose a high-craft Hahlex marketing page using diverse Composition Patterns and code-native Visual Assets, then validate via validate_design.",
       argsSchema: {
         feature: z.string().describe("Product, launch, or campaign topic to design."),
         lang: langArg,
@@ -1048,22 +1053,15 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           role: "user",
           content: {
             type: "text",
-            text:
-              lang === "vi"
-                ? [
-                    `Thiết kế và lập trình giao diện Marketing Hahlex không cần ảnh cho: "${feature}" (trao đổi và xuất nội dung bằng Tiếng Việt, tôn trọng :lang(vi) và Zero Em-Dash).`,
-                    "1. Gọi get_design_guidelines(register='marketing', includeCompositionPatterns=true) để chọn ít nhất 3 Composition Patterns khác nhau (không lặp lại lưới 3 cột card giống nhau).",
-                    "2. Gọi get_visual_assets() và search_sections() để tái sử dụng bộ Visual Assets viết bằng SVG/CSS/Canvas/React (chỉ dùng gradient bên trong asset được phê duyệt như WarmHorizonWash).",
-                    "3. Bảo đảm hiển thị hoàn chỉnh ngay ở 0% scroll, thẻ <footer> nằm ngoài <main>, và tối ưu responsive di động.",
-                    "4. Chạy validate_design(register='marketing') đến khi automatedChecks.passed === true và trình bày trung thực danh sách humanReviewCriteria cho con người duyệt.",
-                  ].join("\n")
-                : [
-                    `Design and implement a photo-free Hahlex Marketing surface for: "${feature}".`,
-                    "1. Call get_design_guidelines(register='marketing', includeCompositionPatterns=true) to select at least 3 distinct Composition Patterns (do NOT repeat identical architectural grids or equal 3-column card grids).",
-                    "2. Call get_visual_assets() and search_sections() to reuse canonical SVG/CSS/Canvas/React visual assets (gradients are allowed ONLY inside explicitly approved visual assets like WarmHorizonWash).",
-                    "3. Ensure static-first visual polish at 0% scroll, top-level <footer> outside <main>, and full mobile responsiveness.",
-                    "4. Run validate_design(register='marketing') until automatedChecks.passed === true, and report the humanReviewCriteria checklist honestly for human sign-off.",
-                  ].join("\n"),
+            text: [
+              `Build a photo-free Hahlex Marketing surface for: "${feature}".`,
+              "1. Query live get_design_guidelines(register='marketing', includeCompositionPatterns=true), get_design_tokens(), get_visual_assets(), and search_sections() (never hardcode tokens).",
+              "2. Combine >= 3 distinct Composition Patterns (no repeated equal 3-column card grids), static-first 0% scroll visibility, and top-level <footer> outside <main>.",
+              "3. Run validate_design(register='marketing') until automatedChecks.passed === true and report humanReviewCriteria separately.",
+              localeLine(lang),
+            ]
+              .filter(Boolean)
+              .join("\n"),
           },
         },
       ],
@@ -1074,7 +1072,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     "millar-build-product",
     {
       title: "Build Operational Product Screen with Millar",
-      description: "Guides an AI agent to implement a crisp, WCAG 2.1/2.2 AA Hahlex Product screen using zero-gradient primitives from @hahlex/millar-ui (supports VI / EN).",
+      description: "Implement a crisp, WCAG 2.1/2.2 AA Hahlex Product screen using zero-gradient primitives from @hahlex/millar-ui.",
       argsSchema: {
         screen: z.string().describe("Product screen or workflow to build."),
         lang: langArg,
@@ -1097,22 +1095,15 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           role: "user",
           content: {
             type: "text",
-            text:
-              lang === "vi"
-                ? [
-                    `Lập trình màn hình Product/App Hahlex: "${screen}" (trao đổi và viết UI/copy bằng Tiếng Việt, tôn trọng Zero Em-Dash).`,
-                    "1. Gọi get_design_guidelines(register='product') và search_components() -> get_component() để lấy đúng props và guardrail chống bịa prop.",
-                    "2. Tuân thủ Zero CSS Gradients, không dùng <button>/<input> thô, giữ focus ring .millar-focus 2px, lỗi form role='alert' và --fg-on-accent-soft trên chip --accent-soft.",
-                    "3. Tách riêng các token chuyên ngành (như Education 4-skill) vào gói extension tùy chọn.",
-                    "4. Chạy validate_design(register='product') đến khi automatedChecks.passed === true.",
-                  ].join("\n")
-                : [
-                    `Implement the Hahlex Product screen: "${screen}".`,
-                    "1. Call get_design_guidelines(register='product') and search_components() -> get_component() for exact props and invalid-prop guardrails.",
-                    "2. Enforce zero CSS gradients, zero raw <button>/<input>, 2px .millar-focus rings, role='alert' validation errors, and --fg-on-accent-soft on --accent-soft chips.",
-                    "3. Keep vertical-specific tokens (like Education 4-skill tones) inside optional domain extensions.",
-                    "4. Run validate_design(register='product') until automatedChecks.passed === true.",
-                  ].join("\n"),
+            text: [
+              `Implement the Hahlex Product screen: "${screen}".`,
+              "1. Query get_design_guidelines(register='product') and search_components() -> get_component() for exact props and invalid-prop guardrails.",
+              "2. Enforce zero CSS gradients, zero raw <button>/<input>, 2px .millar-focus rings, role='alert' errors, and --fg-on-accent-soft on --accent-soft chips.",
+              "3. Run validate_design(register='product') until automatedChecks.passed === true.",
+              localeLine(lang),
+            ]
+              .filter(Boolean)
+              .join("\n"),
           },
         },
       ],
@@ -1123,7 +1114,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     "millar-audit-code",
     {
       title: "Audit UI Code Against Millar",
-      description: "Runs deterministic automated compliance checks and structures human aesthetic review criteria separately (supports VI / EN).",
+      description: "Run deterministic automated compliance checks and separate human aesthetic review criteria.",
       argsSchema: {
         register: z.enum(["shared", "marketing", "product"]).describe("Target Millar register."),
         lang: langArg,
@@ -1135,10 +1126,13 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           role: "user",
           content: {
             type: "text",
-            text:
-              lang === "vi"
-                ? `Kiểm định đoạn mã UI được cung cấp bằng cách gọi validate_design(register="${register}"). Trình bày bằng Tiếng Việt theo 2 phần tách biệt: (1) các lỗi tự động trong automatedChecks kèm cách sửa chính xác và docUris, và (2) danh sách humanReviewCriteria cần con người đánh giá thẩm mỹ.`
-                : `Audit the provided UI code by calling validate_design(register="${register}"). Present (1) automatedChecks violations with exact fixes and docUris, and (2) humanReviewCriteria clearly separated as advisory review questions that require human judgment.`,
+            text: [
+              `Audit the provided UI code with validate_design(register="${register}") and millar-audit.mjs.`,
+              "Report (1) deterministic automatedChecks violations with exact fixes and docUris, and (2) advisory humanReviewCriteria separately.",
+              localeLine(lang),
+            ]
+              .filter(Boolean)
+              .join("\n"),
           },
         },
       ],
@@ -1165,7 +1159,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Design Director & Cross-Page Continuity",
       description:
-        "Activates the millar-design flagship skill to lock a 12-axis Style DNA Contract and keep all secondary pages visually cohesive with existing hero imagery, custom animations, or Hahlex Measured Warmth (supports VI / EN).",
+        "Activates millar-design v0.2 (5-role studio, Brand-First Research, Impeccable craft floor, 12-axis .millar/style-dna.md) to keep secondary pages visually cohesive.",
       argsSchema: {
         brief: z.string().describe("Website, app, or multi-page redesign brief."),
         existingAssets: z
@@ -1189,18 +1183,12 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           role: "user",
           content: {
             type: "text",
-            text: (lang === "vi"
-              ? [
-                  `Thực thi quy trình millar-design cho yêu cầu: "${brief}" (trao đổi và giải thích bằng Tiếng Việt).`,
-                  existingAssets ? `Tài sản / ảnh / animation người dùng cung cấp cần trích xuất và đồng bộ toàn site: ${existingAssets}` : "",
-                  "Thực hiện nghiêm ngặt đủ các bước của millar-design: phân nhánh -> chạy millar-deep-research nếu có tài sản sẵn -> khóa .millar/style-dna.md 12 trục -> gọi get_skill cho millar-create-image / millar-animation khi cần -> kiểm định mọi trang phụ đạt >= 4/5 theo 6 trục đồng bộ thẩm mỹ và chạy validate_design.",
-                ]
-              : [
-                  `Execute the millar-design workflow for: "${brief}".`,
-                  existingAssets ? `User-supplied assets/hero context to extract and sync across ALL pages: ${existingAssets}` : "",
-                  "Follow every step in millar-design strictly: classify branch -> run millar-deep-research if assets exist -> lock .millar/style-dna.md -> call get_skill for millar-create-image / millar-animation as needed -> audit every secondary page against the 6-axis Cross-Page Visual Continuity rubric and validate_design.",
-                ]
-            )
+            text: [
+              `Execute millar-design v0.2 for: "${brief}".`,
+              existingAssets ? `User-supplied hero assets to extract & sync across ALL routes: ${existingAssets}` : "",
+              "Research any named brand first (local DESIGN.md, live MCP tokens, or web research; never hardcode another brand's palette), lock .millar/style-dna.md, produce >= 9.0/10 visuals, and verify every secondary route >= 4/5 continuity.",
+              localeLine(lang),
+            ]
               .filter(Boolean)
               .join("\n"),
           },
@@ -1212,12 +1200,12 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
   server.registerPrompt(
     "millar-deep-research",
     {
-      title: "Millar Visual DNA Extraction & Craft Research",
+      title: "Millar Brand-First Research & Visual DNA Extraction",
       description:
-        "Activates millar-deep-research to decode user intent, extract visual and motion DNA from supplied images/animations, and benchmark world-class styles before building (supports VI / EN).",
+        "Activates millar-deep-research v0.2 to research any named brand, extract Visual/Motion DNA from supplied assets, and emit an English .millar/research-dossier.md.",
       argsSchema: {
-        topic: z.string().describe("Target product, visual style, or multi-page aesthetic challenge to research."),
-        existingAssets: z.string().optional().describe("Optional supplied images, animations, or reference URLs to dissect."),
+        topic: z.string().describe("Brand, product, visual style, or multi-page aesthetic brief to research."),
+        existingAssets: z.string().optional().describe("Optional supplied images, animations, or reference URLs to inspect."),
         lang: langArg,
       },
     },
@@ -1228,18 +1216,12 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           role: "user",
           content: {
             type: "text",
-            text: (lang === "vi"
-              ? [
-                  `Chạy millar-deep-research cho chủ đề: "${topic}" (trình bày báo cáo bằng Tiếng Việt).`,
-                  existingAssets ? `Giải phẫu Visual DNA và Motion DNA từ các tài sản: ${existingAssets}` : "",
-                  "Nạp đầy đủ tài liệu tham chiếu qua get_skill(name='millar-deep-research', includeAllReferences=true) và xuất .millar/research-dossier.md.",
-                ]
-              : [
-                  `Run millar-deep-research for: "${topic}".`,
-                  existingAssets ? `Inspect and extract Visual & Motion DNA from: ${existingAssets}` : "",
-                  "Load reference playbooks via get_skill(name='millar-deep-research', includeAllReferences=true) and emit an actionable .millar/research-dossier.md.",
-                ]
-            )
+            text: [
+              `Run millar-deep-research v0.2 for: "${topic}".`,
+              existingAssets ? `Inspect and extract Visual & Motion DNA from: ${existingAssets}` : "",
+              "Research any named brand from primary sources (local DESIGN.md, live MCP tokens, or official web references) before picking any palette or motif, then save .millar/research-dossier.md in English.",
+              localeLine(lang),
+            ]
               .filter(Boolean)
               .join("\n"),
           },
@@ -1251,9 +1233,9 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
   server.registerPrompt(
     "millar-create-image",
     {
-      title: "Millar Style-Locked Visual Asset & Image Direction",
+      title: "Millar Gallery-Grade Image & Procedural Art Direction",
       description:
-        "Activates millar-create-image to produce style-locked photography, illustrations, or code-native SVG/Canvas editorial plates across every page (supports VI / EN).",
+        "Activates millar-create-image v0.2 (English-only prompts, Human Editorial Photography, 4-Layer Procedural Craft on 503/offline, Zero-Addition Pass 2 polish).",
       argsSchema: {
         subject: z.string().describe("Page, section, or visual asset series to produce."),
         styleContext: z.string().optional().describe("Optional path to .millar/style-dna.md or existing hero reference image."),
@@ -1267,18 +1249,12 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           role: "user",
           content: {
             type: "text",
-            text: (lang === "vi"
-              ? [
-                  `Chạy millar-create-image cho nội dung: "${subject}" (báo cáo và hướng dẫn bằng Tiếng Việt; giữ prompt sinh ảnh tiếng Anh chuẩn xác cho model ảnh).`,
-                  styleContext ? `Ngữ cảnh neo phong cách: ${styleContext}` : "",
-                  "Áp dụng kiến trúc Master Prompt 80% cố định / 20% biến thiên và lộ trình đa agent; đọc get_skill(name='millar-create-image', includeAllReferences=true) trước khi tạo ảnh hoặc vẽ SVG/Canvas.",
-                ]
-              : [
-                  `Run millar-create-image for: "${subject}".`,
-                  styleContext ? `Style anchor context: ${styleContext}` : "",
-                  "Follow the 80% Fixed / 20% Variable Master Prompt architecture and Cross-Agent Capability Routing Ladder, reading get_skill(name='millar-create-image', includeAllReferences=true) first.",
-                ]
-            )
+            text: [
+              `Run millar-create-image v0.2 for: "${subject}".`,
+              styleContext ? `Style anchor context: ${styleContext}` : "",
+              "Author ALL image prompts in concise English (150-250 words), research brand palette/polarity first (never hardcode hexes), load human-editorial-photography.md for real people or procedural-gallery-craft.md on 503/code-native plates, save .prompt.json provenance, and run Zero-Addition Pass 2 polish until >= 9.0/10.",
+              localeLine(lang),
+            ]
               .filter(Boolean)
               .join("\n"),
           },
@@ -1292,10 +1268,10 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Motion Research & Cross-Page Choreography",
       description:
-        "Activates millar-animation to research matching animation physics, lock a 4-line Motion Thesis, and implement compositor-safe, reduced-motion-compliant choreography (supports VI / EN).",
+        "Activates millar-animation v0.2 to lock a 4-line Motion Thesis and ship compositor-safe, static-first, reduced-motion-compliant choreography.",
       argsSchema: {
         target: z.string().describe("Component, page, or multi-page flow to choreograph."),
-        motionFeel: z.string().optional().describe("Optional user motion feel or existing hero animation reference to match."),
+        motionFeel: z.string().optional().describe("Optional motion feel or existing hero animation reference to match."),
         lang: langArg,
       },
     },
@@ -1306,18 +1282,12 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           role: "user",
           content: {
             type: "text",
-            text: (lang === "vi"
-              ? [
-                  `Chạy millar-animation cho: "${target}" (giải thích Motion Thesis và kết quả bằng Tiếng Việt).`,
-                  motionFeel ? `Cảm giác chuyển động / tham chiếu cần đồng bộ: ${motionFeel}` : "",
-                  "Gọi get_motion_presets() và get_skill(name='millar-animation', includeAllReferences=true), viết Motion Thesis 4 dòng, triển khai animation trên GPU compositor kèm nhánh prefers-reduced-motion và kiểm chứng cả 2 chế độ.",
-                ]
-              : [
-                  `Run millar-animation for: "${target}".`,
-                  motionFeel ? `Target motion feel / reference: ${motionFeel}` : "",
-                  "Call get_motion_presets() and get_skill(name='millar-animation', includeAllReferences=true), write a 4-line Motion Thesis, ship compositor-only animations with prefers-reduced-motion, and verify both normal and reduced motion.",
-                ]
-            )
+            text: [
+              `Run millar-animation v0.2 for: "${target}".`,
+              motionFeel ? `Target motion feel / reference: ${motionFeel}` : "",
+              "Query get_motion_presets() if applicable, lock a 4-line Motion Thesis, ship GPU compositor animations with static-first visibility and prefers-reduced-motion in the same edit, and verify both modes.",
+              localeLine(lang),
+            ]
               .filter(Boolean)
               .join("\n"),
           },
@@ -1331,7 +1301,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar End-to-End Web Engineering & Creative Workflow",
       description:
-        "Activates the master millar-web-workflow conductor to classify Track S/M/L, execute Creative Divergence, orchestrate design/assets/animation/build, and enforce the 5-layer QA gate (supports VI / EN).",
+        "Activates millar-web-workflow v0.2 to run Brand-First Research, classify Track S/M/L, run Creative Divergence, orchestrate all 7 skills, and gate on independent verification.",
       argsSchema: {
         request: z.string().describe("Website, multi-page app, redesign, or UI feature request."),
         track: z.enum(["auto", "S", "M", "L"]).optional().describe("Optional explicit Track override (defaults to auto)."),
@@ -1352,18 +1322,14 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           role: "user",
           content: {
             type: "text",
-            text: (lang === "vi"
-              ? [
-                  `Thực thi quy trình tổng thể millar-web-workflow cho yêu cầu: "${request}" (trao đổi và báo cáo bằng Tiếng Việt).`,
-                  track && track !== "auto" ? `Track chỉ định: Track ${track}.` : "Phân loại rõ Track S, M hoặc L trước khi sửa code.",
-                  "Nạp tài liệu qua get_skill(name='millar-web-workflow', includeAllReferences=true), chạy Creative Divergence trên Track M/L, điều phối các skill Millar liên quan và chỉ kết thúc sau khi vượt qua cổng QA 5 lớp millar-verify-web.",
-                ]
-              : [
-                  `Execute millar-web-workflow for: "${request}".`,
-                  track && track !== "auto" ? `Requested Track override: Track ${track}.` : "Classify into Track S, M, or L before editing any code.",
-                  "Load progressive-disclosure references via get_skill(name='millar-web-workflow', includeAllReferences=true), run Creative Divergence on Track M/L, orchestrate companion Millar skills, and gate completion on millar-verify-web.",
-                ]
-            ).join("\n"),
+            text: [
+              `Execute millar-web-workflow v0.2 for: "${request}".`,
+              track && track !== "auto" ? `Track override: Track ${track}.` : "Classify Track S, M, or L before editing any code.",
+              "Research any named brand first (never hardcode another brand's tokens), run Creative Divergence on Track M/L, author all prompts in English, and gate completion on millar-verify-web (millar-audit.mjs + Fresh-Context Independent Finish Reviewer).",
+              localeLine(lang),
+            ]
+              .filter(Boolean)
+              .join("\n"),
           },
         },
       ],
@@ -1375,7 +1341,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Frontend Architecture & Production Web Build",
       description:
-        "Activates millar-build-web to implement Server-First components, deep modules, 5 real interactive UI states, Core Web Vitals hygiene, and semantic SEO (supports VI / EN).",
+        "Activates millar-build-web v0.2 for Server-First components, deep modules, 5 real interactive UI states, browser surface theming, CWV & SEO.",
       argsSchema: {
         scope: z.string().describe("Pages, components, or vertical slices to implement."),
         minimalChange: z.boolean().optional().describe("Set true for Track S surgical fixes with zero unrelated refactors."),
@@ -1389,20 +1355,14 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           role: "user",
           content: {
             type: "text",
-            text: (lang === "vi"
-              ? [
-                  `Chạy millar-build-web cho phạm vi: "${scope}" (trao đổi và báo cáo bằng Tiếng Việt).`,
-                  minimalChange
-                    ? "Chế độ: Minimal-Change Track S (chỉ sửa đúng phần yêu cầu, không refactor lan)."
-                    : "Chế độ: Vertical-Slice Build (Deep Modules + Server-First + đủ 5 trạng thái UI thật + Core Web Vitals/SEO).",
-                  "Nạp tài liệu qua get_skill(name='millar-build-web', includeAllReferences=true) và dùng đúng token/component từ Millar MCP.",
-                ]
-              : [
-                  `Run millar-build-web for: "${scope}".`,
-                  minimalChange ? "Mode: Minimal-Change Track S (touch strictly required files)." : "Mode: Vertical-Slice Build (deep modules + Server-First leaves + 5 UI states + CWV/SEO).",
-                  "Load references via get_skill(name='millar-build-web', includeAllReferences=true) and ground Hahlex UI in Millar MCP tokens/components.",
-                ]
-            ).join("\n"),
+            text: [
+              `Run millar-build-web v0.2 for: "${scope}".`,
+              minimalChange ? "Mode: Minimal-Change Track S (strictly scoped diff)." : "Mode: Vertical-Slice Build (deep modules, Server-First leaves, 5 UI states, browser surface theming, CWV/SEO).",
+              "Load references via get_skill(name='millar-build-web', includeAllReferences=true) and ground tokens dynamically in .millar/style-dna.md or live MCP.",
+              localeLine(lang),
+            ]
+              .filter(Boolean)
+              .join("\n"),
           },
         },
       ],
@@ -1412,9 +1372,9 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
   server.registerPrompt(
     "millar-verify-web",
     {
-      title: "Millar 5-Layer Real-Browser QA & Two-Axis Review Gate",
+      title: "Millar 5-Layer QA, Zero-MCP Audit & Independent Finish Review",
       description:
-        "Activates millar-verify-web to verify build/MCP compliance, Playwright interactive flows, 1440/768/375 Light & Dark screenshots, axe-core WCAG AA, reduced motion, and two-axis Spec-vs-Standards review (supports VI / EN).",
+        "Activates millar-verify-web v0.2: standalone scripts/millar-audit.mjs, Playwright E2E, 1440/768/375 Light/Dark visual & anti-clip-art check, axe-core WCAG AA, and fresh-context finish review.",
       argsSchema: {
         target: z.string().describe("Routes, PR diff, or website build to verify before shipping."),
         lang: langArg,
@@ -1427,16 +1387,13 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           role: "user",
           content: {
             type: "text",
-            text: (lang === "vi"
-              ? [
-                  `Chạy cổng kiểm định 5 lớp millar-verify-web cho: "${target}" (trình bày báo cáo bằng Tiếng Việt).`,
-                  "Nạp get_skill(name='millar-verify-web', includeAllReferences=true), thực thi đầy đủ các lớp kiểm chứng trên trình duyệt thật kèm bằng chứng và tách riêng báo cáo 2 trục Spec vs Standards.",
-                ]
-              : [
-                  `Execute millar-verify-web 5-layer QA gate on: "${target}".`,
-                  "Load get_skill(name='millar-verify-web', includeAllReferences=true), execute all applicable layers with real observed evidence, and report Spec vs Standards axes separately.",
-                ]
-            ).join("\n"),
+            text: [
+              `Execute millar-verify-web v0.2 5-layer QA gate on: "${target}".`,
+              "Run standalone scripts/millar-audit.mjs (+ validate_design if Millar MCP is active), verify interactive Playwright flows & axe-core WCAG AA, inspect 1440/768/375 Light & Dark visuals against clip-art/wax-skin bans, and delegate final Layer 3B + Layer 5 review to a fresh-context subagent.",
+              localeLine(lang),
+            ]
+              .filter(Boolean)
+              .join("\n"),
           },
         },
       ],

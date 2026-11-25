@@ -1,7 +1,7 @@
 ---
 name: millar-build-web
 description: "Production frontend engineering and web architecture skill synthesizing Matt Pocock deep-module / TDD vertical-slice discipline, Agency Agents frontend-developer & minimal-change restraint, Millar MCP tokens/primitives, Core Web Vitals (LCP/INP/CLS), semantic HTML, and SEO hygiene. Use when implementing web pages, React/Next.js/Astro/Vite components, layouts, forms, tables, or refactors so code stays clean, responsive, genuinely interactive, and ready for millar-verify-web."
-version: 0.1.0-draft.1
+version: 0.2.0-draft.1
 license: MIT
 ---
 

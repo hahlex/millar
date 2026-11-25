@@ -193,28 +193,24 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
     await page.getByRole("button", { name: "New proposal" }).click();
     await expect(page.getByRole("cell", { name: "Domain Proposal #1" })).toBeVisible();
 
-    // 8. Agent Skills Suite interactive Bootstrap Prompts (VI/EN synced with topbar), Track S/M/L planner & all 7 skill tabs
+    // 8. Agent Skills Suite concise English Install Prompts (MCP includes skills vs Skills only), Track planner & all 7 skill tabs
     await page.goto("/millar/resources/skills/", { waitUntil: "networkidle" });
-    await page.getByRole("button", { name: "7 Skills Only" }).click();
-    await expect(page.getByText(/Skills Only \(7 Skills\) \(EN\)/)).toBeVisible();
-    await page.getByRole("button", { name: "Tiếng Việt", exact: true }).first().click();
-    await expect(page.getByText(/Skills Only \(7 Skills\) \(VI\)/)).toBeVisible();
-    await expect(page.locator("html")).toHaveAttribute("lang", "vi");
+    await expect(page.getByText(/Prompt · Install MCP \(Includes 7 Skills\)/)).toBeVisible();
+    await page.getByRole("button", { name: "Install 7 Skills Only" }).click();
+    await expect(page.getByText(/Prompt · Install 7 Skills Only/)).toBeVisible();
     await page.getByRole("button", { name: "Photo-Free Hahlex Launch" }).click();
     await expect(page.getByText(/14 code-native SVG\/CSS\/Canvas visual assets/)).toBeVisible();
+    await page.getByRole("tab", { name: "millar-create-image" }).click();
+    await expect(page.getByText("human-editorial-photography.md")).toBeVisible();
+    await expect(page.getByText("procedural-gallery-craft.md")).toBeVisible();
     await page.getByRole("tab", { name: "millar-verify-web" }).click();
     await expect(page.getByText("five-layer-qa-gate.md")).toBeVisible();
-    await expect(page.getByText(/millar-verify-web · Prompt mẫu \(Tiếng Việt\)/)).toBeVisible();
-    await page.getByRole("tab", { name: "millar-build-web" }).click();
-    await expect(page.getByText("web-architecture-checklist.md")).toBeVisible();
+    await expect(page.getByRole("cell", { name: "scripts/millar-audit.mjs", exact: true })).toBeVisible();
 
-    // 9. MCP page auto-connect prompt + 10 bilingual MCP Prompts toggle
+    // 9. MCP page concise English connect prompt + 10 MCP Prompts selector
     await page.goto("/millar/resources/mcp/", { waitUntil: "networkidle" });
-    await page.getByRole("button", { name: "Tiếng Việt", exact: true }).first().click();
-    await expect(page.getByText(/Auto-Install & Connect Millar MCP Prompt \(VI\)/)).toBeVisible();
+    await expect(page.getByText(/Prompt · Install Millar MCP \(Includes 7 Skills\)/)).toBeVisible();
     await page.getByRole("button", { name: "millar-design", exact: true }).click();
-    await expect(page.getByText(/millar-design \(brief, existingAssets\?, lang\?\) · Tiếng Việt/)).toBeVisible();
-    await page.getByRole("button", { name: "English", exact: true }).first().click();
-    await expect(page.getByText(/Auto-Install & Connect Millar MCP Prompt \(EN\)/)).toBeVisible();
+    await expect(page.getByText(/millar-design \(brief, existingAssets\?, lang\?\)/)).toBeVisible();
   });
 });

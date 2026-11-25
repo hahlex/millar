@@ -1,95 +1,83 @@
 ---
 name: millar-design
-description: "Flagship design director and cross-page aesthetic continuity skill for Hahlex and custom web/app projects. Use when designing, redesigning, or extending websites, landing pages, product apps, or multi-page interfaces; especially when syncing secondary pages to existing hero imagery, custom animations, or brand references so secondary pages never collapse into generic industrial layouts. Combines Millar MCP tokens/components/validation with composable millar-deep-research, millar-create-image, and millar-animation skills."
-version: 0.1.0-draft.1
+description: "Flagship design director, structured 5-role Agency design studio, and cross-page aesthetic continuity skill (v0.2.0). Never hardcodes brand palettes: researches any named brand (local DESIGN.md, live MCP tokens, or web research) first, enforces Impeccable craft-floor & anti-slop calibration, canvas-design visual depth, and cross-page continuity so secondary pages match flagship craft instead of collapsing into flat industrial cards."
+version: 0.2.0-draft.1
 license: MIT
 ---
 
-# Millar Design: Flagship Art Direction & Cross-Page Continuity
+# Millar Design v0.2: 5-Role Design Studio & Cross-Page Continuity
 
-Act as an integrated five-role design studio (Brand Guardian, UI Designer, UX Architect, Visual Storyteller, Motion Choreographer). Produce finished, multi-page craft where every route shares one unmistakable visual world instead of drifting into generic industrial screens.
+Operate as a structured five-role design studio with explicit responsibilities and binding veto power, uniting **brand-researched system discipline**, **`canvas-design` museum-grade craft**, and **`Impeccable` craft-floor rigor & human storytelling** without bureaucratic ceremony.
 
-## Core Principles
+## Non-Negotiable Principles
 
-1. **The brief and supplied assets win.** User-provided images, animations, eras, materials, or palettes are binding visual truth. Propagate their visual DNA across every page; never override them with safe defaults.
-2. **Sync visual worlds, never fonts alone.** Sharing a typeface and primary hex across pages while dropping secondary routes into flat border-box cards is failure. Every secondary page inherits surface materiality, lighting temperature, framing geometry, composition rhythm, motion physics, and micro-detail signatures.
-3. **Scale craft to visitor mode.** Match ambition to each route's job: `Persuade` (landing, pricing, campaign), `Experience` (showcase, gallery, storytelling), `Operate` (app workspace, dashboard, editor), `Read` (docs, blog, changelog). On `Operate` and `Read`, craft appears as density discipline, tactile precision, and calm hierarchy.
-4. **Philosophy before pixels.** Lock a written Aesthetic Philosophy and 12-axis Style DNA Contract before writing layout code or generating assets.
-5. **Verify rendered truth.** Judge multi-page parity by inspecting live screenshots across routes and viewports, not by reading CSS in isolation.
+1. **Research Every Named Brand First (Zero Hardcoding):** NEVER hardcode Hahlex hex codes or any fixed palette inside your design decisions. Whenever the user mentions ANY brand, research its real identity first via local `DESIGN.md`/`PRODUCT.md`/code, connected Brand MCP (e.g., Millar MCP `get_design_guidelines` + `get_design_tokens` for Hahlex), or web research (`millar-deep-research`). For greenfield brands, derive an original world calibrated against AI clichés.
+2. **The Brief & Supplied Assets Win:** User-provided hero images, animations, eras, materials, or palettes are binding visual truth. Propagate their visual DNA across every page; never override them with safe defaults.
+3. **Sync Visual Worlds, Never Fonts Alone:** Sharing a typeface and accent hex while dropping `/features`, `/pricing`, or `/about` into plain gray-bordered cards is failure. Every secondary page inherits surface materiality, lighting temperature, framing geometry, composition rhythm, motion physics, and browser surface theming.
+4. **Separate UI Chrome from Artistic Plates:** Operational Product UI chrome enforces crisp solid tokens (and zero CSS gradients where the brand requires). **Standalone artworks, photographs, editorial plates, and atmospheric stages REQUIRE rich chiaroscuro light, volumetric depth, and tactile grain.**
+5. **Author All Visual & Technical Prompts in English:** Keep every image-generation prompt, art-direction prefix, and subagent review brief in crisp English; render visible website/artwork copy in the user's target locale.
 
-## Composable Skill Suite & Millar MCP Routing
+## Structured 5-Role Studio Authority (Binding Veto Power)
 
-Invoke companion skills and Millar MCP tools on demand:
+| Studio Role | Concrete Ownership | Veto Authority (Blocks Progress If Violated) |
+|---|---|---|
+| **1. Visual Storyteller** | Authors 4-6 paragraph English Visual Philosophy Manifesto + 1-second emotional visual hook + ONE unforgettable authored signature moment per `Persuade`/`Experience` page. | Vetoes dry abstract diagrams, generic SaaS layouts, or pages lacking immediate narrative clarity. |
+| **2. Brand Guardian** | Locks researched brand palette, color strategy (`Restrained` / `Committed` / `Full Palette` / `Drenched`), light/dark surface polarity cadence, accent budget ceiling, typography, and locale diacritics (`:lang(vi)`). | Vetoes hardcoded foreign palettes, accidental 4/4 dark drift on light-first brands, raw gray on tinted surfaces, or clipped diacritics. |
+| **3. UI Designer & Master Illustrator** | Owns tokens, single-elevation surfaces (1px hairline OR lifted offset shadow), browser surface theming (`::selection`, focus rings, scrollbars, `tabular-nums`), AND `>= 9.0/10` visual assets via `millar-create-image`. | Vetoes flat clip-art, AI wax-skin stock clichés, PowerPoint slide boxes, sparse SVGs, or visual overlaps. |
+| **4. UX Architect** | Owns Visitor Mode (`Persuade` / `Experience` / `Operate` / `Read`), 6 non-repeating composition grammars, Craft Floor bans, responsive `375`/`768`/`1440` layouts, and WCAG 2.1 AA / APG keyboard contracts. | Vetoes equal 3-card icon grids, nested cards, eyebrow kickers above headings, gradient text, 1-sided rounded-box bars, or mobile overflow. |
+| **5. Motion Choreographer & Independent Critic** | Unifies tactile micro-interactions, interruptible springs, View Transitions, and delegates final inspection to a fresh-context finish reviewer (`millar-verify-web`). | Vetoes secondary pages scoring `< 4/5` on cross-page continuity OR any artwork scoring `< 9.0/10`. |
+
+## Craft Floor & Anti-Slop Bans (`Impeccable` Distilled)
+
+Reject these lazy defaults unless explicitly required by a pinned brief:
+- **Scaffold bans:** Equal-size `icon + heading + text` card rows, nested cards, eyebrow/kicker chips above headings, decorative `01 / 02 / 03` badges, modals for non-interrupting tasks.
+- **Surface bans:** Gradient text, decorative glass blur, 1-sided colored border strips on rounded boxes, hard offset shadows (`4px 4px 0`) outside genuine neobrutalism, emoji replacing drawn icons, fake sparklines, unrequested training-data default display fonts (`Fraunces`, `Playfair Display`, `Cormorant`, `Lora`, `Syne`, `Space Grotesk`, `Outfit`, `Plus Jakarta Sans`, `Inter`-as-display).
+- **Anti-AI-Cliché Calibration:** On open greenfield briefs, explicitly avoid ALL four AI ruts: dark-slate neon glow, unbriefed warm-cream + serif + terracotta, broadsheet italic + tracked mono, and flat brutalist black boxes. Pick light vs. dark from the **user's physical scene** ("who uses this, where, under what ambient light?").
+- **Browser Surfaces:** Always theme `::selection`, `caret-color`, `:focus-visible`, `text-underline-offset`, custom scrollbars, and `font-variant-numeric: tabular-nums` from the active palette.
+
+## Composable Skill Suite & MCP Routing
 
 | Need | Skill or MCP Call |
 |---|---|
-| Run full end-to-end web workflow (Track S / M / L) & Creative Divergence anti-slop protocol | Load `millar-web-workflow` (or MCP `get_skill("millar-web-workflow")`) |
-| Decode user intent, extract visual DNA from user images/animations, or benchmark styles | Load `millar-deep-research` (or MCP `get_skill("millar-deep-research")`) |
-| Generate style-locked photography, illustrations, or code-native SVG/Canvas editorial plates | Load `millar-create-image` (or MCP `get_skill("millar-create-image")`) |
-| Research, choreograph, and implement matching animations, transitions, and micro-interactions | Load `millar-animation` (or MCP `get_skill("millar-animation")`) |
-| Implement clean frontend architecture, Server/Client leaves, 5 UI states, SEO & CWV | Load `millar-build-web` (or MCP `get_skill("millar-build-web")`) |
-| Execute 5-layer real-browser QA, Playwright E2E, axe-core WCAG AA, and 2-axis code review | Load `millar-verify-web` (or MCP `get_skill("millar-verify-web")`) |
-| Pull Hahlex tokens, UI primitives, photo-free Marketing sections, or 14 code-native assets | Call Millar MCP: `get_design_guidelines`, `get_design_tokens`, `get_component`, `get_visual_assets`, `search_sections` |
-| Run deterministic compliance audit (gradients, tokens, contrast, em-dash, a11y) | Call Millar MCP: `validate_design` |
+| End-to-end Track S / M / L orchestration & Creative Divergence | `millar-web-workflow` |
+| Research named brand, extract Visual/Motion DNA from supplied assets | `millar-deep-research` |
+| Generate English style-locked photography, human editorial shots, or 4-layer procedural art | `millar-create-image` |
+| Research & implement compositor-safe springs, View Transitions, reduced motion | `millar-animation` |
+| Implement Server-First architecture, deep modules, 5 UI states, CWV & SEO | `millar-build-web` |
+| Run standalone Zero-MCP audit (`millar-audit.mjs`), 5-layer QA & fresh-context finish review | `millar-verify-web` |
+| Fetch live Hahlex tokens, UI primitives, sections, or automated validation (Hahlex projects) | Millar MCP: `get_design_guidelines`, `get_design_tokens`, `get_component`, `get_visual_assets`, `validate_design` |
 
 ## Execution Sequence
 
-### Step 1: Classify Starting State & Inventory Truth
+### Step 1: Classify Starting State & Research the Brand
+- **Branch A (Existing Hero / User-Supplied Images or Animations):** Run `millar-deep-research` visual & motion extraction BEFORE editing any secondary route.
+- **Branch B (Named Brand: Hahlex or External Brand):** Research the brand first via local `DESIGN.md`, connected Brand MCP (`get_design_guidelines`, `get_design_tokens` for Hahlex), or web research (`millar-deep-research`). Never hardcode or guess brand values.
+- **Branch C (Greenfield Unbranded Project):** Read [references/aesthetic-movements.md](references/aesthetic-movements.md) and `millar-web-workflow/references/creative-divergence-protocol.md` to ban the category rut and derive an original world spanning 3+ cultural/material families.
 
-Inspect the repository, user prompt, existing routes, supplied images, and supplied animations. Classify the project into one of three branches:
+**Completion criterion:** Starting branch declared, brand researched or rut banned, every asset inventoried, and Visitor Mode assigned per route.
 
-- **Branch A (Existing Hero / User-Supplied Images or Animations):** User brought visual assets, motion files, or an already-styled flagship page and needs more pages or full-site buildout. Run `millar-deep-research` visual extraction BEFORE coding any secondary route.
-- **Branch B (Hahlex Ecosystem / Photo-Free Millar):** Building Hahlex surfaces with no external photos. Call Millar MCP (`get_design_guidelines`, `get_design_tokens`, `get_visual_assets`, `search_sections`) to bind Warm Sand + Deep Espresso + Hahlex Crimson (`< 1.5%` tension budget) and the 6 Composition Patterns.
-- **Branch C (Greenfield Custom Brand):** New visual world requested. Read [references/aesthetic-movements.md](references/aesthetic-movements.md) to pick or synthesize an authentic movement anchored to the audience's real culture, never category cliches.
+### Step 2: Lock `.millar/style-dna.md` (12 Axes + Studio Sign-Off)
+Read [references/style-dna-contract.md](references/style-dna-contract.md) and write `.millar/style-dna.md` locking all 12 axes in crisp English:
+- 4-6 paragraph Aesthetic Philosophy Manifesto + 1-second narrative spine.
+- Researched brand palette, color strategy, surface polarity cadence, and accent ceiling.
+- Secondary-Page Richness Contract naming the bespoke focal visual and non-repeating composition pattern for EVERY secondary route.
+- Motion physics constants and browser surface theming tokens.
 
-**Completion criterion:** Starting branch declared, every user-supplied asset and target route inventoried, and Visitor Mode assigned per route.
+**Completion criterion:** `.millar/style-dna.md` saved and clears all 5 Studio Role veto checks.
 
-### Step 2: Author and Lock `.millar/style-dna.md`
+### Step 3: Produce Museum-Grade Visuals & Motion Specs Before Page Assembly
+- Invoke `millar-create-image` for every hero, documentary human photograph, or secondary-page plate (English prompts, provenance sidecars, 4-layer procedural craft + Zero-Addition Pass 2 on 503/code-native).
+- Invoke `millar-animation` to lock the 4-line Motion Thesis, timing tokens, and View Transitions.
 
-Read [references/style-dna-contract.md](references/style-dna-contract.md) and write `.millar/style-dna.md` (or update it when extending an existing site). Lock all 12 axes:
-
-1. Aesthetic Movement Name (1-2 words) + concise 4-paragraph Visual Philosophy manifesto.
-2. Route-by-route Visitor Mode map (`Persuade` / `Experience` / `Operate` / `Read`).
-3. Color temperature, surface polarity cadence, and accent proportion budgets (zero raw gray on warm grounds).
-4. Surface materiality and single-elevation rule (1px hairline border OR lifted offset shadow, never double-bordered ghost cards).
-5. Typography scale, optical tracking, `65-75ch` reading measure, `tabular-nums`, and `:lang(vi)` Vietnamese diacritic headroom when Vietnamese copy is present.
-6. Media and graphic framing rules (aspect ratio, corner radius, border treatment, lighting direction, matte contrast).
-7. Section composition pattern rotation (zero back-to-back identical layouts).
-8. **Secondary-Page Richness Contract**: specify the exact bespoke focal element, surface cadence, and visual treatment for EVERY secondary route so no page drops to bare industrial scaffolding.
-9. Motion physics signature (easing curves, spring parameters, View Transitions / route bridges, `prefers-reduced-motion`).
-10. Browser surface theming (`::selection`, caret color, focus ring, custom scrollbar, underline offset).
-11. Copy voice and anti-cliche rules (product language, zero arbitrary eyebrow kickers, zero `U+2014` em-dash on Hahlex surfaces).
-12. Accessibility and responsive floor (WCAG 2.1 AA contrast, APG keyboard contracts, 0px horizontal overflow at 375px / 768px / 1440px).
-
-**Completion criterion:** `.millar/style-dna.md` exists and every planned route has an explicit focal visual plan and composition sequence.
-
-### Step 3: Produce Missing Visuals & Motion Specs Before Page Assembly
-
-Never leave empty boxes, generic gradient blobs, or mismatched stock images on secondary routes:
-
-- If secondary pages need imagery, illustrations, or diagram plates matching Page 1, run `millar-create-image` using the locked 80% Style DNA prefix from `.millar/style-dna.md`.
-- If routes need matching transitions, scroll pacing, or tactile micro-interactions, run `millar-animation` to lock the motion thesis and token curves.
-
-**Completion criterion:** Every route's focal visual asset (supplied, generated, or code-native SVG/Canvas/chrome) and motion primitives are ready on disk or in components.
+**Completion criterion:** Every visual asset verified `>= 9.0/10` after Pass 2 with provenance recorded; motion tokens ready.
 
 ### Step 4: Build with Craft Floor Discipline
+Hand off to `millar-build-web` enforcing non-repeating composition grammars, one authored signature moment per `Persuade`/`Experience` page, real interactive UI states (`default`/`loading`/`empty`/`error`/`disabled`), browser surface theming, and consistent drawn icons.
 
-Build shared layout shells, tokens, and browser-surface styling first, then implement routes in order. Enforce this non-negotiable floor on every page:
+### Step 5: Mechanical Audit, Fresh-Context Finish Review & Continuity Gate
+Read [references/cross-page-sync-audit.md](references/cross-page-sync-audit.md) and hand off to `millar-verify-web`:
+1. Run standalone `millar-audit.mjs` (AND Millar MCP `validate_design` on Hahlex projects).
+2. Capture `1440px`/`768px`/`375px` screenshots (Light & Dark) and delegate Layer 3A/3B + Layer 5 critique to a **fresh-context independent finish reviewer** with zero shared build transcript.
+3. Score all 6 Cross-Page Continuity axes (`>= 4/5` required) and audit every visual asset (`>= 9.0/10`), applying one clean batched polish pass on any `fix` or `rebuild` disposition before shipping.
 
-- **Layout:** Vary composition grammar between consecutive sections (Editorial Split, Spatial Stage, Architectural Grid, Asymmetric Bento, Typographic Poster, Narrative Sequence). Reject equal 3-column icon-plus-title-plus-paragraph card spam and nested cards.
-- **Hierarchy:** Headings carry weight without eyebrow kickers; more space above headings than below; real domain copy instead of filler.
-- **Gradients:** On Hahlex Product/App surfaces and shared foundation primitives, CSS gradients are strictly forbidden. On Marketing surfaces, allow gradients only inside explicitly approved atmospheric visual assets (`WarmHorizonWash` or brief-pinned atmospheric layers).
-- **Interactive truth:** Every published control, filter, tab, dialog, and CTA implements real working hover, focus-visible, active, disabled, loading, empty, and error states.
-- **Icon consistency:** One drawn icon system with constant stroke weight (1.5px Lucide or authored SVG); never emoji or Unicode glyphs as UI icons.
-
-**Completion criterion:** All routes compile with zero TypeScript/build errors and real interactive states.
-
-### Step 5: Cross-Page Visual Continuity & Compliance Audit
-
-Read [references/cross-page-sync-audit.md](references/cross-page-sync-audit.md) and verify BOTH machine rules and visual parity:
-
-1. Run Millar MCP `validate_design` (or `pnpm run check:design`) on each built route and resolve all automated violations.
-2. Render and capture screenshots of the flagship route alongside EVERY secondary route at desktop (`1440px`) and mobile (`375px`), plus Light and Dark themes if supported.
-3. Score each secondary route across all 6 Cross-Page Continuity axes (1-5). Any route scoring below `4/5` on any axis (e.g. feeling flatter, emptier, or more industrial than the flagship page) MUST be elevated in a focused polish pass before completion.
-
-**Completion criterion:** Zero automated compliance failures, zero broken/overflowing viewports, and every secondary route passes the `>= 4/5` Cross-Page Continuity audit against the flagship page.
+**Completion criterion:** Zero mechanical failures, every visual `>= 9.0/10`, every secondary route `>= 4/5` continuity, and fresh-context reviewer returns `ship`.

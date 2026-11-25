@@ -60,8 +60,8 @@ pnpm add @hahlex/millar-tokens@draft @hahlex/millar-ui@draft @hahlex/millar-mark
 | `packages/marketing` | `@hahlex/millar-marketing` | 6 diverse Composition Patterns, 14 code-native photo-free Visual Assets (SVG/CSS/Canvas/React), Productive & Expressive Motion Library, 10 Marketing Sections, 4 Page/App Templates, and live Visual Do's & Don'ts |
 | `packages/validator` | `@hahlex/millar-validator` | Deterministic design compliance engine + CLI (`pnpm run check:design`) strictly separating `automatedChecks` from `humanReviewCriteria` |
 | `packages/mcp` | `@hahlex/millar-mcp` | MCP `2026-07-28` server (`dist/stdio.js` + `dist/http.js`) exposing `millar://` Resources (including `millar://skills/*`), 13 read-only Tools, 10 Prompts, and all 7 bundled Millar Agent Skills |
-| `skills/` | Millar Agent Skills | 7 open-standard composable skills (`millar-web-workflow`, `millar-deep-research`, `millar-design`, `millar-create-image`, `millar-animation`, `millar-build-web`, `millar-verify-web`) installable via `npx skills add https://github.com/hahlex/millar` across Antigravity, Claude Code, Codex, and Cursor |
-| `apps/portal` | `@hahlex/millar-portal` | Next.js 15 App Router static portal (`basePath: "/millar"`) showcasing Foundations, Marketing, Product, Agent Skills Suite, Resources, `Ctrl+K` search, Light/Dark, and EN/VI live specimens |
+| `skills/` | Millar Agent Skills | 7 open-standard v0.2.0 composable skills (17 playbooks + standalone Zero-MCP `scripts/millar-audit.mjs`) bundled inside `@hahlex/millar-mcp` or installable standalone via `npx skills add https://github.com/hahlex/millar` across Antigravity, Claude Code, Codex, and Cursor |
+| `apps/portal` | `@hahlex/millar-portal` | Next.js 15 App Router static portal live at `https://millar.hahlex.com` (`basePath: "/millar"`) showcasing Foundations, Marketing, Product, Agent Skills Suite, Resources, `Ctrl+K` search, Light/Dark, and EN/VI live specimens |
 
 ## Connect the Millar MCP Server
 

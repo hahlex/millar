@@ -1,61 +1,62 @@
 ---
 name: millar-deep-research
-description: "Visual DNA extraction, user-intent decoding, and world-class design/animation research skill. Use BEFORE building or extending a site when the user supplies existing images, animations, reference URLs, or mood descriptions, or when researching benchmark web styles, layout grammars, and animation patterns so AI agents (Antigravity, Claude, Codex, Cursor) understand the exact visual and motion intent before writing code or generating assets."
-version: 0.1.0-draft.1
+description: "Brand-first research, visual & motion DNA extraction, user-intent decoding, and world-class craft benchmarking skill (v0.2.0). Use BEFORE designing, coding, or prompting images whenever the user names a brand, supplies existing images/animations, shares reference URLs, or describes a target feel. Never hardcode another brand's palette or tropes: research the actual brand, local DESIGN.md/MCP tokens, and audience culture first, and emit crisp English Visual & Motion DNA specifications."
+version: 0.2.0-draft.1
 license: MIT
 ---
 
-# Millar Deep Research: Visual DNA Extraction & Craft Benchmarking
+# Millar Deep Research v0.2: Brand-First Research & Visual DNA Extraction
 
-Turn ambiguous taste prompts, user-supplied media, and live references into a concrete, evidence-backed **Visual Research Dossier** so downstream `millar-design`, `millar-create-image`, and `millar-animation` skills execute with zero guesswork and zero cross-page drift.
+Turn brand mentions, user-supplied assets, live references, and open briefs into an evidence-backed **Visual Research Dossier** (`.millar/research-dossier.md`). Downstream skills (`millar-design`, `millar-create-image`, `millar-animation`) consume this dossier with zero guesswork, zero hardcoded brand assumptions, and zero cross-page style drift.
 
-## When to Run This Skill
+## Non-Negotiable Principles
 
-- **Branch 1 (User Brought Images or Animations):** User provided photos, illustrations, Lottie/Rive/CSS/JS animations, or an already-styled flagship page. Extract its exact visual and motion DNA so every other page matches 100%.
-- **Branch 2 (Benchmark & Style Discovery):** User wants a specific vibe, industry standard, or world-class animation style researched across high-trust web design references before choosing a direction.
-- **Branch 3 (Product / Brand Context Alignment):** Combining Millar MCP tokens (`get_design_guidelines`, `get_design_tokens`) with domain-specific audience culture so the design belongs unmistakably to its users.
+1. **Research Every Named Brand First (Zero Hardcoding):** Never hardcode any brand's hex palette, surface polarity, or visual tropes inside generic prompts or defaults. Whenever the user mentions ANY brand (Hahlex, an external company, an institution, or a client), research its real identity before picking a single color, typeface, lighting direction, or motif.
+2. **Author All Extracted Prompts & Specs in English:** Write every Visual DNA description, photographic art-direction rule, and motion brief in crisp, idiomatic English so image models and coding agents execute at peak precision. Keep only visible rendered UI/artwork copy in the user's target locale (e.g., Vietnamese).
+3. **Visual Authority Is Evidence, Not a Filename:** Missing `DESIGN.md` does not make an existing site greenfield. Inspect rendered pages, CSS variables, brand kits, and user-supplied files directly.
 
 ## Execution Sequence
 
-### Step 1: Decode User Intent (Separate Constraints from Open Axes)
+### Step 1: Decode User Intent & Run Mandatory Brand Discovery Gate
 
-Parse the user's request and existing project artifacts into three explicit lists:
+Classify the request across three explicit lists:
+1. **Named Brand & Pinned Truth:** Any named brand, supplied images/animations, target locale (`vi`, `en`, etc.), required pages, or explicit constraints.
+2. **Audience & Physical Scene:** Who uses this surface, where, on which devices, under what ambient lighting, and what earns trust in their real world.
+3. **Open Aesthetic Axes:** Dimensions the user left free (composition rhythm, visual medium, motion signature, secondary-page treatment).
 
-1. **Pinned Truth (Non-Negotiable):** Supplied images/animations, brand colors/marks, copy language (`en` / `vi`), required sections, target register (`product` vs `marketing`), or named reference sites.
-2. **Audience & Scene:** Who uses this surface, on which devices, under what ambient lighting, and what proves credibility in their real world.
-3. **Open Aesthetic Axes:** Dimensions the user left open (pacing, composition pattern, micro-interaction signature, secondary-page visual treatment).
+Then execute the matching **Brand Discovery Branch** (never skip when a brand is named):
+- **Branch 1A (Local Workspace Truth Exists):** Read `DESIGN.md`, `PRODUCT.md`, `BRAND.md`, token JSON/CSS files, existing pages, and supplied images/animations.
+- **Branch 1B (Brand Design-System MCP Connected):** For an ecosystem with an active MCP server (for example, Millar MCP when working on Hahlex), query live canonical rules dynamically (`get_design_guidelines`, `get_design_tokens`, `get_visual_assets`, `get_motion_presets`) instead of relying on memorized or hardcoded hex values.
+- **Branch 1C (External / Real-World Brand Named Without Local Docs):** Use your host's web research or browser tools (`search_web`, official brand press kits, live website, product photography) to extract the brand's actual palette, light/dark surface balance, typography, cultural roots, and visual voice. Cite exact observed sources and never invent unverified commercial claims.
+- **Branch 1D (Greenfield / Unnamed Brand):** Do NOT reuse another brand's palette. Mark the visual world as open for `millar-web-workflow`'s Creative Divergence & Anti-Slop Calibration.
 
-If critical user intent is genuinely ambiguous between two conflicting worlds, ask 1-2 crisp multiple-choice questions; otherwise proceed directly to extraction and research.
+**Completion criterion:** Brand discovery completed from real sources (local files, live MCP, or web research), pinned constraints separated from open axes, and audience physical scene recorded.
 
-**Completion criterion:** Pinned constraints, audience scene, and open axes are written explicitly.
+### Step 2: Extract Visual & Motion DNA from Supplied Assets
 
-### Step 2: Extract Visual & Motion DNA from Supplied Assets (Branch 1)
+Whenever the user supplies photos, illustrations, screenshots, videos, Lottie/Rive/CSS animations, or an existing hero page, read [references/visual-extraction-protocol.md](references/visual-extraction-protocol.md) and inspect EVERY supplied artifact directly via vision/file tools:
+- **Images & Flagship Pages:** Extract exact lighting direction/softness, surface materiality, color temperature & light/dark polarity ratio, lens/medium grammar, grain density, aspect ratios, framing margins, and negative space rhythm.
+- **Animations & Code:** Extract easing curves (`cubic-bezier` or spring `{ stiffness, damping, mass }`), duration register, travel distance, trigger discipline, stagger cap, and interruptibility.
+- **Secondary-Page Gap Diagnosis:** Explicitly document what would break if secondary routes only copied the font family and accent hex without inheriting materiality, lighting, and layout craft.
 
-Whenever the user provides images, screenshots, videos, animations, or an existing page, read [references/visual-extraction-protocol.md](references/visual-extraction-protocol.md) and inspect EVERY supplied asset directly (using image/file reading tools and code inspection):
+**Completion criterion:** Concrete observed Visual & Motion DNA table grounded in real files with zero invented values.
 
-- **From images/screenshots:** Extract color temperature, dominant/secondary/accent surface proportions, lighting direction and softness, camera/medium grammar (editorial photo, 3D matte clay, isometric architectural render, line-art schematic, archival paper), grain/texture level, framing ratio, and negative space rhythm.
-- **From existing animations/code:** Extract easing curves (`cubic-bezier` or spring stiffness/damping/mass), duration tiers, spatial travel distance (`px` / `scale`), trigger model (mount, hover, click, scroll, route change), and interruptibility behavior.
-- **From Millar MCP (for Hahlex projects):** Call `get_design_guidelines` and `get_design_tokens` to verify non-negotiable Hahlex invariants (Zero Em-Dash, Product Zero Gradients, WCAG 2.1 AA, `< 1.5%` Crimson tension budget).
+### Step 3: Benchmark World-Class Craft & Cultural Context
 
-**Completion criterion:** A structured Visual & Motion DNA table extracted directly from observed files, zero invented claims.
+Read [references/world-class-benchmarks.md](references/world-class-benchmarks.md) and research 2-3 high-craft references aligned with the brand's actual domain and geography:
+- Study structural discipline (layout variety, typographic tension, framing margins, motion restraint, photographic authenticity) without copying copyrighted artwork verbatim.
+- For human photography or regional products (such as Vietnamese education, healthcare, architecture, or consumer brands), research authentic local environments, daylight character, everyday clothing, and architectural cues so visuals never collapse into generic Western stock tropes.
+- **Offline fallback:** If running without web access, rely on local workspace truth, connected MCP resources, and [references/world-class-benchmarks.md](references/world-class-benchmarks.md), disclosing offline mode honestly.
 
-### Step 3: Conduct High-Trust Web & Craft Benchmarking (Branch 2)
+**Completion criterion:** 2-4 concrete structural, cultural, and motion craft takeaways grounded in real references.
 
-Read [references/world-class-benchmarks.md](references/world-class-benchmarks.md) and use your host agent's web research tool (`search_web`, `WebSearch`, browser inspection, or documentation reads) to gather concrete references tailored to the user's brief:
+### Step 4: Emit `.millar/research-dossier.md` (English Technical Spec)
 
-- **Visual craft references:** Study 2-3 high-craft references in adjacent or target domains for layout pacing, typographic scale, framing discipline, and secondary-page continuity (never copy copyrighted visuals verbatim; extract structural discipline only).
-- **Motion & interaction references:** Search verified design-engineering patterns (View Transitions, spring physics, scroll-driven reveals, micro-feedback) matching the exact mood the user wants.
-- **Capability fallback:** If running in an offline or no-web sandbox, rely on [references/world-class-benchmarks.md](references/world-class-benchmarks.md), Millar MCP resources (`millar://guidelines/*`, `millar://visual-assets/*`), and local asset inspection, and disclose offline mode clearly.
+Save `.millar/research-dossier.md` in crisp English with five actionable blocks:
+1. **Brand Research Summary:** Verified palette tokens, exact light/dark surface polarity ratio (e.g., `70% light canvas / 20% secondary tint / 10% dark stage`), accent budget ceiling, typography, and non-negotiable brand invariants.
+2. **Extracted Visual & Motion DNA:** Exact hex-to-physical-material translations (in English) and motion physics constants.
+3. **Cultural & Environmental Authenticity Notes:** Real-world visual cues for the target audience and region.
+4. **Secondary-Page Propagation Rules:** Concrete guarantees preventing `/features`, `/pricing`, `/about`, or `/app` from collapsing into plain boilerplate cards.
+5. **Downstream Handoff Blueprint:** Asset scale/ratio plan for `millar-create-image` and choreography cues for `millar-animation`.
 
-**Completion criterion:** 2-4 concrete structural insights + motion reference cues grounded in named sources or observed artifacts.
-
-### Step 4: Emit the Visual Research Dossier & Handoff
-
-Write findings into `.millar/research-dossier.md` (or feed straight into `.millar/style-dna.md` when paired with `millar-design`) with four actionable outputs:
-
-1. **Extracted Visual DNA Summary** (colors in hex AND descriptive art-direction language for image generators).
-2. **Secondary-Page Propagation Rules** (how Page 2..N echo Page 1's visual richness without looking industrial).
-3. **Recommended Image Asset Plan** -> direct input for `millar-create-image`.
-4. **Recommended Animation Choreography Plan** -> direct input for `millar-animation`.
-
-**Completion criterion:** `.millar/research-dossier.md` (or `.millar/style-dna.md` research section) is saved and actionable by `millar-design`, `millar-create-image`, and `millar-animation` with zero vague adjectives left untranslated.
+**Completion criterion:** `.millar/research-dossier.md` written cleanly in English, grounded in verified brand/asset research, and ready for `millar-design`.

@@ -1,88 +1,72 @@
 "use client";
 
 import React, { useState } from "react";
-import { Alert, ChoiceToggle, DataTable } from "@hahlex/millar-ui";
+import { Alert, DataTable } from "@hahlex/millar-ui";
 import { CodeCopyBox } from "@/components/CodeCopyBox";
 import { DocHeader, SpecimenFrame } from "@/components/DocPrimitives";
-import { usePortalLocale } from "@/components/PortalShell";
 
-const MCP_CONNECT_PROMPTS = {
-  vi: `Hãy tự động cấu hình và kết nối Millar MCP Server (@hahlex/millar-mcp) vào cấu hình MCP của IDE/Agent hiện tại cho tôi:
-
-1. Thêm MCP server tên "millar" dùng transport stdio:
-   - Ưu tiên dùng npm: command "npx", args ["-y", "@hahlex/millar-mcp@draft"].
-   - Nếu máy đã clone repo https://github.com/hahlex/millar ở local, hãy build (pnpm --filter @hahlex/millar-mcp run build) và trỏ args tới đường dẫn packages/mcp/dist/stdio.js.
-2. Nếu tôi cần đồng bộ thêm 7 Millar Agent Skills local, chạy luôn: npx skills add https://github.com/hahlex/millar.
-3. Kiểm tra kết nối thành công bằng cách gọi list_skills() và get_design_guidelines(register="shared"), rồi báo cáo lại số lượng tools, skills và prompts đang hoạt động.`,
-  en: `Automatically configure and connect the Millar MCP Server (@hahlex/millar-mcp) in my current IDE / AI agent MCP settings:
-
-1. Add an MCP server named "millar" using stdio transport:
-   - Primary (npm): command "npx", args ["-y", "@hahlex/millar-mcp@draft"].
-   - Local fallback: if https://github.com/hahlex/millar is cloned locally, run pnpm --filter @hahlex/millar-mcp run build and point node to packages/mcp/dist/stdio.js.
-2. Also install the 7 Millar Agent Skills locally if supported: npx skills add https://github.com/hahlex/millar.
-3. Verify the connection by calling list_skills() and get_design_guidelines(register="shared"), and report the active tools, skills, and prompts.`,
-} as const;
+const MCP_INSTALL_PROMPT = `Add the Millar MCP server ("millar") to my MCP config using command "npx" and args ["-y", "@hahlex/millar-mcp@draft"] (all 7 Millar Skills are bundled inside MCP). Verify by calling list_skills() and get_design_guidelines(register="shared").`;
 
 const MCP_PROMPTS_CATALOG = [
   {
     name: "millar-web-workflow",
     args: "request, track?, lang?",
-    vi: "Gọi MCP prompt millar-web-workflow (lang='vi', track='L') để điều phối trọn quy trình thiết kế, sáng tạo chống AI slop, code web Server-First và kiểm định 5 lớp.",
-    en: "Invoke MCP prompt millar-web-workflow (lang='en', track='L') to orchestrate Creative Divergence, design, assets, animation, Server-First code, and 5-layer QA.",
+    prompt:
+      "Invoke MCP prompt millar-web-workflow (track='L'): research any named brand first, classify Track S/M/L, run Creative Divergence, orchestrate all 7 skills, and pass millar-verify-web.",
   },
   {
     name: "millar-design",
     args: "brief, existingAssets?, lang?",
-    vi: "Gọi MCP prompt millar-design (lang='vi') để khóa Style DNA 12 trục và đồng bộ toàn bộ trang phụ theo ảnh/animation trang chủ, tránh giao diện công nghiệp.",
-    en: "Invoke MCP prompt millar-design (lang='en') to lock a 12-axis Style DNA Contract and synchronize all secondary pages to existing hero imagery or animations.",
+    prompt:
+      "Invoke MCP prompt millar-design: research any named brand first, lock a 12-axis .millar/style-dna.md contract, and sync every secondary page to hero visuals (>= 4/5 continuity).",
   },
   {
     name: "millar-deep-research",
     args: "topic, existingAssets?, lang?",
-    vi: "Gọi MCP prompt millar-deep-research (lang='vi') để giải phẫu Visual/Motion DNA từ ảnh hoặc animation người dùng gửi kèm và tra cứu chuẩn thiết kế quốc tế.",
-    en: "Invoke MCP prompt millar-deep-research (lang='en') to extract Visual & Motion DNA from user-supplied assets and benchmark world-class design craft.",
+    prompt:
+      "Invoke MCP prompt millar-deep-research: research the named brand from primary sources, extract Visual/Motion DNA from supplied assets, and save .millar/research-dossier.md in English.",
   },
   {
     name: "millar-create-image",
     args: "subject, styleContext?, lang?",
-    vi: "Gọi MCP prompt millar-create-image (lang='vi') để tạo bộ hình ảnh đồng bộ 80% Style Prefix cố định cho từng trang hoặc vẽ plate SVG/Canvas chuẩn canvas-design.",
-    en: "Invoke MCP prompt millar-create-image (lang='en') to produce style-locked multi-page imagery (80% fixed Style DNA prefix) or code-native SVG/Canvas editorial plates.",
+    prompt:
+      "Invoke MCP prompt millar-create-image: write concise 150-250 word English prompts (human editorial photo or 4-layer procedural craft on 503), save .prompt.json provenance, and run Zero-Addition Pass 2 polish.",
   },
   {
     name: "millar-animation",
     args: "target, motionFeel?, lang?",
-    vi: "Gọi MCP prompt millar-animation (lang='vi') để nghiên cứu và biên đạo chuyển động khớp với Hero (spring physics, View Transitions, prefers-reduced-motion).",
-    en: "Invoke MCP prompt millar-animation (lang='en') to research and choreograph compositor-safe springs, View Transitions, and static-first reduced-motion fallbacks.",
+    prompt:
+      "Invoke MCP prompt millar-animation: lock a 4-line Motion Thesis and ship GPU compositor springs, View Transitions, and static-first prefers-reduced-motion in the same edit.",
   },
   {
     name: "millar-build-web",
     args: "scope, minimalChange?, lang?",
-    vi: "Gọi MCP prompt millar-build-web (lang='vi') để code trang/component theo chuẩn Deep Modules, Server Components by Default, 5 trạng thái UI và Core Web Vitals.",
-    en: "Invoke MCP prompt millar-build-web (lang='en') to implement Server-First components, deep modules, 5 real interactive UI states, and Core Web Vitals / SEO hygiene.",
+    prompt:
+      "Invoke MCP prompt millar-build-web: implement Server-First components, deep modules, 5 real UI states, browser surface theming, and Core Web Vitals / SEO hygiene.",
   },
   {
     name: "millar-verify-web",
     args: "target, lang?",
-    vi: "Gọi MCP prompt millar-verify-web (lang='vi') để chạy cổng QA 5 lớp: validate_design, Playwright E2E, chụp 1440/768/375 Light & Dark, axe-core WCAG AA và review 2 trục.",
-    en: "Invoke MCP prompt millar-verify-web (lang='en') to execute the 5-layer QA gate: validate_design, Playwright E2E, cross-viewport screenshots, axe-core WCAG AA, and two-axis review.",
+    prompt:
+      "Invoke MCP prompt millar-verify-web: run scripts/millar-audit.mjs (+ validate_design), verify Playwright E2E, 1440/768/375 Light & Dark visuals, axe-core WCAG AA, and delegate Layer 3B + Layer 5 to a fresh-context finish reviewer.",
   },
   {
     name: "millar-build-marketing",
     args: "feature, lang?",
-    vi: "Gọi MCP prompt millar-build-marketing (lang='vi') để dựng trang Marketing Hahlex không cần ảnh bằng 6 Composition Patterns và 14 Visual Assets.",
-    en: "Invoke MCP prompt millar-build-marketing (lang='en') to compose a photo-free Hahlex Marketing page using 6 Composition Patterns and 14 code-native Visual Assets.",
+    prompt:
+      "Invoke MCP prompt millar-build-marketing: query live Millar MCP tokens, combine >= 3 Composition Patterns with code-native Visual Assets, and validate via validate_design.",
   },
   {
     name: "millar-build-product",
     args: "screen, lang?",
-    vi: "Gọi MCP prompt millar-build-product (lang='vi') để dựng màn hình Product/App Zero Gradients, chuẩn WCAG 2.1 AA và tối đa 1 nút chính trên PageHeader.",
-    en: "Invoke MCP prompt millar-build-product (lang='en') to build a crisp, zero-gradient, WCAG 2.1/2.2 AA Hahlex Product workspace using @hahlex/millar-ui primitives.",
+    prompt:
+      "Invoke MCP prompt millar-build-product: build a crisp zero-gradient WCAG 2.1/2.2 AA Hahlex Product screen using @hahlex/millar-ui primitives and verify with validate_design.",
   },
   {
     name: "millar-audit-code",
     args: "register, lang?",
-    vi: "Gọi MCP prompt millar-audit-code (lang='vi') để kiểm tra code UI qua validate_design, tách bạch lỗi tự động và tiêu chí thẩm mỹ cần con người duyệt.",
-    en: "Invoke MCP prompt millar-audit-code (lang='en') to audit UI code via validate_design, separating deterministic automatedChecks from humanReviewCriteria.",
+    prompt:
+      "Invoke MCP prompt millar-audit-code: run validate_design + scripts/millar-audit.mjs, reporting deterministic automatedChecks separately from advisory humanReviewCriteria.",
   },
 ] as const;
 
@@ -98,8 +82,8 @@ const MCP_TOOLS = [
   { name: "get_visual_assets", kind: "Visual System", desc: "Retrieve CSS/SVG/Canvas/React visual assets with gradientPolicy & props." },
   { name: "get_motion_presets", kind: "Motion", desc: "Retrieve Productive & Expressive curves, durations, and reduced-motion fallbacks." },
   { name: "validate_design", kind: "Compliance", desc: "Splits deterministic automatedChecks from advisory humanReviewCriteria." },
-  { name: "list_skills", kind: "Agent Skills", desc: "Lists all 7 composable Millar web & design skills (millar-web-workflow through millar-verify-web) and Track S/M/L recipes." },
-  { name: "get_skill", kind: "Agent Skills", desc: "Retrieves full SKILL.md instructions and progressive-disclosure reference playbooks for any of the 7 Millar Skills." },
+  { name: "list_skills", kind: "Agent Skills", desc: "Lists all 7 composable Millar v0.2.0 web & design skills and Track S/M/L recipes." },
+  { name: "get_skill", kind: "Agent Skills", desc: "Retrieves full SKILL.md instructions and progressive-disclosure playbooks for any of the 7 Millar Skills." },
 ];
 
 const MCP_RESOURCES = [
@@ -116,15 +100,14 @@ const MCP_RESOURCES = [
   { uri: "millar://sections/{id}", mime: "application/json", purpose: "Individual Marketing section spec & reduced-motion fallback." },
   { uri: "millar://templates/{id}", mime: "application/json", purpose: "Individual Page or Application Template spec." },
   { uri: "millar://motion-presets/{id}", mime: "application/json", purpose: "Individual Productive or Expressive motion curve." },
-  { uri: "millar://skills", mime: "application/json", purpose: "Index of all 7 composable Millar Agent Skills and Track S/M/L combination recipes." },
+  { uri: "millar://skills", mime: "application/json", purpose: "Index of all 7 composable Millar Agent Skills v0.2.0 and Track S/M/L recipes." },
   { uri: "millar://skills/{name}", mime: "text/markdown", purpose: "Full SKILL.md playbook for any of the 7 Millar skills." },
-  { uri: "millar://skills/{name}/references/{ref}", mime: "text/markdown", purpose: "15 progressive-disclosure reference playbooks bundled inside Millar skills." },
+  { uri: "millar://skills/{name}/references/{ref}", mime: "text/markdown", purpose: "17 progressive-disclosure playbooks (including human photography & procedural craft)." },
   { uri: "millar://glossary", mime: "text/markdown", purpose: "Canonical Millar domain terminology." },
   { uri: "millar://changelog", mime: "text/markdown", purpose: "Millar versioning and release changelog." },
 ];
 
 export default function McpResourcePage() {
-  const { locale, setLocale } = usePortalLocale();
   const [selectedPromptName, setSelectedPromptName] = useState<(typeof MCP_PROMPTS_CATALOG)[number]["name"]>("millar-web-workflow");
 
   const selectedPrompt = MCP_PROMPTS_CATALOG.find((p) => p.name === selectedPromptName) ?? MCP_PROMPTS_CATALOG[0];
@@ -134,58 +117,32 @@ export default function McpResourcePage() {
       <DocHeader
         section="Resources"
         title="Millar MCP Server & AI Agents"
-        description="Served from the exact same compiled SSoT registry as this Portal, with all 7 Millar Agent Skills and 15 playbooks bundled offline. Supports bilingual VI/EN prompts and both stdio and Streamable HTTP transports."
+        description="Served from the same compiled SSoT registry as this Portal, with all 7 Millar Agent Skills (v0.2.0) and 17 playbooks bundled inside MCP. Supports stdio and Streamable HTTP transports."
         badges={[
           { label: "MCP 2026-07-28", tone: "neutral" },
-          { label: "13 Tools · 7 Skills · 10 VI/EN Prompts", tone: "brand" },
+          { label: "13 Tools · 7 Bundled Skills · 10 Prompts", tone: "brand" },
         ]}
         importPath="@hahlex/millar-mcp"
       />
 
       <SpecimenFrame
-        title="Auto-Connect Prompt for AI Agents (Copy & Send)"
-        description="Send this prompt directly to Antigravity, Claude Code, Codex, or Cursor so the agent configures Millar MCP and verifies tools automatically without hand-editing JSON."
-        toolbar={
-          <ChoiceToggle
-            label="MCP prompt language"
-            value={locale}
-            onChange={setLocale}
-            options={[
-              { value: "vi", label: "Tiếng Việt" },
-              { value: "en", label: "English" },
-            ]}
-          />
-        }
-        code={MCP_CONNECT_PROMPTS[locale]}
-        codeTitle={`Auto-Install & Connect Millar MCP Prompt (${locale.toUpperCase()})`}
+        title="Quick Connect Prompt (Includes All 7 Skills)"
+        description="Copy and send to Antigravity, Claude Code, Codex, or Cursor to install @hahlex/millar-mcp and verify immediately."
+        code={MCP_INSTALL_PROMPT}
+        codeTitle="Prompt · Install Millar MCP (Includes 7 Skills)"
         wrapCode
       >
         <Alert
           tone="info"
-          title={locale === "vi" ? "Tương thích Antigravity, Claude Code, Codex và Cursor" : "Works across Antigravity, Claude Code, Codex, and Cursor"}
-          message={
-            locale === "vi"
-              ? "Dán prompt này vào khung chat: agent sẽ tự đăng ký @hahlex/millar-mcp, cài 7 skills local (nếu cần) và kiểm tra đủ 13 Tools + 10 Prompts hỗ trợ lang='vi'|'en'."
-              : "Paste this prompt into chat; your agent registers @hahlex/millar-mcp, optionally installs the 7 local skills, and confirms all 13 Tools + 10 bilingual VI/EN Prompts."
-          }
+          title="One install covers MCP + all 7 Millar Skills"
+          message="Millar MCP ships all 7 skills and 17 playbooks offline via list_skills(), get_skill(), and millar://skills/*. No separate skills install required."
         />
       </SpecimenFrame>
 
-      {/* Bilingual 10 MCP Prompts Inspector */}
+      {/* 10 Concise English MCP Prompts Inspector */}
       <SpecimenFrame
-        title="10 Bilingual MCP Prompts (Tiếng Việt / English)"
-        description="Every Millar MCP Prompt accepts lang: 'vi' | 'en' so agents respond and write deliverables in Vietnamese or English natively."
-        toolbar={
-          <ChoiceToggle
-            label="MCP prompt catalog language"
-            value={locale}
-            onChange={setLocale}
-            options={[
-              { value: "vi", label: "Tiếng Việt" },
-              { value: "en", label: "English" },
-            ]}
-          />
-        }
+        title="10 Concise English MCP Prompts"
+        description="All agent and image-generation prompts execute in English for peak model fidelity. Pass optional lang='vi' when you want user-facing replies and rendered UI/artwork copy in Vietnamese."
       >
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
@@ -213,11 +170,7 @@ export default function McpResourcePage() {
             ))}
           </div>
 
-          <CodeCopyBox
-            title={`${selectedPrompt.name} (${selectedPrompt.args}) · ${locale === "vi" ? "Tiếng Việt" : "English"}`}
-            code={selectedPrompt[locale]}
-            wrap
-          />
+          <CodeCopyBox title={`${selectedPrompt.name} (${selectedPrompt.args})`} code={selectedPrompt.prompt} wrap />
         </div>
       </SpecimenFrame>
 

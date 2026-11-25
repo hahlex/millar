@@ -1,35 +1,35 @@
 # Visual & Motion DNA Extraction Protocol
 
-Use this protocol whenever the user supplies existing images, screenshots, Figma exports, videos, Lottie/Rive files, or an already-styled Hero/Homepage. Never skip straight to coding secondary pages using only the font family and accent color.
+Use this protocol whenever the user names a brand, supplies existing images/screenshots/animations, or provides an already-styled flagship page. Never skip directly to coding secondary pages using only a font family and accent hex, and never substitute hardcoded tokens from an unrelated brand.
 
-## 1. Image & Visual Artifact Inspection Checklist
+## 1. Brand & Visual Artifact Inspection Checklist (Write Output in English)
 
-Open every supplied image or rendered flagship page with your file/vision reader and record these 8 concrete observations:
+Inspect every supplied image, rendered page, brand guideline, or token file directly and record these 8 concrete observations in crisp English:
 
-1. **Medium & Materiality:** Editorial photography, matte 3D ceramic/clay, architectural line drawing, archival paper collage, warm studio photography, glossy glass/obsidian render, or clean product UI chrome?
-2. **Lighting Paradigm:** Soft diffused north-window daylight, golden-hour warm side-light, deep espresso rim-glow, high-key studio softbox, or flat print matte? Record light direction (top-left, backlit horizon, overhead).
-3. **Color Temperature & Gamut:** Warm sand/cream, cool slate/ice, high-contrast ink-on-paper, or muted earth pigments? Translate key hex values into descriptive art-direction phrases for image models (e.g. `#FAF3EA` -> "warm unbleached archival cream paper"; `#B3121B` -> "deep Venetian crimson accent used sparingly").
-4. **Contrast & Shadow Character:** Soft wide offset shadows, razor-thin 1px borders with zero shadows, or deep dramatic stage contrast?
-5. **Framing & Negative Space:** Full-bleed edge-to-edge, matted inside generous margins, asymmetric 60/40 crop, or centered isolated object with breathing room for typography?
-6. **Surface Grain & Finish:** Crisp digital vector, subtle fine archival paper grain, matte ceramic finish, or brushed dark metal?
-7. **Detail Density:** Minimal gallery stillness (low density, large focal object) vs technical instrument precision (hairline grids, tabular indices, tight annotations)?
-8. **Recurring Motifs:** Geometric arches, coordinate crosshairs, hairline rules, pill badges, editorial pull-quotes, or organic tear/horizon dividers.
+1. **Medium & Materiality:** Editorial documentary photography, tactile matte 3D, architectural linework, fine engraving/halftone print, archival paper texture, dark lacquer/obsidian, or crisp solid product UI chrome?
+2. **Lighting Paradigm:** Soft diffused north-window daylight, humid tropical louver daylight, golden-hour low side-light, warm chiaroscuro lamp cone, studio softbox, or clean flat print matte? Always specify exact light direction (e.g., top-left 35 deg, warm backlight, grazing horizon light).
+3. **Color Temperature & Polarity Ratio:** Record the brand's ACTUAL light/dark surface balance (for example, predominantly light archival surfaces with one dark anchor band vs. dark-native instrument UI vs. saturated color-blocked editorial). Translate verified hex tokens into physical material language in English (for example: `<light-ground-hex>` -> "unbleached cotton archival paper", `<dark-stage-hex>` -> "matte roasted walnut lacquer", `<focal-accent-hex>` -> "sparingly applied carmine registration mark").
+4. **Contrast & Shadow Character:** Wide soft offset shadow, razor-thin 1px structural hairline with zero shadow, or dramatic chiaroscuro depth?
+5. **Framing & Negative Space:** Full-bleed edge-to-edge, matted inside >= 6% archival margins, asymmetric 60/40 crop leaving calm headline headroom, or tight macro focal crop?
+6. **Surface Grain & Finish:** Fine 35mm photographic grain, subtle archival cotton-paper tooth, matte ceramic/stone texture, or clean high-DPI vector precision?
+7. **Detail Density:** Quiet gallery stillness vs. intricate engraving/cartographic precision vs. dense operational data clarity?
+8. **Cultural & Environmental Truth:** Real-world architecture, furniture, clothing, signage language, and regional daylight belonging authentically to the brand's audience (avoiding generic stock-photo clichés).
 
 ## 2. Existing Animation & Interaction Extraction Checklist
 
-Inspect existing CSS, Tailwind, Framer Motion / Motion, GSAP, Lottie, or video references and record:
+Inspect existing CSS, Tailwind, Motion/Framer, GSAP, Lottie, or video references and record:
 
-1. **Tempo Register:** Snappy productive (`120-240ms`) vs calm editorial expressive (`360-640ms`) vs physical spring feel.
+1. **Tempo Register:** Snappy productive (`120-240ms`) vs. calm editorial expressive (`320-640ms`) vs. interruptible physical spring.
 2. **Curve Family:** Exponential ease-out (`cubic-bezier(0.16, 1, 0.3, 1)`), smooth cubic (`cubic-bezier(0.22, 1, 0.36, 1)`), or spring `{ stiffness, damping, mass }`.
-3. **Motion Material:** Subtle `translateY(12-20px)` + opacity, clip-path mask wipe, gentle `scale(0.97 -> 1)`, blur-to-sharp settle, or shared-element layout morph.
-4. **Trigger Discipline:** Only on direct user interaction (hover/click/tab switch), single focal entrance on first viewport, or scroll-linked progress?
-5. **Stagger Cadence:** Sibling delay step (e.g. `40ms` per item, capped total delay `<= 280ms`).
+3. **Motion Material:** Subtle `translateY` + opacity settle, clip-path/mask reveal, tactile scale micro-feedback, or shared-element View Transition.
+4. **Trigger Discipline:** Direct user action (hover/click/tab switch), single hero choreography, or scroll-linked progress without trapping content at `opacity: 0`.
+5. **Stagger Cadence:** Sibling delay step (e.g., `40ms` per item, capped total delay `<= 280ms`).
 
 ## 3. Translation into Cross-Page Propagation Rules
 
-Convert the extracted observations into concrete rules every secondary page MUST obey:
+Convert observed findings into binding rules for EVERY secondary page:
 
-- **Surface Echo:** Secondary pages reuse the exact same ground/alternating/dark-stage surface rhythm (never reverting to default `#FFFFFF` + `#F3F4F6` Tailwind gray boxes).
-- **Visual Anchor Rule:** If Page 1 has warm matte studio photography or refined geometric illustrations, Page 2 (`/features`, `/about`, `/pricing`) MUST pair its copy with style-locked assets from the exact same medium/lighting (via `millar-create-image`) or matching code-native plates.
-- **Border & Radius Lock:** Reuse the exact radius ladder and border opacity across every card, input, image frame, and button on every route.
-- **Motion Parity:** Export shared timing/easing CSS custom properties or spring constants so Page 2..N move with identical physical weight as Page 1.
+- **Surface Polarity Echo:** Secondary pages inherit the exact researched ground/alternating/counter-weight surface cadence (never reverting to generic white + uncalibrated gray Tailwind boxes).
+- **Visual Anchor Rule:** If Page 1 features documentary photography, editorial still-life, or engraved visual plates, secondary pages (`/features`, `/pricing`, `/about`, `/docs`) MUST pair copy with matching style-locked assets produced via `millar-create-image` using the same English Master Style Prefix.
+- **Border, Radius & Elevation Lock:** Reuse the identical corner-radius ladder, 1px hairline or soft shadow discipline, and image framing rules across every route.
+- **Motion Parity:** Export shared CSS custom properties or spring constants so Page 2..N move with identical physical weight as Page 1.

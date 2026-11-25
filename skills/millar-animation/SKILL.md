@@ -1,7 +1,7 @@
 ---
 name: millar-animation
 description: "Motion research, choreography, and engineering skill for websites and product UI. Use when researching reference animations matching user intent, syncing secondary pages to existing hero animations, implementing purposeful micro-interactions, interruptible spring physics, CSS View Transitions, scroll-driven choreography, or Millar Productive/Expressive motion presets with static-first prefers-reduced-motion safety."
-version: 0.1.0-draft.1
+version: 0.2.0-draft.1
 license: MIT
 ---
 
@@ -24,7 +24,7 @@ Use motion to clarify state, spatial relationship, and continuity, or to author 
 ### Step 1: Audit Existing Motion & Research User-Aligned References
 
 - **Check existing code/assets:** Read `.millar/style-dna.md` (Section 9), inspect any existing animation code/CSS/Lottie/Motion definitions, and call Millar MCP `get_motion_presets` for Hahlex projects.
-- **Research tailored motion patterns:** When the user asks for an animation feel ("mượt như Apple", "snappy như Linear", "editorial reveal", "tactile card morph", "scroll story"), read [references/animation-research-patterns.md](references/animation-research-patterns.md) and search web references (`search_web` / `WebSearch`) for verified compositor-safe patterns matching that exact physics and runtime stack (CSS native, Motion/Framer, GSAP, View Transitions API, WAAPI).
+- **Research tailored motion patterns:** When the user asks for an animation feel ("fluid like Apple", "snappy like Linear", "editorial reveal", "tactile card morph", "scroll story"), read [references/animation-research-patterns.md](references/animation-research-patterns.md) and search web references (`search_web` / `WebSearch`) for verified compositor-safe patterns matching that exact physics and runtime stack (CSS native, Motion/Framer, GSAP, View Transitions API, WAAPI).
 
 **Completion criterion:** Existing motion grammar documented OR target motion reference patterns selected and matched to the user's intent and tech stack.
 

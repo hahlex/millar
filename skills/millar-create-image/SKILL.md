@@ -1,69 +1,82 @@
 ---
 name: millar-create-image
-description: "Style-locked visual asset and AI image art direction skill for websites and apps. Use when generating hero visuals, editorial illustrations, product scene photography, secondary-page imagery matching existing hero assets, or gallery-grade code-native SVG/HTML5 Canvas/poster plates (canvas-design standard). Works across Antigravity (image-generator), Claude, Codex, and Cursor using an 80% fixed Style DNA prompt prefix and multi-page visual coherence rules."
-version: 0.1.0-draft.1
+description: "Gallery-grade visual art direction, English-only style-locked AI image generation, authentic human editorial photography, and museum-quality code-native illustration skill (v0.2.0). Synthesizes Anthropic canvas-design (2-phase Visual Philosophy, dense engraving craft, Zero-Addition Pass 2 polish), Impeccable (chiaroscuro 1-second storytelling, concise non-over-specified prompts, prompt provenance), and brand-researched polarity discipline with zero hardcoded brand hexes. Works seamlessly for real human photography, editorial stills, AND 503/offline 4-layer procedural art."
+version: 0.2.0-draft.1
 license: MIT
 ---
 
-# Millar Create Image: Style-Locked Art Direction & Visual Asset Production
+# Millar Create Image v0.2: Gallery-Grade Art Direction & Dual-Soul Visual Craft
 
-Treat image creation as a **latent-space compiler**, never a random prompt slot machine. Every visual generated for a site (Home, Features, About, Pricing, Case Studies, Docs, Empty States) must look shot in the same studio, drawn by the same hand, or drafted on the same architectural plate.
+Produce museum-grade, emotionally resonant visual series across real human editorial photography, still-life/architectural imagery, and code-native procedural illustrations. Never produce AI wax-skin stock clichés, flat geometric clip-art humans/houses, or PowerPoint process slides, even when AI image APIs return `503` or run offline.
 
-## Core Directives
+## Non-Negotiable Laws
 
-1. **Read `.millar/style-dna.md` first.** If no Style DNA exists yet, run `millar-deep-research` (or lock a concise 4-paragraph Visual Philosophy following `canvas-design`: Movement Name, Space/Form, Color/Material, Scale/Rhythm, Lighting) before generating a single image.
-2. **One visual job per asset.** Generate one focused asset per slot/section at its exact target aspect ratio. Never cram multiple web sections or busy collage clutter into one frame.
-3. **80% Fixed / 20% Variable Rule.** Freeze 80% of the prompt (medium, lighting paradigm, color temperature language, surface materiality, framing discipline) across the entire project; swap only the 20% subject and focal composition per page/section.
-4. **Bridge HEX to Art-Direction Language.** Image generators ignore raw HEX codes. Translate every brand token into tactile material descriptions (e.g. `#FAF3EA` -> "warm unbleached archival cream paper", `#1A130D` -> "deep roasted espresso matte backdrop", `#B3121B` -> "restrained crimson lacquer accent").
-5. **Preserve Typography Breathing Room.** When generating hero or split-section images, reserve clean low-frequency negative space in the exact zone where headings or controls will sit.
+1. **100% English Prompting Law:** Author EVERY image-generation prompt, Master Style Prefix, procedural art brief, and negative exclusion clause in **crisp, idiomatic English** (cinematography, lighting, printmaking, architectural vocabulary) regardless of the user's chat language. Only visible text rendered inside the artwork itself (signage, chalkboards, editorial titles) uses the user's target locale (e.g., Vietnamese UTF-8 with verified diacritics).
+2. **Research the Brand First (Zero Hardcoded Colors):** NEVER hardcode Hahlex hex values or any fixed palette inside prompts. Pull the active brand's true palette, surface polarity cadence (light vs. dark balance), accent budget ceiling, and cultural home from `.millar/style-dna.md`, `.millar/research-dossier.md`, local `DESIGN.md`, connected Brand MCP (`get_design_tokens` / `get_design_guidelines`), or fresh web research before drafting Pass 1.
+3. **Dual-Soul Visual Formula:** Unite two complementary qualities grounded in the researched brand's polarity:
+   - **Soul A (Human Storytelling & Chiaroscuro Depth from `Impeccable`):** Communicate an unmistakable human or environmental truth within **1 second** through directional natural/volumetric light, glowing thresholds, candid life, and layered foreground/midground/background depth.
+   - **Soul B (Systematic Master Craft from `canvas-design`):** Reward close inspection with patient, hours-long craftsmanship: dense engraving/guilloche linework, halftone topographies, authentic tactile grain, disciplined `90%` visual form / `10%` surgical typography, and a strict **Zero-Addition Pass 2 refinement**.
+4. **Surface vs. Artwork Boundary:** Operational Product UI chrome may forbid CSS gradients under the brand's rules. **Standalone artworks, editorial plates, illustrations, and approved atmospheric canvases REQUIRE rich volumetric light, radial glow falloff, shadows, and tonal depth.** Never flatten artworks because of Product UI rules.
 
-## Cross-Agent Capability Routing Ladder
+## Structured 4-Role Studio Pipeline (Mandatory Passes)
 
-Pick the highest-fidelity execution path available in the current agent runtime:
+### Pass 1: Visual Storyteller (Philosophy Manifesto & 1-Second Metaphor)
 
-1. **Path A (Native AI Image Generator Available):** e.g. Antigravity `image-generator` subagent, OpenAI/Codex image tool, Imagen/Flux/Midjourney MCP tool.
-   - Generate assets directly using the 5-Block Master Prompt in [references/image-art-direction.md](references/image-art-direction.md).
-   - When user supplied reference images exist, pass them as style reference / edit input so lighting, grain, and color grading lock tightly.
-   - Save every asset to the project's public/assets folder with semantic filenames (`hero-stage.webp`, `features-workflow-plate.webp`) AND write a sidecar `.prompt.json` log recording the locked 80% prefix for future pages.
-2. **Path B (Code-Native Visual Asset / `canvas-design` Editorial Plate):** When building photo-free Hahlex surfaces, crisp diagrams, posters, or running in a runtime without raster image generation.
-   - For Hahlex projects: check Millar MCP `get_visual_assets` first (14 verified SVG/CSS/Canvas/product chrome primitives).
-   - For bespoke editorial posters, plates, or technical schematics: author deterministic high-DPI SVG, HTML5 Canvas (DPR-scaled), or Python Pillow/Cairo/ReportLab plates (`90%` pure visual form, `10%` surgical typography, zero overlapping labels, exact palette tokens).
-3. **Path C (External Generator Prompt Packet):** When the user explicitly prefers Midjourney/Flux/Recraft outside the IDE.
-   - Deliver the complete multi-page Master Prompt Packet (Shared 80% Prefix + per-page 20% prompts + `--ar` ratios + style-ref instructions + post-grading CSS overlay filter).
+Before prompting an image model or writing rendering code, write a concise **Visual Philosophy Manifesto** in English (saved inside `.millar/visual-philosophy.md` or `.millar/style-dna.md`):
+- **Movement Name (1-2 evocative words):** Derived from the researched brand and audience culture (never recycled blindly).
+- **4-6 Concise Paragraphs (`canvas-design` Phase 1):** Define Space & Form, Light & Materiality, Scale & Rhythm, Composition & Balance, and repeatedly anchor patient, museum-grade craftsmanship.
+- **Per-Asset Concept Card:** For each visual in the series, define:
+  - *1-Second Emotional Subject/Metaphor:* Concrete real human moment or physical architectural/light scene (never generic corporate buzzwords).
+  - *Craft Medium:* Documentary Human Photography (`references/human-editorial-photography.md`), Editorial Still-Life / Architecture (`references/image-art-direction.md`), OR 4-Layer Procedural Gallery Plate (`references/procedural-gallery-craft.md`).
+  - *Researched Polarity Assignment:* Honor the brand's actual light/dark balance across the series (for example, `3 Light + 1 Dark` or `2 Light + 2 Dark` for light-first editorial brands; never drifting accidentally into `4/4` dark monochrome unless the researched brand is strictly dark-first).
 
-## Execution Sequence
+**Completion criterion:** English Visual Philosophy Manifesto, polarity cadence, medium selection, and per-asset 1-second concept locked from researched Brand DNA.
 
-### Step 1: Map All Required Visual Slots Across Pages
+### Pass 2: Brand Guardian (Concise 80/20 English Style Prefix & Asset Map)
 
-Read [references/multi-page-asset-map.md](references/multi-page-asset-map.md) and list every page and section needing an asset, specifying:
-- Route & section job (`hook`, `proof`, `narrative`, `process`, `atmosphere`, `empty-state`)
-- Exact container aspect ratio (`16:9`, `3:2`, `4:3`, `1:1`, `4:5`)
-- Copy placement zone (e.g. "clean calm negative space on left 40%" or "standalone right plate, no overlaid text")
-- Whether asset is raster AI image (Path A), Millar MCP / code-native vector-canvas plate (Path B), or prompt packet (Path C).
+Read the matching specialist playbook(s) BEFORE drafting prompts:
+- **Real People, Portraits, Classrooms, Documentary Scenes (Color or B&W):** Read [references/human-editorial-photography.md](references/human-editorial-photography.md).
+- **Still-Life, Architecture, Brand Series & HEX-to-Material Translation:** Read [references/image-art-direction.md](references/image-art-direction.md) and [references/multi-page-asset-map.md](references/multi-page-asset-map.md).
 
-**Completion criterion:** Complete asset table covering flagship AND secondary routes with zero unmapped visual gaps.
+Lock:
+- **80% Fixed / 20% Variable English Master Style Prefix:** Translate researched brand hexes into physical materials, film science, lighting direction, and tactile finishes.
+- **Concise Non-Over-Specified Prompts (`Impeccable` `visualize.md` rule):** Keep each prompt **150-250 words in English**, stating only what the model cannot infer (real subject truth, camera/lens, lighting direction, material palette, framing negative space) so the model preserves organic visual vitality instead of stiffening into a template.
+- **Prompt Provenance Sidecar:** Record `<image-filename>.prompt.json` (or `.millar/asset-manifest.json`) storing the exact English prompt, aspect ratio, anchor reference, and brand research source for every shipping raster.
 
-### Step 2: Lock the 80% Master Style DNA Prefix
+**Completion criterion:** Concise English Master Style Prefix, per-route aspect ratios, and provenance plan locked.
 
-Read [references/image-art-direction.md](references/image-art-direction.md) and construct the project's single reusable `MASTER_STYLE_PREFIX` covering:
-- `[Medium & Craft]` + `[Lighting Paradigm]` + `[Color Language & Palette Discipline]` + `[Materiality & Texture]` + `[Negative Hygiene]`
-- Confirm it honors user-supplied images (if any) and Hahlex invariants (if Hahlex project: Warm Sand + Espresso + `< 1.5%` Crimson, zero neon purple/blue AI cliches).
+### Pass 3: Master Illustrator (Dual-Path Execution: AI Image Gen OR 4-Layer Procedural Craft)
 
-**Completion criterion:** One locked `MASTER_STYLE_PREFIX` saved into `.millar/style-dna.md` (Section 6).
+Execute via the strongest capability available right now:
 
-### Step 3: Generate Assets Sequentially or in Cohesive Series
+- **Path A (AI Image Generator Available & Healthy):** Antigravity `image-generator`, Codex/OpenAI image tool, Imagen/Flux MCP.
+  - Generate the **Anchor Asset** first with the concise English prompt, inspect it via vision (checking subject truth, natural skin/hands, brand lighting, zero garbled text), then generate every secondary-page asset using the exact locked 80% English prefix (passing the Anchor Asset as style reference when supported) and write each `.prompt.json` sidecar.
+- **Path B (AI Image Generator Returns `503`/Unavailable, Offline, OR Code-Native Editorial Plate Requested):**
+  - **MANDATORY:** Read [references/procedural-gallery-craft.md](references/procedural-gallery-craft.md) BEFORE writing a single line of SVG, Canvas, or Python code!
+  - **AUTOMATIC FAILURE BANS (NEVER DRAW THESE):**
+    - Flat geometric clip-art humans (circle head + trapezoid torso + stick limbs) or boxy clip-art houses.
+    - PowerPoint workflow boxes, numbered pill chains, or circle-plus-line-icon slide diagrams.
+    - Flat vector fills under thin outlines (always draw print/engraved subjects with strokes, hatching, and translucent tonal washes) or sparse `< 40` primitive SVGs lacking grain and depth.
+  - **REQUIRED 4-LAYER PROCEDURAL STACK (`2x` HiDPI `>= 1600px` wide PNG/PDF/SVG):**
+    1. *Layer 1 (Material Ground):* Procedural archival paper grain or textured dark surface noise + calibrated vignette using the **researched brand palette**.
+    2. *Layer 2 (Volumetric Chiaroscuro Light & 3 Depth Planes):* Directional window beams on light grounds OR warm/calibrated rim-light cones + luminous dust motes on dark grounds, establishing clear foreground/midground/background depth.
+    3. *Layer 3 (High-Density Master Craft):* Multi-strand harmonic guilloche curves (`18-32` strands), halftone/stipple cartography, `0.5px-1px` architectural elevation linework, illuminated thresholds/windows, or rim-lit atmospheric silhouettes.
+    4. *Layer 4 (Integrated Museum Typography):* `90%` visual form / `10%` surgical text using explicitly loaded local/web TTF/WOFF2 font files (full UTF-8 locale diacritics verified; `>= 6%` margins; zero text-stroke collisions).
+- **Path C (External Generator Requested):** Emit the complete **English** Master Prompt Packet (80% prefix + per-page 20% subjects + `--ar` + anchor ref instructions + subtle CSS grading).
 
-- Generate the **Anchor Asset** first (typically Hero or flagship section), inspect it directly via vision/file reader, and verify palette temperature, lighting, composition balance, and zero garbled text/artifacts.
-- Generate all **Secondary-Page Assets** anchored to that exact Master Prefix (and passing the Anchor Asset as style reference whenever the generator supports reference images), varying subject scale (wide environmental -> medium architectural -> macro material detail) while keeping rendering style frozen.
+**Completion criterion:** Every visual asset rendered at HiDPI (`>= 1600px` wide for flagship/editorial plates) with provenance metadata recorded.
 
-**Completion criterion:** Every generated asset visually inspected via file/image read; any drifting or artifact-heavy frame regenerated before wiring into UI.
+### Pass 4: Harsh Art Critic & `canvas-design` Zero-Addition Second Pass
 
-### Step 4: Integrate with UI Framing & Color Grading Discipline
+**Never ship Pass 1 blindly.** Open EVERY rendered PNG/SVG/screenshot directly via vision and score honestly (1-10) on five strict museum criteria:
 
-Wire assets cleanly into components:
-- Explicit `width` and `height` (or CSS `aspect-ratio`) to prevent Cumulative Layout Shift (CLS).
-- Consistent border radius, hairline matte border, and subtle color-temperature harmonization matching `.millar/style-dna.md`.
-- Accessible `alt` text describing the visual subject meaningfully (or `alt=""` for purely atmospheric plates).
-- Responsive `object-fit: cover` with calibrated `object-position` so focal subjects never crop awkwardly on mobile (`375px`).
+1. **Zero Clip-Art / Zero Wax-Skin / Zero PowerPoint:** Does ANY figure, hand, house, or diagram look like AI plastic skin, Western stock cliché, flat clip-art, or a corporate slide? (If YES -> **REJECT & REGENERATE/REDRAW**!)
+2. **Depth, Light & Materiality:** Is the lighting direction believable with genuine depth planes and tactile paper/film/surface grain (on BOTH light and dark polarities)?
+3. **1-Second Story + Close-Up Mastery:** Does the image communicate its human/domain meaning in 1 second AND reward close inspection with intricate craft?
+4. **Researched Brand Polarity & Accent Discipline:** Does the series faithfully match the researched brand's light/dark ratio and accent budget ceiling?
+5. **Flawless Technical Craft:** Zero overlapping text, zero clipped diacritics (e.g., Vietnamese `ệ, ư, ỗ, ắ, ồ`), generous `>= 6%` margins, zero broken paths or garbled hands/letters.
 
-**Completion criterion:** All assets render sharply in browser at `1440px` and `375px`, match Page 1's visual world seamlessly, and pass `alt` / contrast / CLS checks.
+**`canvas-design` Zero-Addition Refinement Law (Mandatory Pass 2):**
+Assume Pass 1 is not museum-grade yet. Look closely at the rendered image. **If you feel tempted to add another shape, icon, badge, or label, STOP.** Do NOT pile more elements onto the canvas. Instead, return to the code or prompt and ONLY sharpen what already exists: refine stroke delicacy, hatching density, light falloff, shadow softness, kerning, alignment, margin breathing room, and tonal hierarchy until **every asset clears `>= 9.0 / 10`**.
+
+**Completion criterion:** Every rendered image visually inspected after Pass 2 with zero defects, provenance saved, verified `>= 9.0/10` craft, and integrated into HTML/React with explicit `width`/`height` and meaningful `alt` text.

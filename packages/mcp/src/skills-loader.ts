@@ -68,11 +68,11 @@ const SKILL_META: Record<string, SkillCuratedMeta> = {
       "Extracts concrete Visual & Motion DNA from user-supplied images, animations, or live references and benchmarks world-class design craft before writing code or prompts.",
   },
   "millar-create-image": {
-    roleLens: ["Visual Storyteller", "Brand Guardian", "UI Designer"],
+    roleLens: ["Visual Storyteller", "Brand Guardian", "Master Illustrator"],
     recommendedWith: ["millar-deep-research", "millar-design", "millar-build-web"],
     mcpToolsUsed: ["get_design_guidelines", "get_design_tokens", "get_visual_assets"],
     solves:
-      "Produces style-locked photography, illustrations, and code-native SVG/Canvas editorial plates across every route using an 80% fixed Style DNA prefix so multi-page imagery looks authored by one studio.",
+      "English-only style-locked art direction (80% prefix / 20% subject), authentic human editorial photography (anti-wax-skin, cross-shot film roll continuity), and 4-layer museum-grade procedural gallery craft + Zero-Addition Pass 2 polish on 503/offline.",
   },
   "millar-animation": {
     roleLens: ["Motion Choreographer", "Whimsy Injector", "UI Designer"],
@@ -98,11 +98,11 @@ const SKILL_META: Record<string, SkillCuratedMeta> = {
       "Production frontend engineering combining deep modules, TDD vertical slices, Server-First React/Next.js boundaries, 5 mandatory interactive UI states, Core Web Vitals (LCP/INP/CLS), semantic SEO, and minimal-change restraint.",
   },
   "millar-verify-web": {
-    roleLens: ["QA Engineer", "Section 508 Accessibility Specialist", "Code Reviewer"],
+    roleLens: ["QA Engineer", "Harsh Art Critic", "Section 508 Accessibility Specialist", "Code Reviewer"],
     recommendedWith: ["millar-web-workflow", "millar-build-web", "millar-design", "millar-animation"],
     mcpToolsUsed: ["validate_design", "get_design_guidelines"],
     solves:
-      "Five-layer real-browser ship-readiness QA gate combining static/MCP compliance, Playwright interactive E2E, cross-viewport Light/Dark screenshot continuity audits, axe-core WCAG 2.1 AA + reduced-motion testing, and two-axis Spec-vs-Standards review.",
+      "Five-layer ship-readiness QA gate with bundled Zero-MCP standalone CLI (scripts/millar-audit.mjs), Playwright interactive E2E, anti-clip-art/anti-wax-skin Layer 3B critique, axe-core WCAG 2.1 AA, and Fresh-Context Independent Finish Reviewer.",
   },
 };
 

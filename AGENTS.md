@@ -40,15 +40,15 @@ When evolving Millar inside `d:\projects\millar`:
 
 ## 4. Composable Millar Agent Skills Suite (7 Skills & MCP `millar://skills`)
 
-Millar ships seven open-standard skills (`SKILL.md` + 15 progressive-disclosure `references/`) bundled directly inside `@hahlex/millar-mcp` (`list_skills`, `get_skill`, `millar://skills/*`, and 7 skill-backed MCP Prompts) and installable via `npx skills add https://github.com/hahlex/millar`:
+Millar ships seven open-standard v0.2.0 skills (`SKILL.md` + 17 progressive-disclosure `references/` + standalone Zero-MCP `scripts/millar-audit.mjs`) bundled directly inside `@hahlex/millar-mcp` (`list_skills`, `get_skill`, `millar://skills/*`, and 7 skill-backed English MCP Prompts) and installable standalone via `npx skills add https://github.com/hahlex/millar`:
 
-- **`millar-web-workflow`** (`skills/millar-web-workflow/SKILL.md`): Master end-to-end web engineering conductor routing Track S (surgical fix), Track M (syncing secondary pages to hero assets), and Track L (greenfield website/redesign) with the Anti-Slop Creative Divergence Protocol and clean context pointers to Matt Pocock skills & Agency Agents.
-- **`millar-deep-research`** (`skills/millar-deep-research/SKILL.md`): Visual & Motion DNA extraction from user-supplied images/animations plus world-class design and choreography benchmarking.
-- **`millar-design`** (`skills/millar-design/SKILL.md`): Flagship Design Director & Cross-Page Continuity orchestrator locking `.millar/style-dna.md` (12 axes) and enforcing the Secondary-Page Richness Contract + 6-axis Cross-Page Visual Continuity audit.
-- **`millar-create-image`** (`skills/millar-create-image/SKILL.md`): Style-locked 80% Fixed / 20% Variable art direction across native AI image generators (Antigravity `image-generator`, Codex, Claude, Imagen/Flux) and `canvas-design` code-native SVG/Canvas editorial plates.
+- **`millar-web-workflow`** (`skills/millar-web-workflow/SKILL.md`): Master end-to-end web engineering conductor enforcing Brand-First Research (zero hardcoded palettes), routing Track S/M/L, running Anti-Slop Creative Divergence (banning all 4 AI ruts), and orchestrating specialist handoffs.
+- **`millar-deep-research`** (`skills/millar-deep-research/SKILL.md`): Brand-first research from primary sources (local `DESIGN.md`, live MCP, or web research), Visual & Motion DNA extraction from supplied assets, and English `.millar/research-dossier.md` handoff.
+- **`millar-design`** (`skills/millar-design/SKILL.md`): 5-role Design Studio with binding veto power, Impeccable Craft Floor bans, 12-axis `.millar/style-dna.md` contract, and 6-axis Cross-Page Continuity enforcement.
+- **`millar-create-image`** (`skills/millar-create-image/SKILL.md`): Concise English 80/20 art direction with `.prompt.json` provenance, authentic Human Editorial Photography (`human-editorial-photography.md`), AND 4-Layer Procedural Gallery Craft (`procedural-gallery-craft.md`) + `canvas-design` Zero-Addition Pass 2 polish on 503/offline.
 - **`millar-animation`** (`skills/millar-animation/SKILL.md`): User-aligned motion research, 4-line Motion Thesis, compositor-safe interruptible springs, CSS View Transitions, scroll-driven reveals, and mandatory `prefers-reduced-motion` fallbacks.
-- **`millar-build-web`** (`skills/millar-build-web/SKILL.md`): Production frontend architecture combining deep modules, TDD vertical slices, Server-First React/Next.js leaves, 5 mandatory interactive UI states, Core Web Vitals (LCP/INP/CLS), semantic SEO, and minimal-change restraint.
-- **`millar-verify-web`** (`skills/millar-verify-web/SKILL.md`): Five-layer real-browser QA gate combining static/MCP compliance, Playwright interactive E2E, cross-viewport Light/Dark visual continuity audits, dynamic `axe-core` WCAG 2.1 AA + reduced-motion checks, and two-axis Spec-vs-Standards review.
+- **`millar-build-web`** (`skills/millar-build-web/SKILL.md`): Production frontend architecture combining deep modules, TDD vertical slices, Server-First React/Next.js leaves, 5 mandatory interactive UI states, browser surface theming, Core Web Vitals (LCP/INP/CLS), semantic SEO, and minimal-change restraint.
+- **`millar-verify-web`** (`skills/millar-verify-web/SKILL.md`): Five-layer QA gate with standalone Zero-MCP `scripts/millar-audit.mjs`, Playwright interactive E2E, Layer 3B anti-clip-art/anti-wax-skin visual inspection, dynamic `axe-core` WCAG 2.1 AA, and Fresh-Context Independent Finish Reviewer (`ship` | `fix` | `rebuild` | `recapture`).
 
 ## 5. Context Pointers
 
