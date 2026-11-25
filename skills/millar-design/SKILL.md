@@ -23,9 +23,12 @@ Invoke companion skills and Millar MCP tools on demand:
 
 | Need | Skill or MCP Call |
 |---|---|
+| Run full end-to-end web workflow (Track S / M / L) & Creative Divergence anti-slop protocol | Load `millar-web-workflow` (or MCP `get_skill("millar-web-workflow")`) |
 | Decode user intent, extract visual DNA from user images/animations, or benchmark styles | Load `millar-deep-research` (or MCP `get_skill("millar-deep-research")`) |
 | Generate style-locked photography, illustrations, or code-native SVG/Canvas editorial plates | Load `millar-create-image` (or MCP `get_skill("millar-create-image")`) |
 | Research, choreograph, and implement matching animations, transitions, and micro-interactions | Load `millar-animation` (or MCP `get_skill("millar-animation")`) |
+| Implement clean frontend architecture, Server/Client leaves, 5 UI states, SEO & CWV | Load `millar-build-web` (or MCP `get_skill("millar-build-web")`) |
+| Execute 5-layer real-browser QA, Playwright E2E, axe-core WCAG AA, and 2-axis code review | Load `millar-verify-web` (or MCP `get_skill("millar-verify-web")`) |
 | Pull Hahlex tokens, UI primitives, photo-free Marketing sections, or 14 code-native assets | Call Millar MCP: `get_design_guidelines`, `get_design_tokens`, `get_component`, `get_visual_assets`, `search_sections` |
 | Run deterministic compliance audit (gradients, tokens, contrast, em-dash, a11y) | Call Millar MCP: `validate_design` |
 

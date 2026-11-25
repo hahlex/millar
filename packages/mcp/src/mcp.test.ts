@@ -70,7 +70,12 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
     expect(uris).toContain("millar://glossary");
     expect(uris).toContain("millar://skills");
     expect(uris).toContain("millar://skills/millar-design");
+    expect(uris).toContain("millar://skills/millar-web-workflow");
+    expect(uris).toContain("millar://skills/millar-build-web");
+    expect(uris).toContain("millar://skills/millar-verify-web");
     expect(uris).toContain("millar://skills/millar-design/references/style-dna-contract.md");
+    expect(uris).toContain("millar://skills/millar-web-workflow/references/creative-divergence-protocol.md");
+    expect(uris).toContain("millar://skills/millar-verify-web/references/five-layer-qa-gate.md");
 
     const inv = await client.readResource({ uri: "millar://guidelines/invariants" });
     const invFirst = inv.contents[0];
@@ -166,12 +171,15 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
 
     const skillList = await client.callTool({ name: "list_skills", arguments: {} });
     const sListData = skillList.structuredContent as { count: number; skills: Array<{ id: string }>; recipes: unknown[] };
-    expect(sListData.count).toBe(4);
+    expect(sListData.count).toBe(7);
     expect(sListData.skills.map((s) => s.id).sort()).toEqual([
       "millar-animation",
+      "millar-build-web",
       "millar-create-image",
       "millar-deep-research",
       "millar-design",
+      "millar-verify-web",
+      "millar-web-workflow",
     ]);
     expect(sListData.recipes.length).toBeGreaterThanOrEqual(4);
 
@@ -191,9 +199,17 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
       "cross-page-sync-audit.md",
       "style-dna-contract.md",
     ]);
+
+    const wfDetail = await client.callTool({
+      name: "get_skill",
+      arguments: { name: "millar-web-workflow", reference: "creative-divergence-protocol.md" },
+    });
+    const wfData = wfDetail.structuredContent as { includedReferences: Array<{ file: string; content: string }> };
+    expect(wfData.includedReferences[0]?.file).toBe("creative-divergence-protocol.md");
+    expect(wfData.includedReferences[0]?.content).toContain("Three-Family Cultural Derivation");
   });
 
-  it("exposes all 7 user-controlled MCP Prompts (3 core workflows + 4 composable Millar Skills)", async () => {
+  it("exposes all 10 user-controlled MCP Prompts (3 core workflows + 7 composable Millar Skills)", async () => {
     const client = await connectClient();
     const { prompts } = await client.listPrompts();
     expect(prompts.map((p) => p.name).sort()).toEqual([
@@ -201,9 +217,12 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
       "millar-audit-code",
       "millar-build-marketing",
       "millar-build-product",
+      "millar-build-web",
       "millar-create-image",
       "millar-deep-research",
       "millar-design",
+      "millar-verify-web",
+      "millar-web-workflow",
     ]);
 
     const res = await client.getPrompt({
@@ -223,5 +242,13 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
     expect(designPrompt.messages.length).toBe(3);
     expect(JSON.stringify(designPrompt.messages)).toContain("millar://skills/millar-design");
     expect(JSON.stringify(designPrompt.messages)).toContain("public/hero-stage.png");
+
+    const wfPrompt = await client.getPrompt({
+      name: "millar-web-workflow",
+      arguments: { request: "Build full Hahlex Studio marketing + app site", track: "L" },
+    });
+    expect(wfPrompt.messages.length).toBe(3);
+    expect(JSON.stringify(wfPrompt.messages)).toContain("millar://skills/millar-web-workflow");
+    expect(JSON.stringify(wfPrompt.messages)).toContain("Track L");
   });
 });

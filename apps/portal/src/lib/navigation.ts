@@ -61,7 +61,7 @@ export const SIDEBAR_GROUPS: NavGroup[] = [
     title: "Resources",
     items: [
       { href: "/resources/downloads", label: "Brand Downloads", section: "Resources" },
-      { href: "/resources/skills", label: "Agent Skills Suite", section: "Resources", badge: "4" },
+      { href: "/resources/skills", label: "Agent Skills Suite", section: "Resources", badge: "7" },
       { href: "/resources/mcp", label: "MCP Server & Agents", section: "Resources", badge: "13" },
       { href: "/resources/changelog", label: "Changelog & Governance", section: "Resources" },
     ],

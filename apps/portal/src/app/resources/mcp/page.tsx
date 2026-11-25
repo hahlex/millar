@@ -16,8 +16,8 @@ const MCP_TOOLS = [
   { name: "get_visual_assets", kind: "Visual System", desc: "Retrieve CSS/SVG/Canvas/React visual assets with gradientPolicy & props." },
   { name: "get_motion_presets", kind: "Motion", desc: "Retrieve Productive & Expressive curves, durations, and reduced-motion fallbacks." },
   { name: "validate_design", kind: "Compliance", desc: "Splits deterministic automatedChecks from advisory humanReviewCriteria." },
-  { name: "list_skills", kind: "Agent Skills", desc: "Lists the 4 composable Millar Skills (millar-design, millar-deep-research, millar-create-image, millar-animation) and recipes." },
-  { name: "get_skill", kind: "Agent Skills", desc: "Retrieves full SKILL.md instructions and progressive-disclosure reference playbooks for any Millar Skill." },
+  { name: "list_skills", kind: "Agent Skills", desc: "Lists all 7 composable Millar web & design skills (millar-web-workflow through millar-verify-web) and Track S/M/L recipes." },
+  { name: "get_skill", kind: "Agent Skills", desc: "Retrieves full SKILL.md instructions and progressive-disclosure reference playbooks for any of the 7 Millar Skills." },
 ];
 
 const MCP_RESOURCES = [
@@ -34,9 +34,9 @@ const MCP_RESOURCES = [
   { uri: "millar://sections/{id}", mime: "application/json", purpose: "Individual Marketing section spec & reduced-motion fallback." },
   { uri: "millar://templates/{id}", mime: "application/json", purpose: "Individual Page or Application Template spec." },
   { uri: "millar://motion-presets/{id}", mime: "application/json", purpose: "Individual Productive or Expressive motion curve." },
-  { uri: "millar://skills", mime: "application/json", purpose: "Index of all 4 composable Millar Agent Skills and combination recipes." },
-  { uri: "millar://skills/{name}", mime: "text/markdown", purpose: "Full SKILL.md playbook for millar-design, millar-deep-research, millar-create-image, or millar-animation." },
-  { uri: "millar://skills/{name}/references/{ref}", mime: "text/markdown", purpose: "Progressive-disclosure reference docs bundled inside each skill." },
+  { uri: "millar://skills", mime: "application/json", purpose: "Index of all 7 composable Millar Agent Skills and Track S/M/L combination recipes." },
+  { uri: "millar://skills/{name}", mime: "text/markdown", purpose: "Full SKILL.md playbook for any of the 7 Millar skills." },
+  { uri: "millar://skills/{name}/references/{ref}", mime: "text/markdown", purpose: "15 progressive-disclosure reference playbooks bundled inside Millar skills." },
   { uri: "millar://glossary", mime: "text/markdown", purpose: "Canonical Millar domain terminology." },
   { uri: "millar://changelog", mime: "text/markdown", purpose: "Millar versioning and release changelog." },
 ];
@@ -47,8 +47,8 @@ export default function McpResourcePage() {
       <DocHeader
         section="Resources"
         title="Millar MCP Server & AI Agents"
-        description="Served from the exact same compiled SSoT registry as this Portal, with all 4 Millar Agent Skills bundled offline. Supports stdio (Claude Code, Cursor, VS Code, Antigravity, Codex) and Streamable HTTP transports."
-        badges={[{ label: "MCP 2026-07-28", tone: "neutral" }, { label: "13 Tools · 4 Bundled Skills · 7 Prompts", tone: "brand" }]}
+        description="Served from the exact same compiled SSoT registry as this Portal, with all 7 Millar Agent Skills and 15 playbooks bundled offline. Supports stdio (Claude Code, Cursor, VS Code, Antigravity, Codex) and Streamable HTTP transports."
+        badges={[{ label: "MCP 2026-07-28", tone: "neutral" }, { label: "13 Tools · 7 Bundled Skills · 10 Prompts", tone: "brand" }]}
         importPath="@hahlex/millar-mcp"
       />
 

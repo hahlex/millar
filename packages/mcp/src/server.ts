@@ -902,9 +902,9 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "List Millar Agent Skills Suite",
       description:
-        "Lists composable Hahlex/Millar design studio skills (millar-design, millar-deep-research, millar-create-image, millar-animation), bundled reference playbooks, and multi-skill recipes for Antigravity, Claude Code, Codex, and Cursor.",
+        "Lists all 7 composable Hahlex/Millar web engineering & design skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web), bundled reference playbooks, and Track S/M/L recipes.",
       inputSchema: {
-        query: z.string().optional().describe("Optional search keyword (e.g. 'animation', 'image', 'sync', 'research', 'style')."),
+        query: z.string().optional().describe("Optional search keyword (e.g. 'workflow', 'build', 'verify', 'animation', 'image', 'sync', 'research')."),
       },
       annotations: READ_ONLY_ANNOTATIONS,
     },
@@ -948,10 +948,18 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Get Millar Agent Skill Playbook & References",
       description:
-        "Fetches the complete SKILL.md instructions and optional progressive-disclosure reference playbooks for millar-design, millar-deep-research, millar-create-image, or millar-animation.",
+        "Fetches the complete SKILL.md instructions and optional progressive-disclosure reference playbooks for any of the 7 Millar skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web).",
       inputSchema: {
         name: z
-          .enum(["millar-design", "millar-deep-research", "millar-create-image", "millar-animation"])
+          .enum([
+            "millar-web-workflow",
+            "millar-design",
+            "millar-deep-research",
+            "millar-create-image",
+            "millar-animation",
+            "millar-build-web",
+            "millar-verify-web",
+          ])
           .describe("Skill identifier to retrieve."),
         reference: z
           .string()
@@ -1005,7 +1013,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
   );
 
   /* ==========================================================================
-   * 3. SEVEN USER-CONTROLLED MCP PROMPTS (3 Core Workflows + 4 Millar Skills)
+   * 3. TEN USER-CONTROLLED MCP PROMPTS (3 Core Workflows + 7 Millar Skills)
    * ========================================================================== */
 
   server.registerPrompt(
@@ -1251,6 +1259,98 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
             ]
               .filter(Boolean)
               .join("\n"),
+          },
+        },
+      ],
+    }),
+  );
+
+  server.registerPrompt(
+    "millar-web-workflow",
+    {
+      title: "Millar End-to-End Web Engineering & Creative Workflow",
+      description:
+        "Activates the master millar-web-workflow conductor to classify Track S/M/L, execute Creative Divergence, orchestrate design/assets/animation/build, and enforce the 5-layer QA gate.",
+      argsSchema: {
+        request: z.string().describe("Website, multi-page app, redesign, or UI feature request."),
+        track: z.enum(["auto", "S", "M", "L"]).optional().describe("Optional explicit Track override (defaults to auto)."),
+      },
+    },
+    async ({ request, track }) => ({
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "resource",
+            resource: { uri: "millar://guidelines/invariants", mimeType: "text/markdown", text: invariantsMarkdown },
+          },
+        },
+        embedSkillMessage("millar-web-workflow"),
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: [
+              `Execute millar-web-workflow for: "${request}".`,
+              track && track !== "auto" ? `Requested Track override: Track ${track}.` : "Classify into Track S, M, or L before editing any code.",
+              "Load progressive-disclosure references via get_skill(name='millar-web-workflow', includeAllReferences=true), run Creative Divergence on Track M/L, orchestrate companion Millar skills, and gate completion on millar-verify-web.",
+            ].join("\n"),
+          },
+        },
+      ],
+    }),
+  );
+
+  server.registerPrompt(
+    "millar-build-web",
+    {
+      title: "Millar Frontend Architecture & Production Web Build",
+      description:
+        "Activates millar-build-web to implement Server-First components, deep modules, 5 real interactive UI states, Core Web Vitals hygiene, and semantic SEO.",
+      argsSchema: {
+        scope: z.string().describe("Pages, components, or vertical slices to implement."),
+        minimalChange: z.boolean().optional().describe("Set true for Track S surgical fixes with zero unrelated refactors."),
+      },
+    },
+    async ({ scope, minimalChange }) => ({
+      messages: [
+        embedSkillMessage("millar-build-web"),
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: [
+              `Run millar-build-web for: "${scope}".`,
+              minimalChange ? "Mode: Minimal-Change Track S (touch strictly required files)." : "Mode: Vertical-Slice Build (deep modules + Server-First leaves + 5 UI states + CWV/SEO).",
+              "Load references via get_skill(name='millar-build-web', includeAllReferences=true) and ground Hahlex UI in Millar MCP tokens/components.",
+            ].join("\n"),
+          },
+        },
+      ],
+    }),
+  );
+
+  server.registerPrompt(
+    "millar-verify-web",
+    {
+      title: "Millar 5-Layer Real-Browser QA & Two-Axis Review Gate",
+      description:
+        "Activates millar-verify-web to verify build/MCP compliance, Playwright interactive flows, 1440/768/375 Light & Dark screenshots, axe-core WCAG AA, reduced motion, and two-axis Spec-vs-Standards review.",
+      argsSchema: {
+        target: z.string().describe("Routes, PR diff, or website build to verify before shipping."),
+      },
+    },
+    async ({ target }) => ({
+      messages: [
+        embedSkillMessage("millar-verify-web"),
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: [
+              `Execute millar-verify-web 5-layer QA gate on: "${target}".`,
+              "Load get_skill(name='millar-verify-web', includeAllReferences=true), execute all applicable layers with real observed evidence, and report Spec vs Standards axes separately.",
+            ].join("\n"),
           },
         },
       ],

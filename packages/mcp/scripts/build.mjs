@@ -45,4 +45,4 @@ if (fs.existsSync(skillsSrc)) {
   fs.cpSync(skillsSrc, skillsOut, { recursive: true });
 }
 
-console.log("PASS: Bundled @hahlex/millar-mcp dist/stdio.js, dist/http.js, standalone docs, and 4 Millar Skills");
+console.log("PASS: Bundled @hahlex/millar-mcp dist/stdio.js, dist/http.js, standalone docs, and 7 Millar Skills");

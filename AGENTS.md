@@ -38,14 +38,17 @@ When evolving Millar inside `d:\projects\millar`:
 4. Run full verification gate: `pnpm run verify && pnpm run test:mcp-stdio`.
 5. If Portal UI changed: `pnpm --filter @hahlex/millar-portal run build && pnpm run test:e2e` and visually inspect captured screenshots in `e2e/screenshots/`.
 
-## 4. Composable Millar Agent Skills Suite (`skills/` & MCP `millar://skills`)
+## 4. Composable Millar Agent Skills Suite (7 Skills & MCP `millar://skills`)
 
-Millar ships four open-standard skills (`SKILL.md` + progressive-disclosure `references/`) bundled directly inside `@hahlex/millar-mcp` (`list_skills`, `get_skill`, `millar://skills/*`, and 4 dedicated MCP Prompts) and installable via `npx skills add https://github.com/hahlex/millar`:
+Millar ships seven open-standard skills (`SKILL.md` + 15 progressive-disclosure `references/`) bundled directly inside `@hahlex/millar-mcp` (`list_skills`, `get_skill`, `millar://skills/*`, and 7 skill-backed MCP Prompts) and installable via `npx skills add https://github.com/hahlex/millar`:
 
-- **`millar-design`** (`skills/millar-design/SKILL.md`): Flagship Design Director & Cross-Page Continuity orchestrator. Locks `.millar/style-dna.md` (12 axes) and enforces the Secondary-Page Richness Contract + 6-axis Cross-Page Visual Continuity audit so secondary pages never degrade into bland industrial cards.
+- **`millar-web-workflow`** (`skills/millar-web-workflow/SKILL.md`): Master end-to-end web engineering conductor routing Track S (surgical fix), Track M (syncing secondary pages to hero assets), and Track L (greenfield website/redesign) with the Anti-Slop Creative Divergence Protocol and clean context pointers to Matt Pocock skills & Agency Agents.
 - **`millar-deep-research`** (`skills/millar-deep-research/SKILL.md`): Visual & Motion DNA extraction from user-supplied images/animations plus world-class design and choreography benchmarking.
+- **`millar-design`** (`skills/millar-design/SKILL.md`): Flagship Design Director & Cross-Page Continuity orchestrator locking `.millar/style-dna.md` (12 axes) and enforcing the Secondary-Page Richness Contract + 6-axis Cross-Page Visual Continuity audit.
 - **`millar-create-image`** (`skills/millar-create-image/SKILL.md`): Style-locked 80% Fixed / 20% Variable art direction across native AI image generators (Antigravity `image-generator`, Codex, Claude, Imagen/Flux) and `canvas-design` code-native SVG/Canvas editorial plates.
 - **`millar-animation`** (`skills/millar-animation/SKILL.md`): User-aligned motion research, 4-line Motion Thesis, compositor-safe interruptible springs, CSS View Transitions, scroll-driven reveals, and mandatory `prefers-reduced-motion` fallbacks.
+- **`millar-build-web`** (`skills/millar-build-web/SKILL.md`): Production frontend architecture combining deep modules, TDD vertical slices, Server-First React/Next.js leaves, 5 mandatory interactive UI states, Core Web Vitals (LCP/INP/CLS), semantic SEO, and minimal-change restraint.
+- **`millar-verify-web`** (`skills/millar-verify-web/SKILL.md`): Five-layer real-browser QA gate combining static/MCP compliance, Playwright interactive E2E, cross-viewport Light/Dark visual continuity audits, dynamic `axe-core` WCAG 2.1 AA + reduced-motion checks, and two-axis Spec-vs-Standards review.
 
 ## 5. Context Pointers
 

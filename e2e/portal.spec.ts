@@ -193,11 +193,13 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
     await page.getByRole("button", { name: "New proposal" }).click();
     await expect(page.getByRole("cell", { name: "Domain Proposal #1" })).toBeVisible();
 
-    // 8. Agent Skills Suite interactive scenario planner & skill tabs
+    // 8. Agent Skills Suite interactive Track S/M/L planner & all 7 skill tabs
     await page.goto("/millar/resources/skills/", { waitUntil: "networkidle" });
     await page.getByRole("button", { name: "Photo-Free Hahlex Launch" }).click();
     await expect(page.getByText(/14 code-native SVG\/CSS\/Canvas visual assets/)).toBeVisible();
-    await page.getByRole("tab", { name: "millar-animation" }).click();
-    await expect(page.getByText("motion-choreography.md")).toBeVisible();
+    await page.getByRole("tab", { name: "millar-verify-web" }).click();
+    await expect(page.getByText("five-layer-qa-gate.md")).toBeVisible();
+    await page.getByRole("tab", { name: "millar-build-web" }).click();
+    await expect(page.getByText("web-architecture-checklist.md")).toBeVisible();
   });
 });

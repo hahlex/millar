@@ -11,7 +11,7 @@ const tools = await client.listTools();
 const resources = await client.listResources();
 const prompts = await client.listPrompts();
 
-if (tools.tools.length !== 13 || prompts.prompts.length !== 7 || resources.resources.length < 15) {
+if (tools.tools.length !== 13 || prompts.prompts.length !== 10 || resources.resources.length < 22) {
   console.error("FAIL: Unexpected MCP surface counts", {
     tools: tools.tools.length,
     resources: resources.resources.length,
