@@ -1,0 +1,35 @@
+{
+  "name": "@hahlex/millar-marketing",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Millar Marketing Design System: 6 diverse Composition Patterns, code-native zero-photo Visual Assets (CSS/SVG/Canvas/React), Expressive Motion, Section Library, Page Templates, and Visual Do/Don't.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./assets": "./src/assets/index.ts",
+    "./sections": "./src/sections/index.ts",
+    "./templates": "./src/templates/index.ts",
+    "./motion": "./src/motion/index.ts"
+  },
+  "dependencies": {
+    "@hahlex/millar-tokens": "workspace:*",
+    "@hahlex/millar-ui": "workspace:*",
+    "clsx": "^2.1.1"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^19.1.4",
+    "@types/react-dom": "^19.1.4",
+    "axe-core": "^4.10.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  }
+}

@@ -1,0 +1,62 @@
+[
+  {
+    "id": "product-launch-template",
+    "name": "ProductLaunchTemplate",
+    "register": "marketing",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "Complete photo-free Hahlex product landing page alternating all 6 Composition Patterns (Spatial Stage -> Editorial Split -> Interactive Showcase -> Bento Mosaic -> Workflow Loop -> Metric Mirror -> FAQ -> Espresso CTA + Top-Level Footer).",
+    "compositionPatternsUsed": ["spatial-product-stage", "editorial-split", "bento-mosaic", "narrative-sequence", "typographic-poster"],
+    "sectionsOrRegions": ["HeroSpatialStage", "EditorialEssaySplit", "ProductStageShowcase", "BentoNarrativeMosaic", "WorkflowLoopSection", "MetricMirrorSection", "NativeAccordionFaq", "ClosingConversionBand", "MillarSiteFooter"],
+    "usageGuidelines": ["Demonstrates diverse section rhythm without repeating two identical layouts consecutively.", "Never requires stock photos or scroll-jacking to look finished."],
+    "responsiveBehavior": "Full responsive flow from 375px mobile to 1440px wide desktop with semantic top-level <main> and <footer>.",
+    "importPath": "@hahlex/millar-marketing",
+    "exampleCode": "import { ProductLaunchTemplate } from \"@hahlex/millar-marketing\";\n\nexport default function Page() {\n  return <ProductLaunchTemplate />;\n}",
+    "sourcePath": "packages/marketing/src/templates/PageTemplates.tsx"
+  },
+  {
+    "id": "editorial-feature-template",
+    "name": "EditorialFeatureTemplate",
+    "register": "marketing",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "Editorial capability deep-dive page combining Monumental Typographic Poster, Architectural Visible-Rule Grid, Editorial Essay Split, and PaperTear Espresso CTA.",
+    "compositionPatternsUsed": ["typographic-poster", "architectural-grid", "editorial-split"],
+    "sectionsOrRegions": ["HeroTypographicPoster", "ArchitectureGridSection", "EditorialEssaySplit", "ClosingConversionBand", "MillarSiteFooter"],
+    "usageGuidelines": ["Best for technical launches, platform architecture pages, and narrative feature essays."],
+    "responsiveBehavior": "Fluid editorial grids and 65ch reading columns across all breakpoints.",
+    "importPath": "@hahlex/millar-marketing",
+    "exampleCode": "import { EditorialFeatureTemplate } from \"@hahlex/millar-marketing\";\n\nexport default function FeaturePage() {\n  return <EditorialFeatureTemplate />;\n}",
+    "sourcePath": "packages/marketing/src/templates/PageTemplates.tsx"
+  },
+  {
+    "id": "directory-workspace-template",
+    "name": "DirectoryWorkspaceTemplate",
+    "register": "product",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "Canonical operational directory screen: AppShell -> PageHeader (<=1 Primary CTA) -> immediate FilterBar -> Zero-Scrollbar DataTable.",
+    "compositionPatternsUsed": [],
+    "sectionsOrRegions": ["AppShell", "PageHeader", "FilterBar", "DataTable"],
+    "usageGuidelines": ["Never wrap the main DataTable inside an outer Card with a redundant heading.", "Zero CSS gradients throughout."],
+    "responsiveBehavior": "Sidebar navigation + fluid table frame on desktop; filter pills wrap cleanly on mobile.",
+    "importPath": "@hahlex/millar-marketing",
+    "exampleCode": "import { DirectoryWorkspaceTemplate } from \"@hahlex/millar-marketing\";\n\n<DirectoryWorkspaceTemplate />",
+    "sourcePath": "packages/marketing/src/templates/PageTemplates.tsx"
+  },
+  {
+    "id": "analytics-dashboard-template",
+    "name": "AnalyticsDashboardTemplate",
+    "register": "product",
+    "status": "draft",
+    "sinceVersion": "0.1.0",
+    "summary": "1-Glance operational health dashboard combining AppShell, PageHeader, full-box Stat KPI tiles with tabular-nums, and semantic Alert status banner.",
+    "compositionPatternsUsed": [],
+    "sectionsOrRegions": ["AppShell", "PageHeader", "Stat Row", "Alert"],
+    "usageGuidelines": ["Limit top KPI row to 3-4 high-signal metrics with solid progress bars (zero gradients)."],
+    "responsiveBehavior": "Auto-fits KPI row cleanly from 3 columns down to 1 column on phones.",
+    "importPath": "@hahlex/millar-marketing",
+    "exampleCode": "import { AnalyticsDashboardTemplate } from \"@hahlex/millar-marketing\";\n\n<AnalyticsDashboardTemplate />",
+    "sourcePath": "packages/marketing/src/templates/PageTemplates.tsx"
+  }
+]
