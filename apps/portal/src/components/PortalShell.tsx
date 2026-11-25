@@ -8,6 +8,7 @@ import { Badge, Button, ChoiceToggle, Dialog, IconClose, IconMenu, IconSearch } 
 import { HahlexLockup, MillarSiteFooter } from "@hahlex/millar-marketing";
 import { FLAT_NAV_ITEMS, SIDEBAR_GROUPS, normalizePath } from "@/lib/navigation";
 import { DocPagination } from "./DocPrimitives";
+import { RightSidebar } from "./RightSidebar";
 
 interface SearchEntry {
   id: string;
@@ -321,7 +322,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
         </nav>
       ) : null}
 
-      {/* Geist-Style Two-Column Documentation Body */}
+      {/* Geist-Style Three-Column Documentation Body (Left Nav + Focused Canvas + Right On-This-Page TOC) */}
       <div className="portal-shell-body">
         <aside aria-label="Millar documentation navigation" className="portal-sidebar-desktop">
           <nav aria-label="Primary documentation">{renderSidebarTree()}</nav>
@@ -331,6 +332,8 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
           {children}
           <DocPagination />
         </main>
+
+        <RightSidebar />
       </div>
 
       {/* Semantic Top-Level Footer strictly outside <main> */}

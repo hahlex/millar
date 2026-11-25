@@ -53,59 +53,67 @@ export default function IconsFoundationPage() {
         </div>
       </SpecimenFrame>
 
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-        <div style={{ flex: 1, minWidth: 240 }}>
-          <FilterBar
-            searchValue={query}
-            onSearchChange={setQuery}
-            searchPlaceholder="Search semantic icons (e.g. Shield, Search, Close, Layers)..."
+      <section aria-labelledby="all-icons-heading" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <h2
+          id="all-icons-heading"
+          style={{ margin: 0, scrollMarginTop: 76, fontFamily: "var(--font-display)", fontSize: "var(--text-section-title)", fontWeight: 600 }}
+        >
+          All Semantic Icons ({entries.length})
+        </h2>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+          <div style={{ flex: 1, minWidth: 240 }}>
+            <FilterBar
+              searchValue={query}
+              onSearchChange={setQuery}
+              searchPlaceholder="Search semantic icons (e.g. Shield, Search, Close, Layers)..."
+            />
+          </div>
+          <ChoiceToggle
+            label="Icon preview size"
+            value={size}
+            onChange={setSize}
+            options={[
+              { value: "sm", label: "sm (14px)" },
+              { value: "md", label: "md (16px)" },
+              { value: "lg", label: "lg (20px)" },
+            ]}
           />
         </div>
-        <ChoiceToggle
-          label="Icon preview size"
-          value={size}
-          onChange={setSize}
-          options={[
-            { value: "sm", label: "sm (14px)" },
-            { value: "md", label: "md (16px)" },
-            { value: "lg", label: "lg (20px)" },
-          ]}
-        />
-      </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(144px, 1fr))", gap: 10 }}>
-        {entries.map(([name, IconComp]) => (
-          <button
-            key={name}
-            type="button"
-            onClick={() => copyImport(name)}
-            className="millar-focus"
-            style={{
-              padding: "16px 10px",
-              borderRadius: "var(--radius-md)",
-              border: "1px solid var(--border-default)",
-              backgroundColor: "var(--bg-surface)",
-              color: "var(--fg-default)",
-              cursor: "pointer",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 10,
-            }}
-          >
-            <IconComp size={size} />
-            <code
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(144px, 1fr))", gap: 10 }}>
+          {entries.map(([name, IconComp]) => (
+            <button
+              key={name}
+              type="button"
+              onClick={() => copyImport(name)}
+              className="millar-focus"
               style={{
-                fontFamily: "var(--font-mono)",
-                fontSize: "var(--text-micro)",
-                color: copied === name ? "var(--status-success)" : "var(--fg-muted)",
+                padding: "16px 10px",
+                borderRadius: "var(--radius-md)",
+                border: "1px solid var(--border-default)",
+                backgroundColor: "var(--bg-surface)",
+                color: "var(--fg-default)",
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 10,
               }}
             >
-              {copied === name ? "Copied!" : name}
-            </code>
-          </button>
-        ))}
-      </div>
+              <IconComp size={size} />
+              <code
+                style={{
+                  fontFamily: "var(--font-mono)",
+                  fontSize: "var(--text-micro)",
+                  color: copied === name ? "var(--status-success)" : "var(--fg-muted)",
+                }}
+              >
+                {copied === name ? "Copied!" : name}
+              </code>
+            </button>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

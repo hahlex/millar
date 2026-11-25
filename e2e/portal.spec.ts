@@ -38,8 +38,9 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
       expect(consoleErrors, `Console errors on ${route.path}`).toEqual([]);
       expect(failedResponses, `Failed HTTP responses on ${route.path}`).toEqual([]);
 
-      // Verify persistent desktop sidebar navigation is visible
+      // Verify persistent desktop left nav sidebar AND right "On this page" TOC sidebar are visible
       await expect(page.getByRole("navigation", { name: "Primary documentation" })).toBeVisible();
+      await expect(page.getByRole("navigation", { name: "Table of contents" })).toBeVisible();
 
       // Verify single top-level <main> and top-level <footer> strictly outside <main>
       const landmarkCheck = await page.evaluate(() => {

@@ -37,6 +37,7 @@ export default function MarketingTemplatesPage() {
         code={spec?.exampleCode}
       >
         <div
+          data-embedded-preview="true"
           style={{
             borderRadius: "var(--radius-md)",
             border: "1px solid var(--border-default)",

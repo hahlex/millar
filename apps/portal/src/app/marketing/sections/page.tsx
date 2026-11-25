@@ -125,6 +125,7 @@ export default function MarketingSectionsPage() {
               <Badge tone="neutral" dot={false}>Goal: {active.goal}</Badge>
             </div>
             <div
+              data-embedded-preview="true"
               style={{
                 width: VIEWPORT_WIDTHS[viewport],
                 maxWidth: "100%",

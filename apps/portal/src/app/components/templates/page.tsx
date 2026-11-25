@@ -35,7 +35,9 @@ export default function AppTemplatesPage() {
         }
         code={spec?.exampleCode}
       >
-        {selected === "directory-workspace-template" ? <DirectoryWorkspaceTemplate embedded /> : <AnalyticsDashboardTemplate embedded />}
+        <div data-embedded-preview="true">
+          {selected === "directory-workspace-template" ? <DirectoryWorkspaceTemplate embedded /> : <AnalyticsDashboardTemplate embedded />}
+        </div>
       </SpecimenFrame>
     </div>
   );

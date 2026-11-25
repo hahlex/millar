@@ -35,11 +35,11 @@
   }
 }
 
-/* Portal Documentation Shell Layout (Geist-style persistent left sidebar + focused reading canvas) */
+/* Portal Documentation Shell Layout (Geist-style 3-column: Left Nav + Focused Canvas + Sticky Right TOC) */
 .portal-shell-body {
   display: grid;
-  grid-template-columns: 252px minmax(0, 1fr);
-  max-width: 1440px;
+  grid-template-columns: 248px minmax(0, 1fr) 232px;
+  max-width: 1480px;
   width: 100%;
   margin: 0 auto;
   flex: 1;
@@ -55,12 +55,21 @@
   padding: 20px 14px 36px;
 }
 
+.portal-sidebar-right {
+  position: sticky;
+  top: 56px;
+  height: calc(100vh - 56px);
+  overflow-y: auto;
+  border-left: 1px solid var(--border-soft);
+  padding: 36px 18px 36px 20px;
+}
+
 .portal-main-canvas {
   min-width: 0;
   width: 100%;
-  max-width: 1040px;
+  max-width: 960px;
   margin: 0 auto;
-  padding: 36px clamp(20px, 4vw, 52px) 72px;
+  padding: 36px clamp(20px, 3.5vw, 48px) 72px;
 }
 
 .portal-desktop-only {
@@ -69,6 +78,15 @@
 
 .portal-mobile-only {
   display: none;
+}
+
+@media (max-width: 1200px) {
+  .portal-shell-body {
+    grid-template-columns: 248px minmax(0, 1fr);
+  }
+  .portal-sidebar-right {
+    display: none;
+  }
 }
 
 @media (max-width: 960px) {

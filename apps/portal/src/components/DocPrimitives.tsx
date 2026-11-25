@@ -98,8 +98,13 @@ export function SpecimenFrame({
           <div>
             {title ? (
               <h2
+                id={title
+                  .toLowerCase()
+                  .replace(/[^a-z0-9]+/g, "-")
+                  .replace(/^-+|-+$/g, "")}
                 style={{
                   margin: 0,
+                  scrollMarginTop: 76,
                   fontFamily: "var(--font-display)",
                   fontSize: "var(--text-section-title, 1.125rem)",
                   fontWeight: 600,
