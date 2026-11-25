@@ -145,10 +145,12 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
           <div
             style={{
               padding: "0 10px 4px",
-              fontSize: "var(--text-micro, 0.75rem)",
-              fontWeight: 600,
-              color: "var(--fg-default)",
-              letterSpacing: "0.01em",
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              textTransform: "uppercase",
+              color: "var(--fg-subtle)",
+              letterSpacing: "0.08em",
             }}
           >
             {group.title}
@@ -237,13 +239,10 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
             gap: 12,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <Link href="/" className="millar-focus" style={{ textDecoration: "none", borderRadius: 8 }}>
-              <HahlexLockup variant={theme === "dark" ? "on-dark" : "color"} size={24} sublabel="Millar" />
+              <HahlexLockup variant={theme === "dark" ? "on-dark" : "color"} size={22} sublabel="Millar" />
             </Link>
-            <span className="portal-desktop-only">
-              <Badge tone="brand">v{registry.version} Draft</Badge>
-            </span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -352,7 +351,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
       </div>
 
       {/* Semantic Top-Level Footer strictly outside <main> */}
-      <MillarSiteFooter version={`v${registry.version}-draft · DTCG ${registry.dtcgSpecVersion}`} />
+      <MillarSiteFooter version="Millar" />
 
       <Dialog open={searchOpen} onClose={() => setSearchOpen(false)} title="Search Millar Design System">
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>

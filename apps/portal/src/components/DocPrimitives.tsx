@@ -3,62 +3,66 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Badge, IconArrowRight } from "@hahlex/millar-ui";
-import { CodeCopyBox, LifecycleBadge } from "./CodeCopyBox";
+import { IconArrowRight } from "@hahlex/millar-ui";
+import { CodeCopyBox } from "./CodeCopyBox";
 import { getPrevNext } from "@/lib/navigation";
 
 export interface DocHeaderProps {
   section: string;
   title: string;
-  description: string;
+  description?: string;
   status?: string;
   badges?: Array<{ label: string; tone?: "neutral" | "brand" | "sage" | "sand" | "success" | "warning" | "error" }>;
   importPath?: string;
 }
 
-export function DocHeader({ section, title, description, status = "draft", badges = [], importPath }: DocHeaderProps) {
+export function DocHeader({ section, title, importPath }: DocHeaderProps) {
+  const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 12, paddingBottom: 28, borderBottom: "1px solid var(--border-default)" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
-        <span style={{ fontSize: "var(--text-meta, 0.8125rem)", fontWeight: 500, color: "var(--fg-accent)" }}>{section}</span>
-        <LifecycleBadge status={status} />
-        {badges.map((b) => (
-          <Badge key={b.label} tone={b.tone ?? "neutral"} dot={false}>
-            {b.label}
-          </Badge>
-        ))}
-        {importPath ? (
-          <code
-            style={{
-              fontFamily: "var(--font-mono)",
-              fontSize: "var(--text-micro, 0.75rem)",
-              padding: "2px 8px",
-              borderRadius: "var(--radius-sm, 8px)",
-              backgroundColor: "var(--bg-surface-2)",
-              border: "1px solid var(--border-soft)",
-              color: "var(--fg-muted)",
-            }}
-          >
-            {importPath}
-          </code>
-        ) : null}
+    <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingBottom: 20, borderBottom: "1px solid var(--border-soft)" }}>
+      <div
+        style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: "0.75rem",
+          color: "var(--fg-subtle)",
+          letterSpacing: "0.01em",
+        }}
+      >
+        millar / {section.toLowerCase()} / <span style={{ color: "var(--fg-muted)" }}>{slug}</span>
       </div>
+
       <h1
         style={{
           margin: 0,
           fontFamily: "var(--font-display)",
-          fontSize: "clamp(2rem, 3.6vw, 2.75rem)",
-          fontWeight: 300,
-          lineHeight: "var(--leading-display, 1.14)",
-          letterSpacing: "var(--tracking-display, -0.02em)",
+          fontSize: "clamp(1.85rem, 3.2vw, 2.35rem)",
+          fontWeight: 500,
+          lineHeight: "var(--leading-display, 1.15)",
+          letterSpacing: "-0.025em",
           color: "var(--fg-default)",
         }}
       >
         {title}
       </h1>
-      <p style={{ margin: 0, maxWidth: "68ch", fontSize: "var(--text-body, 0.9375rem)", lineHeight: 1.6, color: "var(--fg-muted)" }}>
-        {description}
-      </p>
+
+      {importPath ? (
+        <div>
+          <code
+            style={{
+              display: "inline-block",
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.75rem",
+              padding: "3px 10px",
+              borderRadius: "var(--radius-sm, 8px)",
+              backgroundColor: "var(--bg-surface)",
+              border: "1px solid var(--border-default)",
+              color: "var(--fg-muted)",
+            }}
+          >
+            {importPath}
+          </code>
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -76,7 +80,6 @@ export interface SpecimenFrameProps {
 
 export function SpecimenFrame({
   title,
-  description,
   toolbar,
   canvasTone = "surface",
   code,
@@ -96,41 +99,48 @@ export function SpecimenFrame({
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
       {title || toolbar ? (
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
-          <div>
-            {title ? (
-              <h2
-                id={title
-                  .toLowerCase()
-                  .replace(/[^a-z0-9]+/g, "-")
-                  .replace(/^-+|-+$/g, "")}
-                style={{
-                  margin: 0,
-                  scrollMarginTop: 76,
-                  fontFamily: "var(--font-display)",
-                  fontSize: "var(--text-section-title, 1.125rem)",
-                  fontWeight: 600,
-                  color: "var(--fg-default)",
-                }}
-              >
-                {title}
-              </h2>
-            ) : null}
-            {description ? (
-              <p style={{ margin: "4px 0 0", fontSize: "var(--text-body-sm, 0.875rem)", color: "var(--fg-muted)" }}>{description}</p>
-            ) : null}
-          </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 12,
+            flexWrap: "wrap",
+            paddingBottom: 8,
+            borderBottom: "1px solid var(--border-soft)",
+          }}
+        >
+          {title ? (
+            <h2
+              id={title
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "")}
+              style={{
+                margin: 0,
+                scrollMarginTop: 76,
+                fontFamily: "var(--font-mono)",
+                fontSize: "0.72rem",
+                fontWeight: 500,
+                letterSpacing: "0.08em",
+                textTransform: "uppercase",
+                color: "var(--fg-muted)",
+              }}
+            >
+              {title}
+            </h2>
+          ) : null}
           {toolbar}
         </div>
       ) : null}
 
       <div
         style={{
-          borderRadius: "var(--radius-lg, 16px)",
+          borderRadius: "var(--radius-md, 12px)",
           border: "1px solid var(--border-default)",
           backgroundColor: bg,
           color: canvasTone === "stage-dark" ? "var(--fg-on-stage-dark)" : "var(--fg-default)",
-          padding: "clamp(18px, 3vw, 28px)",
+          padding: "clamp(16px, 2.5vw, 24px)",
           overflowX: "auto",
         }}
       >
@@ -151,9 +161,9 @@ export function DocPagination() {
     <nav
       aria-label="Page pagination"
       style={{
-        marginTop: 56,
-        paddingTop: 24,
-        borderTop: "1px solid var(--border-default)",
+        marginTop: 48,
+        paddingTop: 20,
+        borderTop: "1px solid var(--border-soft)",
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
         gap: 14,
@@ -164,18 +174,20 @@ export function DocPagination() {
           href={prev.href}
           className="millar-focus"
           style={{
-            padding: "14px 16px",
-            borderRadius: "var(--radius-md, 12px)",
-            border: "1px solid var(--border-default)",
-            backgroundColor: "var(--bg-surface)",
+            padding: "12px 14px",
+            borderRadius: "var(--radius-sm, 8px)",
+            border: "1px solid var(--border-soft)",
+            backgroundColor: "transparent",
             textDecoration: "none",
             display: "flex",
             flexDirection: "column",
-            gap: 4,
+            gap: 3,
           }}
         >
-          <span style={{ fontSize: "var(--text-micro, 0.75rem)", color: "var(--fg-subtle)" }}>Previous · {prev.section}</span>
-          <span style={{ fontSize: "var(--text-body-sm, 0.875rem)", fontWeight: 600, color: "var(--fg-default)" }}>{prev.label}</span>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--fg-subtle)" }}>
+            Previous
+          </span>
+          <span style={{ fontSize: "var(--text-body-sm, 0.875rem)", fontWeight: 500, color: "var(--fg-default)" }}>{prev.label}</span>
         </Link>
       ) : (
         <div />
@@ -185,23 +197,25 @@ export function DocPagination() {
           href={next.href}
           className="millar-focus"
           style={{
-            padding: "14px 16px",
-            borderRadius: "var(--radius-md, 12px)",
-            border: "1px solid var(--border-default)",
-            backgroundColor: "var(--bg-surface)",
+            padding: "12px 14px",
+            borderRadius: "var(--radius-sm, 8px)",
+            border: "1px solid var(--border-soft)",
+            backgroundColor: "transparent",
             textDecoration: "none",
             display: "flex",
             flexDirection: "column",
             alignItems: "flex-end",
-            gap: 4,
+            gap: 3,
             textAlign: "right",
           }}
         >
-          <span style={{ fontSize: "var(--text-micro, 0.75rem)", color: "var(--fg-subtle)" }}>Next · {next.section}</span>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "0.6875rem", textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--fg-subtle)" }}>
+            Next
+          </span>
           <span
             style={{
               fontSize: "var(--text-body-sm, 0.875rem)",
-              fontWeight: 600,
+              fontWeight: 500,
               color: "var(--fg-default)",
               display: "inline-flex",
               alignItems: "center",

@@ -27,6 +27,7 @@ const PACKAGES_IN_ORDER = [
   "packages/domain-education",
   "packages/marketing",
   "packages/mcp",
+  "packages/cli",
 ];
 
 const rootDir = process.cwd();

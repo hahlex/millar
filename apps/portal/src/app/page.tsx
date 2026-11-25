@@ -16,6 +16,7 @@ import {
 } from "@hahlex/millar-ui";
 import { ConcentricArcCanvas, HahlexMark } from "@hahlex/millar-marketing";
 import { DocHeader, SpecimenFrame } from "@/components/DocPrimitives";
+import { InstallBar } from "@/components/InstallBar";
 import { CodeCopyBox } from "@/components/CodeCopyBox";
 
 interface DirectoryTile {
@@ -247,15 +248,9 @@ export default function MillarIntroductionPage() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
-      <DocHeader
-        section="Overview"
-        title="Millar Design System"
-        description="Official, product-agnostic design language for the Hahlex ecosystem. Compiled from one W3C DTCG 2025.10 Single Source of Truth into Shared Foundations, Photo-Free Marketing Visual Language, Accessible Product Components, and the Millar MCP Server."
-        badges={[
-          { label: `W3C DTCG ${registry.dtcgSpecVersion}`, tone: "neutral" },
-          { label: `${registry.contrastSummary.passed}/${registry.contrastSummary.totalChecked} WCAG AA`, tone: "success" },
-        ]}
-      />
+      <DocHeader section="Overview" title="Millar Design System" importPath="@hahlex/millar-ui" />
+
+      <InstallBar label="Installation" showTargetSwitch defaultTarget="mcp" />
 
       {/* Compact System Metrics Strip */}
       <dl
@@ -271,7 +266,7 @@ export default function MillarIntroductionPage() {
           { value: String(registry.components.length), label: "Product UI Primitives" },
           { value: String(registry.compositionPatterns.length), label: "Marketing Compositions" },
           { value: String(registry.visualAssets.length), label: "Code-Native Assets" },
-          { value: "11", label: "MCP Tools + 66 Resources" },
+          { value: "13", label: "MCP Tools · 7 Skills" },
         ].map((item) => (
           <div
             key={item.label}
@@ -304,14 +299,9 @@ export default function MillarIntroductionPage() {
 
       {/* Geist-Style Visual Directory Grid */}
       <section aria-labelledby="directory-heading" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-        <div>
-          <h2 id="directory-heading" style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-page-title)", fontWeight: 600 }}>
-            Browse System Modules
-          </h2>
-          <p style={{ margin: "4px 0 0", fontSize: "var(--text-body-sm)", color: "var(--fg-muted)" }}>
-            Use the left navigation sidebar or jump directly into any foundation, marketing craft system, UI primitive, or AI resource.
-          </p>
-        </div>
+        <h2 id="directory-heading" style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-page-title)", fontWeight: 600 }}>
+          System Modules
+        </h2>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
           {tiles.map((tile) => (
@@ -393,10 +383,7 @@ export default function MillarIntroductionPage() {
       </section>
 
       {/* Quick Start */}
-      <SpecimenFrame
-        title="Quick Start"
-        description="Install Millar tokens and UI primitives from the compiled Single Source of Truth."
-      >
+      <SpecimenFrame title="Quick Start">
         <CodeCopyBox
           title="globals.css & React usage"
           code={`/* 1. Import generated Millar Tailwind v4 theme + tokens */\n@import "tailwindcss";\n@import "@hahlex/millar-tokens/tailwind";\n\n/* 2. Consume accessible primitives */\nimport { Button, Badge, DataTable } from "@hahlex/millar-ui";\nimport { HahlexLockup, WarmHorizonWash } from "@hahlex/millar-marketing";`}

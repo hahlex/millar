@@ -426,7 +426,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           text: JSON.stringify(
             {
               lifecycleStatus: "draft",
-              installCommand: "npx skills add https://github.com/hahlex/millar",
+              installCommand: "npx millar install",
               skills: skills.map((s) => ({
                 id: s.id,
                 name: s.name,
@@ -922,7 +922,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
         {
           lifecycleStatus: "draft",
           count: matched.length,
-          installCommand: "npx skills add https://github.com/hahlex/millar",
+          installCommand: "npx millar install",
           skills: matched.map((s) => ({
             id: s.id,
             name: s.name,

@@ -1,0 +1,26 @@
+{
+  "name": "millar",
+  "version": "0.2.0-draft.1",
+  "description": "Zero-GitHub CLI to install Millar Agent Skills, run standalone Zero-MCP audits, and connect Millar MCP.",
+  "license": "MIT",
+  "homepage": "https://millar.hahlex.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hahlex/millar.git",
+    "directory": "packages/cli"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "bin": {
+    "millar": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "typecheck": "node --check src/cli.mjs"
+  }
+}

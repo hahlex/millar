@@ -193,13 +193,13 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
     await page.getByRole("button", { name: "New proposal" }).click();
     await expect(page.getByRole("cell", { name: "Domain Proposal #1" })).toBeVisible();
 
-    // 8. Agent Skills Suite concise English Install Prompts (MCP includes skills vs Skills only), Track planner & all 7 skill tabs
+    // 8. Agent Skills Suite skills.sh-inspired InstallBar (Command | Prompt, MCP | Skills Only) & 7 skill tabs
     await page.goto("/millar/resources/skills/", { waitUntil: "networkidle" });
-    await expect(page.getByText(/Prompt · Install MCP \(Includes 7 Skills\)/)).toBeVisible();
-    await page.getByRole("button", { name: "Install 7 Skills Only" }).click();
-    await expect(page.getByText(/Prompt · Install 7 Skills Only/)).toBeVisible();
-    await page.getByRole("button", { name: "Photo-Free Hahlex Launch" }).click();
-    await expect(page.getByText(/14 code-native SVG\/CSS\/Canvas visual assets/)).toBeVisible();
+    await expect(page.getByText("npx -y @hahlex/millar-mcp@draft")).toBeVisible();
+    await page.getByRole("button", { name: "Skills Only" }).click();
+    await expect(page.getByText("npx millar install")).toBeVisible();
+    await page.getByRole("button", { name: "Prompt", exact: true }).click();
+    await expect(page.getByText(/Run `npx millar install`/)).toBeVisible();
     await page.getByRole("tab", { name: "millar-create-image" }).click();
     await expect(page.getByText("human-editorial-photography.md")).toBeVisible();
     await expect(page.getByText("procedural-gallery-craft.md")).toBeVisible();
@@ -207,9 +207,11 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
     await expect(page.getByText("five-layer-qa-gate.md")).toBeVisible();
     await expect(page.getByRole("cell", { name: "scripts/millar-audit.mjs", exact: true })).toBeVisible();
 
-    // 9. MCP page concise English connect prompt + 10 MCP Prompts selector
+    // 9. MCP page skills.sh-inspired InstallBar (Command | Prompt) + 10 MCP Prompts selector
     await page.goto("/millar/resources/mcp/", { waitUntil: "networkidle" });
-    await expect(page.getByText(/Prompt · Install Millar MCP \(Includes 7 Skills\)/)).toBeVisible();
+    await expect(page.getByText("npx -y @hahlex/millar-mcp@draft").first()).toBeVisible();
+    await page.getByRole("button", { name: "Prompt", exact: true }).click();
+    await expect(page.getByText(/Add Millar MCP/)).toBeVisible();
     await page.getByRole("button", { name: "millar-design", exact: true }).click();
     await expect(page.getByText(/millar-design \(brief, existingAssets\?, lang\?\)/)).toBeVisible();
   });

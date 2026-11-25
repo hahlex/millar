@@ -116,10 +116,12 @@ export function RightSidebar() {
         <nav aria-label="Table of contents" style={{ display: "flex", flexDirection: "column", gap: 8 }}>
           <div
             style={{
-              fontSize: "var(--text-micro, 0.75rem)",
-              fontWeight: 600,
-              color: "var(--fg-default)",
-              letterSpacing: "0.01em",
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              textTransform: "uppercase",
+              color: "var(--fg-subtle)",
+              letterSpacing: "0.08em",
             }}
           >
             On this page
@@ -178,7 +180,16 @@ export function RightSidebar() {
             gap: 10,
           }}
         >
-          <div style={{ fontSize: "var(--text-micro, 0.75rem)", fontWeight: 600, color: "var(--fg-default)" }}>
+          <div
+            style={{
+              fontFamily: "var(--font-mono)",
+              fontSize: "0.6875rem",
+              fontWeight: 500,
+              textTransform: "uppercase",
+              color: "var(--fg-subtle)",
+              letterSpacing: "0.08em",
+            }}
+          >
             MCP Resource
           </div>
           <button
