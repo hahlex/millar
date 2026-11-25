@@ -1,0 +1,29 @@
+{
+  "name": "@hahlex/millar-mcp",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Millar MCP Server (MCP 2026-07-28): millar:// Resources, 11 Tools, and 3 Prompts powered by Millar's Single Source of Truth.",
+  "bin": {
+    "millar-mcp": "./dist/stdio.js"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./server": "./src/server.ts"
+  },
+  "dependencies": {
+    "@hahlex/millar-core": "workspace:*",
+    "@hahlex/millar-tokens": "workspace:*",
+    "@hahlex/millar-validator": "workspace:*",
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.4"
+  },
+  "scripts": {
+    "build": "tsc --noEmit && node scripts/build.mjs",
+    "start:stdio": "node dist/stdio.js",
+    "start:http": "node dist/http.js",
+    "typecheck": "tsc --noEmit"
+  }
+}
