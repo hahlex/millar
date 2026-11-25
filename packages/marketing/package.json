@@ -1,15 +1,45 @@
 {
   "name": "@hahlex/millar-marketing",
-  "version": "0.1.0",
-  "type": "module",
-  "description": "Millar Marketing Design System: 6 diverse Composition Patterns, code-native zero-photo Visual Assets (CSS/SVG/Canvas/React), Expressive Motion, Section Library, Page Templates, and Visual Do/Don't.",
-  "exports": {
-    ".": "./src/index.ts",
-    "./assets": "./src/assets/index.ts",
-    "./sections": "./src/sections/index.ts",
-    "./templates": "./src/templates/index.ts",
-    "./motion": "./src/motion/index.ts"
+  "version": "0.1.0-draft.1",
+  "description": "Millar Marketing Design System: 6 diverse Composition Patterns, 14 code-native zero-photo Visual Assets (CSS/SVG/Canvas/React), Expressive Motion, Section Library, Page Templates, and Visual Do/Don't.",
+  "license": "MIT",
+  "homepage": "https://hahlex.com/millar",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hahlex/millar.git",
+    "directory": "packages/marketing"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./assets": {
+      "types": "./dist/assets/index.d.ts",
+      "import": "./dist/assets/index.js"
+    },
+    "./sections": {
+      "types": "./dist/sections/index.d.ts",
+      "import": "./dist/sections/index.js"
+    },
+    "./templates": {
+      "types": "./dist/templates/index.d.ts",
+      "import": "./dist/templates/index.js"
+    },
+    "./motion": {
+      "types": "./dist/motion/index.d.ts",
+      "import": "./dist/motion/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@hahlex/millar-tokens": "workspace:*",
     "@hahlex/millar-ui": "workspace:*",
@@ -29,7 +59,7 @@
     "react-dom": "^19.1.0"
   },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json && node -e \"const fs=require('fs'); for (const f of ['composition-patterns.registry.json','visual-assets.registry.json','sections.registry.json','templates.registry.json']) fs.copyFileSync('src/'+f,'dist/'+f)\"",
     "typecheck": "tsc --noEmit"
   }
 }

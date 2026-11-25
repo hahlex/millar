@@ -1,17 +1,38 @@
 {
   "name": "@hahlex/millar-validator",
-  "version": "0.1.0",
-  "type": "module",
-  "description": "Deterministic Millar Design System compliance engine separating automated verifiable rules from human aesthetic review criteria.",
-  "exports": {
-    ".": "./src/index.ts"
+  "version": "0.1.0-draft.1",
+  "description": "Deterministic Millar Design System compliance engine and CLI separating automated verifiable rules from human aesthetic review criteria.",
+  "license": "MIT",
+  "homepage": "https://hahlex.com/millar",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hahlex/millar.git",
+    "directory": "packages/validator"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "millar-check": "./dist/cli.js"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@hahlex/millar-core": "workspace:*",
     "@hahlex/millar-tokens": "workspace:*"
   },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit"
   }
 }

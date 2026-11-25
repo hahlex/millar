@@ -9,7 +9,10 @@
   },
   "scripts": {
     "compile": "pnpm --filter @hahlex/millar-core run compile",
-    "build": "pnpm run compile && pnpm --filter @hahlex/millar-tokens run build && pnpm --filter @hahlex/millar-validator run build && pnpm --filter @hahlex/millar-ui run build && pnpm --filter @hahlex/millar-marketing run build && pnpm --filter @hahlex/millar-domain-education run build && pnpm --filter @hahlex/millar-mcp run build && pnpm --filter @hahlex/millar-portal run build",
+    "build:packages": "pnpm run compile && pnpm --filter @hahlex/millar-core run build && pnpm --filter @hahlex/millar-tokens run build && pnpm --filter @hahlex/millar-validator run build && pnpm --filter @hahlex/millar-ui run build && pnpm --filter @hahlex/millar-domain-education run build && pnpm --filter @hahlex/millar-marketing run build && pnpm --filter @hahlex/millar-mcp run build",
+    "build": "pnpm run build:packages && pnpm --filter @hahlex/millar-portal run build",
+    "publish:draft": "node scripts/publish-npm.mjs --tag=draft",
+    "publish:dry-run": "node scripts/publish-npm.mjs --tag=draft --dry-run",
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "vitest run",
     "test:watch": "vitest",

@@ -874,6 +874,7 @@ export function VisualDoDontPair({ title, doLabel, dontLabel, doPreview, dontPre
 }
 
 export function DefaultMarketingDoDontShowcase() {
+  const [doClicks, setDoClicks] = useState(0);
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
       <VisualDoDontPair
@@ -886,10 +887,15 @@ export function DefaultMarketingDoDontShowcase() {
             <strong style={{ fontFamily: "var(--font-display)", fontSize: "1.125rem", fontWeight: 500, color: "var(--fg-default)" }}>
               Calm, tactile contrast
             </strong>
-            <div>
-              <Button variant="primary" size="sm" icon={<IconShield size="sm" />}>
-                Verified 12.09:1 CTA
+            <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+              <Button variant="primary" size="sm" icon={<IconShield size="sm" />} onClick={() => setDoClicks((c) => c + 1)}>
+                {doClicks > 0 ? `Verified 12.09:1 CTA (${doClicks})` : "Verified 12.09:1 CTA"}
               </Button>
+              {doClicks > 0 ? (
+                <span role="status" style={{ fontSize: "var(--text-micro, 0.75rem)", color: "var(--status-success)", fontWeight: 500 }}>
+                  Interactive response verified
+                </span>
+              ) : null}
             </div>
           </div>
         }

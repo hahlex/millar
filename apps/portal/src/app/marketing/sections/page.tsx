@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import registry from "@hahlex/millar-tokens/registry";
-import { Badge, Button, ChoiceToggle } from "@hahlex/millar-ui";
+import { Alert, Badge, Button, ChoiceToggle } from "@hahlex/millar-ui";
 import {
   ArchitectureGridSection,
   BentoNarrativeMosaic,
@@ -26,8 +26,14 @@ const VIEWPORT_WIDTHS = {
 export default function MarketingSectionsPage() {
   const [selectedId, setSelectedId] = useState(registry.sections[0]?.id ?? "hero-spatial-stage");
   const [viewport, setViewport] = useState<keyof typeof VIEWPORT_WIDTHS>("desktop");
+  const [ctaFeedback, setCtaFeedback] = useState<string | null>(null);
 
   const active = registry.sections.find((s) => s.id === selectedId) ?? registry.sections[0];
+
+  const handleSelectSection = (id: string) => {
+    setSelectedId(id);
+    setCtaFeedback(null);
+  };
 
   const renderSection = (id: string) => {
     switch (id) {
@@ -39,6 +45,8 @@ export default function MarketingSectionsPage() {
             lead="Photo-free marketing craft backed by W3C DTCG tokens and MCP verification."
             primaryCtaLabel="Explore Millar"
             secondaryCtaLabel="View Specs"
+            onPrimaryCta={() => setCtaFeedback('Primary CTA clicked: "Explore Millar" (HeroSpatialStage).')}
+            onSecondaryCta={() => setCtaFeedback('Secondary CTA clicked: "View Specs" (HeroSpatialStage).')}
           />
         );
       case "hero-typographic-poster":
@@ -48,6 +56,7 @@ export default function MarketingSectionsPage() {
             headline="Design systems should enforce craft, not write essays about it."
             lead="Monolithic Geist 300 display statements paired with tabular proof metrics."
             ctaLabel="Read Architecture"
+            onCta={() => setCtaFeedback('CTA clicked: "Read Architecture" (HeroTypographicPoster).')}
           />
         );
       case "editorial-essay-split":
@@ -72,7 +81,11 @@ export default function MarketingSectionsPage() {
       case "native-accordion-faq":
         return <NativeAccordionFaq />;
       default:
-        return <ClosingConversionBand />;
+        return (
+          <ClosingConversionBand
+            onCta={() => setCtaFeedback('Closing CTA clicked: "Explore Millar Portal" (ClosingConversionBand).')}
+          />
+        );
     }
   };
 
@@ -93,7 +106,7 @@ export default function MarketingSectionsPage() {
               key={sec.id}
               variant={sec.id === active?.id ? "primary" : "white"}
               size="sm"
-              onClick={() => setSelectedId(sec.id)}
+              onClick={() => handleSelectSection(sec.id)}
             >
               {sec.name}
             </Button>
@@ -124,6 +137,18 @@ export default function MarketingSectionsPage() {
               <Badge tone="brand" dot={false}>Pattern: {active.compositionPattern}</Badge>
               <Badge tone="neutral" dot={false}>Goal: {active.goal}</Badge>
             </div>
+            {ctaFeedback ? (
+              <Alert
+                tone="success"
+                title="Live preview interaction"
+                message={ctaFeedback}
+                action={
+                  <Button variant="ghost" size="sm" onClick={() => setCtaFeedback(null)}>
+                    Dismiss
+                  </Button>
+                }
+              />
+            ) : null}
             <div
               data-embedded-preview="true"
               style={{

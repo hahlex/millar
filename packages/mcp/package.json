@@ -1,15 +1,37 @@
 {
   "name": "@hahlex/millar-mcp",
-  "version": "0.1.0",
-  "type": "module",
+  "version": "0.1.0-draft.1",
   "description": "Millar MCP Server (MCP 2026-07-28): millar:// Resources, 11 Tools, and 3 Prompts powered by Millar's Single Source of Truth.",
+  "license": "MIT",
+  "homepage": "https://hahlex.com/millar",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hahlex/millar.git",
+    "directory": "packages/mcp"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "bin": {
-    "millar-mcp": "./dist/stdio.js"
+    "millar-mcp": "./dist/stdio.js",
+    "millar-mcp-http": "./dist/http.js"
   },
   "exports": {
-    ".": "./src/index.ts",
-    "./server": "./src/server.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    }
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@hahlex/millar-core": "workspace:*",
     "@hahlex/millar-tokens": "workspace:*",
@@ -21,7 +43,7 @@
     "esbuild": "^0.25.4"
   },
   "scripts": {
-    "build": "tsc --noEmit && node scripts/build.mjs",
+    "build": "tsc -p tsconfig.build.json && node scripts/build.mjs",
     "start:stdio": "node dist/stdio.js",
     "start:http": "node dist/http.js",
     "typecheck": "tsc --noEmit"

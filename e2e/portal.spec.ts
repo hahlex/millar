@@ -144,4 +144,51 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
 
     await expect(page.getByRole("heading", { level: 1, name: "Code-Native Visual Assets" })).toBeVisible();
   });
+
+  test("published sample components, sections, visual assets, and templates are genuinely interactive", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+
+    // 1. Button playground live click readout
+    await page.goto("/millar/components/button/", { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: /Pill action \(0\)/ }).click();
+    await expect(page.getByRole("button", { name: /Pill action \(1\)/ })).toBeVisible();
+    await expect(page.getByText(/Pill action clicked 1x/)).toBeVisible();
+
+    // 2. DataTable FilterBar real search filtering + removable pill
+    await page.goto("/millar/components/data-table/", { waitUntil: "networkidle" });
+    const searchInput = page.getByPlaceholder("Type to filter packages (e.g. tokens, ui, mcp)...");
+    await searchInput.fill("mcp");
+    await expect(page.getByText("Search: mcp")).toBeVisible();
+    await expect(page.getByRole("cell", { name: "@hahlex/millar-mcp" })).toBeVisible();
+    await expect(page.getByRole("cell", { name: "@hahlex/millar-tokens" })).toHaveCount(0);
+
+    // 3. ConfirmDialog interactive open + confirm feedback
+    await page.goto("/millar/components/dialog/", { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: /Open ConfirmDialog \(0 confirmed\)/ }).click();
+    await expect(page.getByRole("dialog", { name: "Deprecate legacy token" })).toBeVisible();
+    await page.getByRole("button", { name: "Deprecate", exact: true }).click();
+    await expect(page.getByText(/Deprecation confirmed \(1x\)/)).toBeVisible();
+
+    // 4. AppShell live nav switch + Create action
+    await page.goto("/millar/components/app-shell/", { waitUntil: "networkidle" });
+    await page.getByRole("navigation", { name: "Workspace preview sections" }).getByRole("link", { name: "Governance" }).click();
+    await expect(page.getByRole("heading", { level: 3, name: "Release Governance" })).toBeVisible();
+    await page.getByRole("button", { name: "Create", exact: true }).click();
+    await expect(page.getByText(/Created item #11 inside governance workspace/)).toBeVisible();
+
+    // 5. Marketing Sections CTA interactive feedback
+    await page.goto("/millar/marketing/sections/", { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "Explore Millar" }).click();
+    await expect(page.getByText(/Primary CTA clicked: "Explore Millar"/)).toBeVisible();
+
+    // 6. Visual Assets ClosedLoopSchematic clickable step
+    await page.goto("/millar/marketing/visual-assets/", { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: /Step 4 \/ 6/i }).click();
+    await expect(page.getByText("Active step: validate")).toBeVisible();
+
+    // 7. Application Templates live proposal creation
+    await page.goto("/millar/components/templates/", { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "New proposal" }).click();
+    await expect(page.getByRole("cell", { name: "Domain Proposal #1" })).toBeVisible();
+  });
 });

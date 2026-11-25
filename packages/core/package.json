@@ -1,13 +1,32 @@
 {
   "name": "@hahlex/millar-core",
-  "version": "0.1.0",
-  "private": true,
-  "type": "module",
-  "exports": {
-    ".": "./src/index.ts"
+  "version": "0.1.0-draft.1",
+  "description": "Millar Design System SSoT W3C DTCG 2025.10 token compiler, WCAG contrast verifier, Machado CVD engine, and shared types.",
+  "license": "MIT",
+  "homepage": "https://hahlex.com/millar",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hahlex/millar.git",
+    "directory": "packages/core"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "compile": "tsx src/cli.ts",
+    "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit"
   }
 }

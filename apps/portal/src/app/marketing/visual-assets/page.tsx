@@ -23,6 +23,8 @@ import { DocHeader, SpecimenFrame } from "@/components/DocPrimitives";
 export default function VisualAssetsPage() {
   const [tone, setTone] = useState<"light" | "dark">("dark");
   const [washIntensity, setWashIntensity] = useState<"subtle" | "editorial">("editorial");
+  const [activeLoopStep, setActiveLoopStep] = useState<string>("author");
+  const [threadScenario, setThreadScenario] = useState<"marketing" | "product">("marketing");
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 36 }}>
@@ -102,8 +104,33 @@ export default function VisualAssetsPage() {
         <SpecimenFrame title="DataTableSpecimenFrame" description="Stylized Hahlex table chrome at 0% scroll.">
           <DataTableSpecimenFrame />
         </SpecimenFrame>
-        <SpecimenFrame title="AssistantThreadPreview" description="Single purposeful AI verification thread.">
-          <AssistantThreadPreview />
+        <SpecimenFrame
+          title="AssistantThreadPreview"
+          description="Single purposeful AI verification thread. Switch scenarios live."
+          toolbar={
+            <ChoiceToggle
+              label="Assistant scenario"
+              value={threadScenario}
+              onChange={setThreadScenario}
+              options={[
+                { value: "marketing", label: "Marketing" },
+                { value: "product", label: "Product" },
+              ]}
+            />
+          }
+        >
+          <AssistantThreadPreview
+            prompt={
+              threadScenario === "marketing"
+                ? "Build a photo-free launch section for Hahlex Analytics."
+                : "Audit my Product DataTable for zero CSS gradients and WCAG AA contrast."
+            }
+            reply={
+              threadScenario === "marketing"
+                ? "Selected Spatial Product Stage + WarmHorizonWash (approved visual asset) + DataTableSpecimenFrame. Automated validator passed 11/11 checks."
+                : "Verified solid --bg-surface + 1px --border-default, tabular numerals, mobileCard fallback, and 97/97 AA token contrast."
+            }
+          />
         </SpecimenFrame>
       </div>
 
@@ -122,8 +149,12 @@ export default function VisualAssetsPage() {
         </CoordinateGridSurface>
       </SpecimenFrame>
 
-      <SpecimenFrame title="ClosedLoopSchematic (Interactive 6-Step Flow)" description="Collision-free ordered workflow diagram.">
-        <ClosedLoopSchematic tone={tone} />
+      <SpecimenFrame
+        title="ClosedLoopSchematic (Interactive 6-Step Flow)"
+        description="Click any step card to inspect the ordered design-system workflow."
+        toolbar={<Badge tone="brand" dot={false}>Active step: {activeLoopStep}</Badge>}
+      >
+        <ClosedLoopSchematic tone={tone} activeStepId={activeLoopStep} onSelectStep={setActiveLoopStep} />
       </SpecimenFrame>
 
       <section aria-labelledby="asset-registry-heading" style={{ display: "flex", flexDirection: "column", gap: 12 }}>

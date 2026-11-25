@@ -1,11 +1,29 @@
 {
   "name": "@hahlex/millar-domain-education",
-  "version": "0.1.0",
-  "type": "module",
+  "version": "0.1.0-draft.1",
   "description": "Optional Hahlex Education Domain Extension for Millar (4-Skill IELTS tones, learner highlighter, education icon aliases).",
-  "exports": {
-    ".": "./src/index.tsx"
+  "license": "MIT",
+  "homepage": "https://hahlex.com/millar",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hahlex/millar.git",
+    "directory": "packages/domain-education"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@hahlex/millar-tokens": "workspace:*",
     "@hahlex/millar-ui": "workspace:*",
@@ -19,7 +37,7 @@
     "react": "^19.1.0"
   },
   "scripts": {
-    "build": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit"
   }
 }

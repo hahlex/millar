@@ -2,11 +2,11 @@
 
 > Product-agnostic Design Foundations, Photo-Free Marketing Visual Language, Accessible Product Primitives, Interactive Portal (`hahlex.com/millar`), and AI-Native MCP Server compiled from one W3C DTCG `2025.10` Single Source of Truth.
 
-**Status**: `v0.1.0` (`Draft` pending human governance promotion to `Approved`).
+**Status**: `v0.1.0-draft.1` (`Draft` pending human governance promotion to `Approved`).
 
 ## Why Millar Exists
 
-Hahlex product apps (`hahlex-edu`) and marketing sites (`education-portfolio`) previously duplicated tokens across four drifting files, mixed five font families, and relied on missing photography or repetitive chatboxes for visual polish. Millar unifies the entire Hahlex ecosystem under one calm, measurable design language (**Measured Warmth**) that serves designers, frontend engineers, and AI coding agents from the exact same compiled registry.
+Hahlex product apps (`hahlex-edu`) and marketing sites (`education-portfolio`) previously duplicated tokens across four drifting files, mixed five font families, and relied on missing photography or repetitive chatboxes for visual polish. Millar unifies the entire Hahlex ecosystem under one calm, measurable design language (**Measured Warmth**) rooted in the App Warm Sand + Espresso + Hahlex Crimson palette, serving designers, frontend engineers, and AI coding agents from the exact same compiled registry.
 
 ## Quick Start (Under 60 Seconds)
 
@@ -16,14 +16,35 @@ Hahlex product apps (`hahlex-edu`) and marketing sites (`education-portfolio`) p
 # 1. Install workspace dependencies
 pnpm install
 
-# 2. Compile W3C DTCG 2025.10 tokens & SSoT registry (verifies 84/84 WCAG AA pairs + CVD Delta-E)
+# 2. Compile W3C DTCG 2025.10 tokens & SSoT registry (verifies 97/97 WCAG AA pairs + CVD Delta-E)
 pnpm run compile
 
-# 3. Run full governance, em-dash, typecheck, and Vitest suite
+# 3. Build all 7 publishable @hahlex/millar-* npm packages
+pnpm run build:packages
+
+# 4. Run full governance, em-dash, typecheck, and Vitest suite
 pnpm run verify
 
-# 4. Run Millar Website Portal locally at http://localhost:3000/millar
+# 5. Run Millar Website Portal locally at http://localhost:3000/millar
 pnpm --filter @hahlex/millar-portal run dev
+```
+
+## Publishing & Consuming via npm (`@hahlex/*`)
+
+All 7 Millar packages publish to `https://registry.npmjs.org` under the `@hahlex/*` scope with `publishConfig: { "access": "public" }` and dist-tag `draft` while in `Draft` governance:
+
+```bash
+# Dry-run all 7 packages in topological order
+pnpm run publish:dry-run
+
+# Publish all 7 packages under dist-tag "draft" (requires @hahlex npm org membership)
+pnpm run publish:draft
+```
+
+Install draft releases in consumer apps:
+
+```bash
+pnpm add @hahlex/millar-tokens@draft @hahlex/millar-ui@draft @hahlex/millar-marketing@draft
 ```
 
 ## Monorepo Layout
@@ -73,14 +94,16 @@ PORT=3105 node packages/mcp/dist/http.js
 
 | Command | What It Checks |
 |---|---|
-| `pnpm run compile` | Compiles W3C DTCG `2025.10` tokens -> `packages/tokens/dist/` and checks 84/84 WCAG AA contrast pairs + Machado CVD separation |
+| `pnpm run compile` | Compiles W3C DTCG `2025.10` tokens -> `packages/tokens/dist/` and checks 97/97 WCAG AA contrast pairs + Machado CVD separation |
+| `pnpm run build:packages` | Compiles all 7 `@hahlex/millar-*` npm packages (`dist/*.js` + `dist/*.d.ts` + bundled MCP CLI) |
 | `pnpm run check:em-dash` | Enforces Zero `U+2014` em-dash across Hahlex-controlled UI, docs, and source files |
 | `pnpm run check:governance` | Enforces Draft/Approved/Deprecated lifecycle rules, blocks AI self-approval, and verifies visual-asset referential integrity |
 | `pnpm run typecheck` | Runs `tsc --noEmit` across all 8 workspace packages & apps |
 | `pnpm run test` | Runs Vitest unit, accessibility (`axe-core`), validator, and in-memory MCP protocol tests |
-| `pnpm run test:mcp-stdio` | Spawns real OS stdio child process (`dist/stdio.js`) and verifies all 11 Tools, static Resources, and 3 Prompts |
+| `pnpm run test:mcp-stdio` | Spawns real OS stdio child process (`dist/stdio.js`) and verifies all 11 Tools, 66 static Resources, and 3 Prompts |
 | `pnpm run check:design -- --register=product <file>` | Runs deterministic CLI compliance checks on any TSX/CSS/HTML file |
-| `pnpm run test:e2e` | Runs Playwright + real-browser `@axe-core/playwright` across all 5 Portal routes (Light & Dark, 1440px / 768px / 375px, keyboard, VI locale, reduced-motion) |
+| `pnpm run test:e2e` | Runs Playwright + real-browser `@axe-core/playwright` across Portal routes (Light & Dark, 1440px / 768px / 375px, keyboard, VI locale, reduced-motion, live component interactivity) |
+| `pnpm run publish:dry-run` | Verifies npm tarball packing & topological `workspace:*` resolution for all 7 `@hahlex/millar-*` packages |
 
 ## Key Documentation
 

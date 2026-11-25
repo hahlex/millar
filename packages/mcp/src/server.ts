@@ -26,6 +26,10 @@ function readRepoDoc(rootDir: string, relPath: string, fallback: string): string
   if (fs.existsSync(full)) {
     return fs.readFileSync(full, "utf8");
   }
+  const bundled = path.join(import.meta.dirname, "docs", relPath);
+  if (fs.existsSync(bundled)) {
+    return fs.readFileSync(bundled, "utf8");
+  }
   return fallback;
 }
 

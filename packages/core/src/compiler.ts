@@ -709,6 +709,19 @@ export function compileMillar(options: CompileMillarOptions): CompileMillarOutpu
     fs.writeFileSync(path.join(outDir, "tailwind.css"), tailwindCss, "utf8");
     fs.writeFileSync(path.join(outDir, "tailwind.preset.cjs"), tailwindPresetCjs, "utf8");
     fs.writeFileSync(path.join(outDir, "tokens.ts"), tokensTs, "utf8");
+    fs.writeFileSync(
+      path.join(outDir, "tokens.d.ts"),
+      [
+        "export declare const MILLAR_LIGHT_TOKENS: Record<string, string>;",
+        "export declare const MILLAR_DARK_TOKENS: Record<string, string>;",
+        "export declare const MILLAR_Z_INDEX: Record<string, number>;",
+        "export declare const MILLAR_MOTION_DURATION_MS: Record<string, number>;",
+        "export declare const MILLAR_MOTION_EASING: Record<string, readonly [number, number, number, number]>;",
+        "export type MillarThemeTokens = typeof MILLAR_LIGHT_TOKENS;",
+        "",
+      ].join("\n"),
+      "utf8",
+    );
     fs.writeFileSync(path.join(outDir, "tokens.js"), tokensJs, "utf8");
     fs.writeFileSync(path.join(outDir, "education.css"), educationCss, "utf8");
     fs.writeFileSync(path.join(outDir, "dtcg.json"), dtcgJson, "utf8");

@@ -1,10 +1,25 @@
 {
   "name": "@hahlex/millar-tokens",
-  "version": "0.1.0",
+  "version": "0.1.0-draft.1",
+  "description": "Compiled Millar Design Tokens (CSS custom properties, Tailwind v4 @theme inline, Tailwind v3 preset, literal AntD 6 mirrors, DTCG 2025.10 JSON, and SSoT Registry).",
+  "license": "MIT",
+  "homepage": "https://hahlex.com/millar",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hahlex/millar.git",
+    "directory": "packages/tokens"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
-  "description": "Compiled Millar Design Tokens (CSS custom properties, Tailwind v4 @theme inline, Tailwind v3 preset, literal TS/AntD mirrors, DTCG 2025.10 JSON, and SSoT Registry).",
+  "main": "./dist/tokens.js",
+  "types": "./dist/tokens.d.ts",
   "exports": {
-    ".": "./dist/tokens.js",
+    ".": {
+      "types": "./dist/tokens.d.ts",
+      "import": "./dist/tokens.js"
+    },
     "./ts": "./dist/tokens.ts",
     "./css": "./dist/tokens.css",
     "./tailwind": "./dist/tailwind.css",
@@ -13,6 +28,9 @@
     "./registry": "./dist/millar-registry.json",
     "./education.css": "./dist/education.css"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "node -e \"const fs=require('fs'); if(!fs.existsSync('dist/tokens.css')) { console.error('Run pnpm compile first'); process.exit(1); }\"",
     "typecheck": "tsc --noEmit"
