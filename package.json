@@ -1,0 +1,26 @@
+{
+  "name": "@hahlex/millar-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Millar: Official Hahlex Design System (Foundations, Marketing, Product, Portal & MCP Server)",
+  "packageManager": "pnpm@12.18.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "compile": "pnpm --filter @hahlex/millar-core run compile",
+    "build": "pnpm run compile && pnpm --filter @hahlex/millar-tokens run build && pnpm --filter @hahlex/millar-validator run build && pnpm --filter @hahlex/millar-ui run build && pnpm --filter @hahlex/millar-marketing run build && pnpm --filter @hahlex/millar-domain-education run build && pnpm --filter @hahlex/millar-mcp run build && pnpm --filter @hahlex/millar-portal run build",
+    "typecheck": "pnpm -r --if-present run typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:em-dash": "node scripts/check-em-dash.mjs",
+    "check:governance": "node scripts/check-governance.mjs",
+    "verify": "pnpm run check:em-dash && pnpm run check:governance && pnpm run typecheck && pnpm run test"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "tsx": "^4.19.4",
+    "typescript": "^5.8.3",
+    "vitest": "^3.1.4"
+  }
+}
