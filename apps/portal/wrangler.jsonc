@@ -4,6 +4,12 @@
   "main": "./worker.ts",
   "compatibility_date": "2026-01-01",
   "workers_dev": true,
+  "routes": [
+    {
+      "pattern": "millar.hahlex.com",
+      "custom_domain": true
+    }
+  ],
   "assets": {
     "directory": "./out",
     "binding": "ASSETS",
