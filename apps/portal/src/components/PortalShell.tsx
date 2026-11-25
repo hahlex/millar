@@ -6,13 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import registry from "@hahlex/millar-tokens/registry";
 import { Badge, Button, ChoiceToggle, Dialog, IconClose, IconMenu, IconSearch } from "@hahlex/millar-ui";
 import { HahlexLockup, MillarSiteFooter } from "@hahlex/millar-marketing";
-
-const NAV_ITEMS = [
-  { href: "/foundations", label: "Foundations" },
-  { href: "/marketing", label: "Marketing" },
-  { href: "/product", label: "Product" },
-  { href: "/resources", label: "Resources" },
-] as const;
+import { FLAT_NAV_ITEMS, SIDEBAR_GROUPS, normalizePath } from "@/lib/navigation";
+import { DocPagination } from "./DocPrimitives";
 
 interface SearchEntry {
   id: string;
@@ -20,12 +15,13 @@ interface SearchEntry {
   title: string;
   summary: string;
   href: string;
-  status: string;
 }
 
 export function PortalShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
+  const activePath = normalizePath(pathname);
+
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [locale, setLocale] = useState<"en" | "vi">("en");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -53,37 +49,125 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
 
   const searchIndex = useMemo<SearchEntry[]>(() => {
     const entries: SearchEntry[] = [];
-    for (const g of registry.guidelines) {
-      entries.push({ id: `g-${g.id}`, kind: "Guideline", title: g.title, summary: g.summary, href: g.register === "marketing" ? "/marketing" : g.register === "product" ? "/product" : "/foundations", status: g.status });
+    for (const item of FLAT_NAV_ITEMS) {
+      entries.push({
+        id: `nav-${item.href}`,
+        kind: item.section,
+        title: item.label,
+        summary: `Documentation page · ${item.href}`,
+        href: item.href,
+      });
     }
     for (const c of registry.components) {
-      entries.push({ id: `c-${c.id}`, kind: "Component", title: c.name, summary: c.summary, href: "/product", status: c.status });
+      entries.push({
+        id: `c-${c.id}`,
+        kind: "Component",
+        title: c.name,
+        summary: c.summary,
+        href: `/components/${c.id}`,
+      });
     }
     for (const p of registry.compositionPatterns) {
-      entries.push({ id: `p-${p.id}`, kind: "Composition", title: p.name, summary: p.summary, href: "/marketing", status: p.status });
+      entries.push({
+        id: `p-${p.id}`,
+        kind: "Composition",
+        title: p.name,
+        summary: p.summary,
+        href: "/marketing/compositions",
+      });
     }
     for (const v of registry.visualAssets) {
-      entries.push({ id: `v-${v.id}`, kind: "Visual Asset", title: v.name, summary: v.summary, href: "/marketing", status: v.status });
+      entries.push({
+        id: `v-${v.id}`,
+        kind: "Visual Asset",
+        title: v.name,
+        summary: v.summary,
+        href: "/marketing/visual-assets",
+      });
     }
     for (const s of registry.sections) {
-      entries.push({ id: `s-${s.id}`, kind: "Section", title: s.name, summary: s.summary, href: "/marketing", status: s.status });
+      entries.push({
+        id: `s-${s.id}`,
+        kind: "Section",
+        title: s.name,
+        summary: s.summary,
+        href: "/marketing/sections",
+      });
     }
     for (const t of registry.templates) {
-      entries.push({ id: `t-${t.id}`, kind: "Template", title: t.name, summary: t.summary, href: t.register === "marketing" ? "/marketing" : "/product", status: t.status });
+      entries.push({
+        id: `t-${t.id}`,
+        kind: "Template",
+        title: t.name,
+        summary: t.summary,
+        href: t.register === "marketing" ? "/marketing/templates" : "/components/templates",
+      });
     }
     for (const tok of registry.tokens.light.slice(0, 40)) {
-      entries.push({ id: `tok-${tok.path}`, kind: "Token", title: tok.cssVar, summary: `${tok.value} · ${tok.description}`, href: "/foundations", status: "draft" });
+      entries.push({
+        id: `tok-${tok.path}`,
+        kind: "Token",
+        title: tok.cssVar,
+        summary: `${tok.value} · ${tok.description}`,
+        href: "/foundations/tokens",
+      });
     }
     return entries;
   }, []);
 
   const searchHits = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return searchIndex.slice(0, 8);
+    if (!q) return searchIndex.slice(0, 10);
     return searchIndex
       .filter((e) => e.title.toLowerCase().includes(q) || e.summary.toLowerCase().includes(q) || e.kind.toLowerCase().includes(q))
-      .slice(0, 12);
+      .slice(0, 14);
   }, [query, searchIndex]);
+
+  const renderSidebarTree = (onSelect?: () => void) => (
+    <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+      {SIDEBAR_GROUPS.map((group) => (
+        <div key={group.title} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+          <div
+            style={{
+              padding: "0 10px 4px",
+              fontSize: "var(--text-micro, 0.75rem)",
+              fontWeight: 600,
+              color: "var(--fg-default)",
+              letterSpacing: "0.01em",
+            }}
+          >
+            {group.title}
+          </div>
+          {group.items.map((item) => {
+            const isActive = activePath === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                aria-current={isActive ? "page" : undefined}
+                onClick={onSelect}
+                className="portal-sidebar-link millar-focus"
+              >
+                <span>{item.label}</span>
+                {item.badge ? (
+                  <span
+                    className="tabular-nums"
+                    style={{
+                      fontFamily: "var(--font-mono)",
+                      fontSize: "var(--text-micro, 0.75rem)",
+                      color: isActive ? "var(--tone-brand-fg)" : "var(--fg-subtle)",
+                    }}
+                  >
+                    {item.badge}
+                  </span>
+                ) : null}
+              </Link>
+            );
+          })}
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "var(--bg-app)", color: "var(--fg-default)" }}>
@@ -112,61 +196,39 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
         Skip to main content
       </a>
 
+      {/* Slim Sticky Portal Utility Header (56px) */}
       <header
         style={{
           position: "sticky",
           top: 0,
+          height: 56,
           zIndex: "var(--z-nav, 60)" as unknown as number,
           backgroundColor: "var(--bg-sidebar)",
           borderBottom: "1px solid var(--border-default)",
+          display: "flex",
+          alignItems: "center",
         }}
       >
         <div
           style={{
-            maxWidth: 1320,
+            maxWidth: 1440,
+            width: "100%",
             margin: "0 auto",
-            padding: "12px clamp(16px, 3vw, 32px)",
+            padding: "0 clamp(14px, 2.5vw, 24px)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
-            gap: 16,
+            gap: 12,
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <Link href="/" className="millar-focus" style={{ textDecoration: "none", borderRadius: 8 }}>
-              <HahlexLockup variant={theme === "dark" ? "on-dark" : "color"} size={26} sublabel="Millar" />
+              <HahlexLockup variant={theme === "dark" ? "on-dark" : "color"} size={24} sublabel="Millar" />
             </Link>
-            <span className="portal-nav-desktop">
+            <span className="portal-desktop-only">
               <Badge tone="brand">v{registry.version} Draft</Badge>
             </span>
           </div>
-
-          <nav aria-label="Primary navigation" className="portal-nav-desktop" style={{ alignItems: "center", gap: 4 }}>
-            {NAV_ITEMS.map((item) => {
-              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  className="millar-focus"
-                  style={{
-                    padding: "7px 12px",
-                    borderRadius: "var(--radius-sm, 8px)",
-                    border: "1px solid",
-                    borderColor: active ? "var(--tone-brand-border)" : "transparent",
-                    backgroundColor: active ? "var(--tone-brand-soft)" : "transparent",
-                    color: active ? "var(--tone-brand-fg)" : "var(--fg-muted)",
-                    fontSize: "var(--text-body-sm, 0.875rem)",
-                    fontWeight: active ? 600 : 500,
-                    textDecoration: "none",
-                  }}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-          </nav>
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
             <Button
@@ -176,13 +238,15 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
               aria-label="Search Millar (Ctrl+K)"
               icon={<IconSearch size="sm" />}
             >
-              <span className="portal-nav-desktop" style={{ gap: 6, alignItems: "center" }}>
-                <span>Search</span>
-                <kbd style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro, 0.75rem)", color: "var(--fg-muted)" }}>Ctrl K</kbd>
+              <span className="portal-desktop-only" style={{ gap: 10, alignItems: "center" }}>
+                <span style={{ color: "var(--fg-muted)" }}>Search documentation...</span>
+                <kbd style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro, 0.75rem)", color: "var(--fg-muted)" }}>
+                  Ctrl K
+                </kbd>
               </span>
             </Button>
 
-            <div className="portal-nav-desktop" style={{ gap: 8, alignItems: "center" }}>
+            <div className="portal-desktop-only" style={{ gap: 8, alignItems: "center" }}>
               <ChoiceToggle
                 label="Theme"
                 value={theme}
@@ -203,7 +267,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
               />
             </div>
 
-            <span className="portal-nav-mobile-trigger">
+            <span className="portal-mobile-only">
               <Button
                 variant="white"
                 size="sm"
@@ -216,80 +280,70 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
             </span>
           </div>
         </div>
-
-        {/* Accessible Mobile Navigation Panel (fixes missing mobile nav found in Audit 02) */}
-        {mobileMenuOpen ? (
-          <nav
-            aria-label="Mobile navigation"
-            style={{
-              padding: "12px 16px 18px",
-              borderTop: "1px solid var(--border-default)",
-              backgroundColor: "var(--bg-surface)",
-              display: "flex",
-              flexDirection: "column",
-              gap: 10,
-            }}
-          >
-            {NAV_ITEMS.map((item) => {
-              const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  aria-current={active ? "page" : undefined}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="millar-focus"
-                  style={{
-                    padding: "10px 12px",
-                    borderRadius: "var(--radius-sm, 8px)",
-                    backgroundColor: active ? "var(--tone-brand-soft)" : "var(--bg-surface-2)",
-                    color: active ? "var(--tone-brand-fg)" : "var(--fg-default)",
-                    fontWeight: 500,
-                    textDecoration: "none",
-                  }}
-                >
-                  {item.label}
-                </Link>
-              );
-            })}
-            <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingTop: 6 }}>
-              <ChoiceToggle
-                label="Mobile theme"
-                value={theme}
-                onChange={setTheme}
-                options={[
-                  { value: "light", label: "Light" },
-                  { value: "dark", label: "Dark" },
-                ]}
-              />
-              <ChoiceToggle
-                label="Mobile specimen language"
-                value={locale}
-                onChange={setLocale}
-                options={[
-                  { value: "en", label: "EN" },
-                  { value: "vi", label: "VI" },
-                ]}
-              />
-            </div>
-          </nav>
-        ) : null}
       </header>
 
-      <main id="portal-main" tabIndex={-1} style={{ flex: 1 }}>
-        {children}
-      </main>
+      {/* Accessible Mobile Navigation Drawer (<= 960px) */}
+      {mobileMenuOpen ? (
+        <nav
+          aria-label="Mobile navigation"
+          style={{
+            padding: "16px 16px 24px",
+            borderBottom: "1px solid var(--border-default)",
+            backgroundColor: "var(--bg-surface)",
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+            maxHeight: "75vh",
+            overflowY: "auto",
+          }}
+        >
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingBottom: 12, borderBottom: "1px solid var(--border-soft)" }}>
+            <ChoiceToggle
+              label="Mobile theme"
+              value={theme}
+              onChange={setTheme}
+              options={[
+                { value: "light", label: "Light" },
+                { value: "dark", label: "Dark" },
+              ]}
+            />
+            <ChoiceToggle
+              label="Mobile specimen language"
+              value={locale}
+              onChange={setLocale}
+              options={[
+                { value: "en", label: "EN" },
+                { value: "vi", label: "VI" },
+              ]}
+            />
+          </div>
+          {renderSidebarTree(() => setMobileMenuOpen(false))}
+        </nav>
+      ) : null}
 
+      {/* Geist-Style Two-Column Documentation Body */}
+      <div className="portal-shell-body">
+        <aside aria-label="Millar documentation navigation" className="portal-sidebar-desktop">
+          <nav aria-label="Primary documentation">{renderSidebarTree()}</nav>
+        </aside>
+
+        <main id="portal-main" tabIndex={-1} className="portal-main-canvas">
+          {children}
+          <DocPagination />
+        </main>
+      </div>
+
+      {/* Semantic Top-Level Footer strictly outside <main> */}
       <MillarSiteFooter version={`v${registry.version}-draft · DTCG ${registry.dtcgSpecVersion}`} />
 
-      <Dialog open={searchOpen} onClose={() => setSearchOpen(false)} title="Search Millar Single Source of Truth">
+      <Dialog open={searchOpen} onClose={() => setSearchOpen(false)} title="Search Millar Design System">
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           <input
             type="search"
             autoFocus
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search tokens, components, visual assets, composition patterns..."
+            placeholder="Search colors, typography, button, visual assets, tokens..."
             aria-label="Search Millar catalog"
             className="millar-focus"
             style={{
@@ -303,7 +357,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
               fontSize: "var(--text-body-sm, 0.875rem)",
             }}
           />
-          <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 340, overflowY: "auto" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, maxHeight: 360, overflowY: "auto" }}>
             {searchHits.map((hit) => (
               <button
                 key={hit.id}

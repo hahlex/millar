@@ -1,325 +1,407 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
 import registry from "@hahlex/millar-tokens/registry";
-import { Card, IconArrowRight, IconCode, IconLayers, IconPalette, IconShield } from "@hahlex/millar-ui";
 import {
-  BentoNarrativeMosaic,
-  ConcentricArcCanvas,
-  CoordinateGridSurface,
-  DataTableSpecimenFrame,
-  PaperTearDivider,
-  ProductStageShowcase,
-  WarmHorizonWash,
-} from "@hahlex/millar-marketing";
+  Badge,
+  DataTable,
+  IconCode,
+  IconLayers,
+  IconPalette,
+  IconSearch,
+  IconSettings,
+  IconShield,
+  IconUsers,
+} from "@hahlex/millar-ui";
+import { ConcentricArcCanvas, HahlexMark } from "@hahlex/millar-marketing";
+import { DocHeader, SpecimenFrame } from "@/components/DocPrimitives";
+import { CodeCopyBox } from "@/components/CodeCopyBox";
 
-export default function MillarHomePage() {
-  const [heroRegister, setHeroRegister] = useState<"marketing" | "product">("marketing");
+interface DirectoryTile {
+  href: string;
+  section: string;
+  title: string;
+  caption: string;
+  preview: React.ReactNode;
+}
+
+export default function MillarIntroductionPage() {
+  const tiles: DirectoryTile[] = [
+    {
+      href: "/foundations/colors",
+      section: "Foundations",
+      title: "Colors & Themes",
+      caption: "OKLCH Warm Sand, Bronze, Espresso, Status & CVD-safe Data-Viz",
+      preview: (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6, width: "100%" }}>
+          {[
+            "var(--bg-editorial)",
+            "var(--accent-soft)",
+            "var(--accent-editorial)",
+            "var(--accent)",
+            "var(--status-success)",
+            "var(--bg-stage-dark)",
+          ].map((c) => (
+            <span
+              key={c}
+              style={{
+                height: 44,
+                borderRadius: 8,
+                backgroundColor: c,
+                border: "1px solid var(--border-default)",
+                display: "block",
+              }}
+            />
+          ))}
+        </div>
+      ),
+    },
+    {
+      href: "/foundations/typography",
+      section: "Foundations",
+      title: "Typography",
+      caption: "Geist Sans (300-600), Inter (Body/UI), Geist Mono + :lang(vi)",
+      preview: (
+        <div style={{ display: "flex", alignItems: "baseline", gap: 14 }}>
+          <span style={{ fontFamily: "var(--font-display)", fontSize: 40, fontWeight: 300, lineHeight: 1, letterSpacing: "-0.02em" }}>
+            Aa
+          </span>
+          <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <span style={{ fontFamily: "var(--font-display)", fontSize: 14, fontWeight: 500 }}>Geist · Inter · Mono</span>
+            <span style={{ fontFamily: "var(--font-sans)", fontSize: 12.5, color: "var(--fg-muted)" }}>Tiếng Việt không cắt dấu</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      href: "/foundations/brand",
+      section: "Foundations",
+      title: "Brand & Logo",
+      caption: "Canonical Vector Arch + 3 Pillars & Geist 600 wordmark",
+      preview: (
+        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+          <div
+            style={{
+              padding: "10px 14px",
+              borderRadius: 10,
+              backgroundColor: "var(--bg-editorial)",
+              border: "1px solid var(--border-default)",
+            }}
+          >
+            <HahlexMark variant="color" size={28} />
+          </div>
+          <div
+            style={{
+              padding: "10px 14px",
+              borderRadius: 10,
+              backgroundColor: "var(--bg-stage-dark)",
+              border: "1px solid var(--border-stage-dark)",
+            }}
+          >
+            <HahlexMark variant="on-dark" size={28} />
+          </div>
+        </div>
+      ),
+    },
+    {
+      href: "/foundations/icons",
+      section: "Foundations",
+      title: "Icons (54)",
+      caption: "Single 1.5px stroke semantic Lucide registry",
+      preview: (
+        <div style={{ display: "flex", alignItems: "center", gap: 14, color: "var(--fg-default)" }}>
+          <IconPalette size="lg" />
+          <IconLayers size="lg" />
+          <IconShield size="lg" />
+          <IconSearch size="lg" />
+          <IconCode size="lg" />
+          <IconUsers size="lg" />
+          <IconSettings size="lg" />
+        </div>
+      ),
+    },
+    {
+      href: "/marketing/visual-assets",
+      section: "Marketing",
+      title: "Visual Assets (14)",
+      caption: "Photo-free SVG, CSS, Canvas & React craft plates",
+      preview: (
+        <div style={{ width: "100%", borderRadius: 10, overflow: "hidden" }}>
+          <ConcentricArcCanvas tone="dark" height={86} />
+        </div>
+      ),
+    },
+    {
+      href: "/marketing/compositions",
+      section: "Marketing",
+      title: "Composition Patterns (6)",
+      caption: "Editorial Split, Spatial Stage, Bento Mosaic, Poster, Grid, Loop",
+      preview: (
+        <div style={{ display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 6, width: "100%" }}>
+          <div style={{ height: 48, borderRadius: 8, backgroundColor: "var(--bg-editorial-card)", border: "1px solid var(--border-default)" }} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ flex: 1, borderRadius: 6, backgroundColor: "var(--bg-stage-dark)" }} />
+            <div style={{ flex: 1, borderRadius: 6, backgroundColor: "var(--tone-brand-soft)", border: "1px solid var(--tone-brand-border)" }} />
+          </div>
+        </div>
+      ),
+    },
+    {
+      href: "/components/button",
+      section: "Components",
+      title: "Button",
+      caption: "7 semantic variants, async double-click guard, outlined dark danger",
+      preview: (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+          <span
+            style={{
+              padding: "6px 12px",
+              borderRadius: 8,
+              backgroundColor: "var(--accent)",
+              color: "var(--fg-on-accent)",
+              fontSize: 12.5,
+              fontWeight: 500,
+            }}
+          >
+            Primary
+          </span>
+          <span
+            style={{
+              padding: "6px 12px",
+              borderRadius: 8,
+              backgroundColor: "var(--bg-surface)",
+              border: "1px solid var(--border-default)",
+              color: "var(--fg-default)",
+              fontSize: 12.5,
+              fontWeight: 500,
+            }}
+          >
+            White
+          </span>
+          <span
+            style={{
+              padding: "6px 12px",
+              borderRadius: 8,
+              backgroundColor: "var(--bg-surface)",
+              border: "1px solid var(--status-error)",
+              color: "var(--status-error)",
+              fontSize: 12.5,
+              fontWeight: 500,
+            }}
+          >
+            Danger
+          </span>
+        </div>
+      ),
+    },
+    {
+      href: "/components/data-table",
+      section: "Components",
+      title: "DataTable & FilterBar",
+      caption: "Zero-scrollbar tables, '-' empty cells, mobile cards",
+      preview: (
+        <div
+          style={{
+            width: "100%",
+            borderRadius: 8,
+            border: "1px solid var(--border-default)",
+            overflow: "hidden",
+            fontSize: 12,
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", padding: "5px 10px", backgroundColor: "var(--bg-surface-2)", color: "var(--fg-muted)", fontWeight: 500 }}>
+            <span>Token</span>
+            <span>Ratio</span>
+          </div>
+          <div style={{ display: "flex", justifyContent: "space-between", padding: "5px 10px", borderTop: "1px solid var(--border-soft)", fontFamily: "var(--font-mono)" }}>
+            <span>--fg-default</span>
+            <span style={{ color: "var(--status-success)" }}>16.03:1</span>
+          </div>
+        </div>
+      ),
+    },
+    {
+      href: "/resources/mcp",
+      section: "Resources",
+      title: "MCP Server & Agents",
+      caption: "11 read-only Tools, 66 millar:// Resources & 3 Prompts",
+      preview: (
+        <div
+          style={{
+            width: "100%",
+            padding: "8px 10px",
+            borderRadius: 8,
+            backgroundColor: "var(--bg-stage-dark)",
+            color: "var(--fg-on-stage-dark)",
+            fontFamily: "var(--font-mono)",
+            fontSize: 12,
+          }}
+        >
+          <div>millar://guidelines/invariants</div>
+          <div style={{ color: "var(--fg-accent-on-stage-dark)" }}>validate_design(register)</div>
+        </div>
+      ),
+    },
+  ];
 
   return (
-    <div>
-      {/* Signature Opening: Measured Warmth Spatial Stage */}
-      <section style={{ padding: "clamp(28px, 4vw, 56px) clamp(16px, 4vw, 48px)", backgroundColor: "var(--bg-editorial)" }}>
-        <WarmHorizonWash intensity="editorial" style={{ maxWidth: 1320, margin: "0 auto", padding: "clamp(28px, 5vw, 60px)" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "clamp(28px, 4vw, 56px)", alignItems: "center" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-              <h1
-                style={{
-                  margin: 0,
-                  fontFamily: "var(--font-display)",
-                  fontSize: "clamp(2.4rem, 5vw, 4rem)",
-                  fontWeight: 300,
-                  lineHeight: "var(--leading-display-hero, 1.08)",
-                  letterSpacing: "var(--tracking-display, -0.02em)",
-                  color: "var(--fg-on-stage-dark)",
-                }}
-              >
-                Millar is Hahlex&apos;s measured language for craft, clarity, and AI builders.
-              </h1>
-              <p
-                style={{
-                  margin: 0,
-                  maxWidth: 560,
-                  fontSize: "var(--text-lead, 1.125rem)",
-                  lineHeight: 1.55,
-                  color: "var(--fg-muted-on-stage-dark)",
-                }}
-              >
-                One W3C DTCG 2025.10 Single Source of Truth powering Shared Foundations, photo-free Marketing visual systems, accessible Product primitives, and the Millar MCP Server.
-              </p>
-
-              <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", paddingTop: 4 }}>
-                <Link
-                  href="/foundations"
-                  className="millar-focus"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 8,
-                    height: 44,
-                    padding: "0 18px",
-                    borderRadius: "var(--radius-control, 10px)",
-                    border: "1px solid var(--accent-on-stage-dark)",
-                    backgroundColor: "var(--accent-on-stage-dark)",
-                    color: "var(--fg-on-accent)",
-                    fontSize: "var(--text-body, 0.9375rem)",
-                    fontWeight: 500,
-                    textDecoration: "none",
-                  }}
-                >
-                  <span>Explore Foundations</span>
-                  <IconArrowRight size="md" />
-                </Link>
-                <Link
-                  href="/marketing"
-                  className="millar-focus"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 8,
-                    height: 44,
-                    padding: "0 18px",
-                    borderRadius: "var(--radius-control, 10px)",
-                    border: "1px solid var(--border-stage-dark)",
-                    backgroundColor: "transparent",
-                    color: "var(--fg-on-stage-dark)",
-                    fontSize: "var(--text-body, 0.9375rem)",
-                    fontWeight: 500,
-                    textDecoration: "none",
-                  }}
-                >
-                  Visual Asset Gallery
-                </Link>
-                <Link
-                  href="/resources"
-                  className="millar-focus"
-                  style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: 6,
-                    padding: "6px 4px",
-                    borderRadius: "var(--radius-sm, 8px)",
-                    color: "var(--fg-accent-on-stage-dark)",
-                    fontSize: "var(--text-body-sm, 0.875rem)",
-                    fontWeight: 500,
-                    textDecoration: "underline",
-                    textUnderlineOffset: "3px",
-                  }}
-                >
-                  <span>MCP Server</span>
-                  <IconArrowRight size="sm" />
-                </Link>
-              </div>
-
-              <dl
-                style={{
-                  margin: "12px 0 0",
-                  paddingTop: 20,
-                  borderTop: "1px solid var(--border-stage-dark)",
-                  display: "grid",
-                  gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
-                  gap: 14,
-                }}
-              >
-                {[
-                  { value: `${registry.contrastSummary.passed}/${registry.contrastSummary.totalChecked}`, label: "WCAG AA Pairs" },
-                  { value: String(registry.compositionPatterns.length), label: "Compositions" },
-                  { value: String(registry.visualAssets.length), label: "Visual Assets" },
-                  { value: "11", label: "MCP Tools" },
-                ].map((stat) => (
-                  <div key={stat.label} style={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                    <dd className="tabular-nums" style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "1.5rem", fontWeight: 300, color: "var(--fg-accent-on-stage-dark)" }}>
-                      {stat.value}
-                    </dd>
-                    <dt style={{ fontSize: "var(--text-micro, 0.75rem)", color: "var(--fg-muted-on-stage-dark)" }}>{stat.label}</dt>
-                  </div>
-                ))}
-              </dl>
-            </div>
-
-            {/* Live interactive Register switcher inside the opening stage */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
-                <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro, 0.75rem)", color: "var(--fg-muted-on-stage-dark)" }}>
-                  Live Register Proof
-                </span>
-                <div style={{ display: "inline-flex", gap: 6 }}>
-                  {(["marketing", "product"] as const).map((reg) => (
-                    <button
-                      key={reg}
-                      type="button"
-                      aria-pressed={heroRegister === reg}
-                      onClick={() => setHeroRegister(reg)}
-                      className="millar-focus"
-                      style={{
-                        padding: "5px 12px",
-                        borderRadius: "var(--radius-pill, 9999px)",
-                        border: `1px solid ${heroRegister === reg ? "var(--fg-accent-on-stage-dark)" : "var(--border-stage-dark)"}`,
-                        backgroundColor: heroRegister === reg ? "var(--accent-on-stage-dark)" : "var(--bg-stage-dark-card)",
-                        color: "var(--fg-on-accent)",
-                        fontSize: "var(--text-micro, 0.75rem)",
-                        fontWeight: 500,
-                        cursor: "pointer",
-                      }}
-                    >
-                      {reg === "marketing" ? "Marketing Register" : "Product Register"}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              {heroRegister === "marketing" ? (
-                <ConcentricArcCanvas tone="dark" height={290} caption="Measured Warmth · Code-Native Shelter Arch Geometry (0 Photos)" />
-              ) : (
-                <DataTableSpecimenFrame />
-              )}
-            </div>
-          </div>
-        </WarmHorizonWash>
-      </section>
-
-      {/* Four Entry Portals built on Architectural Visible-Rule Grid */}
-      <section style={{ padding: "clamp(40px, 6vw, 72px) clamp(16px, 4vw, 48px)", backgroundColor: "var(--bg-editorial)" }}>
-        <div style={{ maxWidth: 1280, margin: "0 auto", display: "flex", flexDirection: "column", gap: 24 }}>
-          <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.75rem, 3vw, 2.35rem)", fontWeight: 300 }}>
-            Three cohesive tiers, one single source of truth
-          </h2>
-          <CoordinateGridSurface surface="base" showCrosshairs>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))" }}>
-              {[
-                {
-                  href: "/foundations",
-                  icon: <IconPalette size="md" />,
-                  code: "TIER 01 · SHARED",
-                  title: "Shared Foundations",
-                  desc: "Unified Geist + Inter + Geist Mono typography (:lang(vi) safe), OKLCH Warm Sand/Bronze/Espresso tokens, canonical SVG marks, and WCAG 2.1 AA rules.",
-                },
-                {
-                  href: "/marketing",
-                  icon: <IconLayers size="md" />,
-                  code: "TIER 02 · PERSUADE",
-                  title: "Marketing Design",
-                  desc: "6 diverse Composition Patterns, 12 code-native zero-photo Visual Assets, Expressive Motion, 10 Marketing Sections, and visual Do/Don't proofs.",
-                },
-                {
-                  href: "/product",
-                  icon: <IconShield size="md" />,
-                  code: "TIER 03 · OPERATE",
-                  title: "Product & App System",
-                  desc: "Zero-gradient accessible React primitives, Ant Design 6 literal theme adapter, APG keyboard contracts, and decoupled Education domain extension.",
-                },
-                {
-                  href: "/resources",
-                  icon: <IconCode size="md" />,
-                  code: "AI AGENT · MCP",
-                  title: "Millar MCP & Assets",
-                  desc: "11 MCP tools, cacheable millar:// Resources, 3 Prompts, deterministic vs. aesthetic validator, and downloadable brand & poster kits.",
-                },
-              ].map((entry, i) => (
-                <Link
-                  key={entry.href}
-                  href={entry.href}
-                  className="millar-focus"
-                  style={{
-                    padding: "26px 24px",
-                    borderRight: i % 2 === 0 ? "1px solid var(--border-default)" : "none",
-                    borderBottom: i < 2 ? "1px solid var(--border-default)" : "none",
-                    textDecoration: "none",
-                    color: "var(--fg-default)",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 10,
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                    <code style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro, 0.75rem)", color: "var(--fg-accent)" }}>
-                      {entry.code}
-                    </code>
-                    <span style={{ color: "var(--fg-accent)" }}>{entry.icon}</span>
-                  </div>
-                  <h3 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-section-title, 1.125rem)", fontWeight: 600 }}>
-                    {entry.title}
-                  </h3>
-                  <p style={{ margin: 0, fontSize: "var(--text-body-sm, 0.875rem)", lineHeight: 1.55, color: "var(--fg-muted)" }}>
-                    {entry.desc}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </CoordinateGridSurface>
-        </div>
-      </section>
-
-      <PaperTearDivider topColor="var(--bg-editorial)" bottomColor="var(--bg-stage-dark)" />
-      <ProductStageShowcase heading="Inspect Millar live across registers and agents" />
-      <BentoNarrativeMosaic
-        heading="Solved at the root: visual polish with zero stock photos"
-        lead="Every visual asset, section, and template ships with live preview, copyable React code, responsive rules, and machine-readable MCP metadata."
+    <div style={{ display: "flex", flexDirection: "column", gap: 40 }}>
+      <DocHeader
+        section="Overview"
+        title="Millar Design System"
+        description="Official, product-agnostic design language for the Hahlex ecosystem. Compiled from one W3C DTCG 2025.10 Single Source of Truth into Shared Foundations, Photo-Free Marketing Visual Language, Accessible Product Components, and the Millar MCP Server."
+        badges={[
+          { label: `W3C DTCG ${registry.dtcgSpecVersion}`, tone: "neutral" },
+          { label: `${registry.contrastSummary.passed}/${registry.contrastSummary.totalChecked} WCAG AA`, tone: "success" },
+        ]}
       />
 
-      {/* Brand Philosophy Poster Preview Strip */}
-      <section style={{ padding: "clamp(48px, 7vw, 80px) clamp(16px, 4vw, 48px)", backgroundColor: "var(--bg-editorial)" }}>
-        <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))", gap: 36, alignItems: "center" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.85rem, 3.2vw, 2.5rem)", fontWeight: 300, lineHeight: 1.15 }}>
-              Tactile warmth calibrated like an architectural instrument.
-            </h2>
-            <p style={{ margin: 0, maxWidth: "60ch", fontSize: "var(--text-body, 0.9375rem)", lineHeight: 1.6, color: "var(--fg-muted)" }}>
-              From archival Warm Cream and Deep Espresso stages to Josef Albers mineral surface steps, Millar gives designers and AI coding agents an unmistakable Hahlex visual voice without copying Vercel, Linear, or ElevenLabs.
-            </p>
-            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", paddingTop: 6 }}>
-              <a
-                href="/millar/brand/measured-warmth-poster.pdf"
-                download
-                className="millar-focus"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  height: 40,
-                  padding: "0 14px",
-                  borderRadius: "var(--radius-control, 10px)",
-                  border: "1px solid var(--accent)",
-                  backgroundColor: "var(--accent)",
-                  color: "var(--fg-on-accent)",
-                  fontSize: "var(--text-body-sm, 0.875rem)",
-                  fontWeight: 500,
-                  textDecoration: "none",
-                }}
-              >
-                Download Specimen PDF
-              </a>
-              <Link
-                href="/marketing"
-                className="millar-focus"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  height: 40,
-                  padding: "0 14px",
-                  borderRadius: "var(--radius-control, 10px)",
-                  border: "1px solid var(--border-default)",
-                  backgroundColor: "var(--bg-surface)",
-                  color: "var(--fg-default)",
-                  fontSize: "var(--text-body-sm, 0.875rem)",
-                  fontWeight: 500,
-                  textDecoration: "none",
-                }}
-              >
-                Inspect 6 Composition Patterns
-              </Link>
-            </div>
+      {/* Compact System Metrics Strip */}
+      <dl
+        style={{
+          margin: 0,
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+          gap: 12,
+        }}
+      >
+        {[
+          { value: `${registry.contrastSummary.passed}/${registry.contrastSummary.totalChecked}`, label: "WCAG AA Contrast Pairs" },
+          { value: String(registry.components.length), label: "Product UI Primitives" },
+          { value: String(registry.compositionPatterns.length), label: "Marketing Compositions" },
+          { value: String(registry.visualAssets.length), label: "Code-Native Assets" },
+          { value: "11", label: "MCP Tools + 66 Resources" },
+        ].map((item) => (
+          <div
+            key={item.label}
+            style={{
+              padding: "14px 16px",
+              borderRadius: "var(--radius-md, 12px)",
+              border: "1px solid var(--border-default)",
+              backgroundColor: "var(--bg-surface)",
+              display: "flex",
+              flexDirection: "column",
+              gap: 4,
+            }}
+          >
+            <dd
+              className="tabular-nums"
+              style={{
+                margin: 0,
+                fontFamily: "var(--font-display)",
+                fontSize: "1.5rem",
+                fontWeight: 300,
+                color: "var(--fg-accent)",
+              }}
+            >
+              {item.value}
+            </dd>
+            <dt style={{ fontSize: "var(--text-micro, 0.75rem)", color: "var(--fg-muted)" }}>{item.label}</dt>
           </div>
-          <Card surface="base" padding="compact">
-            <img
-              src="/millar/brand/measured-warmth-poster.png"
-              alt="Millar Measured Warmth Specimen Plate 01 poster featuring concentric shelter arcs, three ascending pillars, and calibrated Warm Sand to Espresso mineral swatches"
-              width={800}
-              height={1066}
-              style={{ width: "100%", height: "auto", borderRadius: "var(--radius-md, 12px)", display: "block" }}
-            />
-          </Card>
+        ))}
+      </dl>
+
+      {/* Geist-Style Visual Directory Grid */}
+      <section aria-labelledby="directory-heading" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div>
+          <h2 id="directory-heading" style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-page-title)", fontWeight: 600 }}>
+            Browse System Modules
+          </h2>
+          <p style={{ margin: "4px 0 0", fontSize: "var(--text-body-sm)", color: "var(--fg-muted)" }}>
+            Use the left navigation sidebar or jump directly into any foundation, marketing craft system, UI primitive, or AI resource.
+          </p>
+        </div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
+          {tiles.map((tile) => (
+            <Link key={tile.href} href={tile.href} className="portal-directory-card millar-focus">
+              <div
+                style={{
+                  minHeight: 112,
+                  padding: 16,
+                  backgroundColor: "var(--bg-surface-2)",
+                  borderBottom: "1px solid var(--border-soft)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {tile.preview}
+              </div>
+              <div style={{ padding: "12px 14px", display: "flex", flexDirection: "column", gap: 4 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8 }}>
+                  <strong style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-body-sm)", fontWeight: 600, color: "var(--fg-default)" }}>
+                    {tile.title}
+                  </strong>
+                  <Badge tone="neutral" dot={false}>
+                    {tile.section}
+                  </Badge>
+                </div>
+                <span style={{ fontSize: "var(--text-micro)", color: "var(--fg-muted)", lineHeight: 1.45 }}>{tile.caption}</span>
+              </div>
+            </Link>
+          ))}
         </div>
       </section>
+
+      {/* Three-Tier Architecture Matrix */}
+      <section aria-labelledby="arch-heading" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        <h2 id="arch-heading" style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-page-title)", fontWeight: 600 }}>
+          Three-Tier Architecture &amp; Register Boundaries
+        </h2>
+        <DataTable
+          caption="Millar architectural tiers and gradient/motion contracts"
+          columns={[
+            { key: "tier", header: "Tier / Package" },
+            { key: "purpose", header: "Role" },
+            { key: "gradients", header: "Gradient Policy" },
+            { key: "motion", header: "Motion Profile" },
+          ]}
+          rows={[
+            {
+              id: "shared",
+              tier: "Shared Foundations (@hahlex/millar-tokens)",
+              purpose: "Brand mark, Geist/Inter/Mono type, OKLCH palette, spacing, icons",
+              gradients: "Forbidden",
+              motion: "Shared base curves + reduced-motion",
+            },
+            {
+              id: "marketing",
+              tier: "Marketing Design (@hahlex/millar-marketing)",
+              purpose: "6 Composition Patterns, 14 photo-free Visual Assets, 10 Sections",
+              gradients: "Approved Visual Assets only (WarmHorizonWash)",
+              motion: "Expressive (280-640ms, static-first)",
+            },
+            {
+              id: "product",
+              tier: "Product/App UI (@hahlex/millar-ui)",
+              purpose: "10 accessible UI primitives, DataTable, APG Tabs, AntD 6 adapter",
+              gradients: "Strictly Forbidden",
+              motion: "Productive (140-320ms crisp ease)",
+            },
+            {
+              id: "ext",
+              tier: "Domain Extension (@hahlex/millar-domain-education)",
+              purpose: "Optional IELTS 4-skill badges & learner highlights (isolated from Core)",
+              gradients: "Strictly Forbidden",
+              motion: "Inherits Product register",
+            },
+          ]}
+          rowKey={(r) => r.id}
+        />
+      </section>
+
+      {/* Quick Start */}
+      <SpecimenFrame
+        title="Quick Start"
+        description="Install Millar tokens and UI primitives from the compiled Single Source of Truth."
+      >
+        <CodeCopyBox
+          title="globals.css & React usage"
+          code={`/* 1. Import generated Millar Tailwind v4 theme + tokens */\n@import "tailwindcss";\n@import "@hahlex/millar-tokens/tailwind";\n\n/* 2. Consume accessible primitives */\nimport { Button, Badge, DataTable } from "@hahlex/millar-ui";\nimport { HahlexLockup, WarmHorizonWash } from "@hahlex/millar-marketing";`}
+        />
+      </SpecimenFrame>
     </div>
   );
 }

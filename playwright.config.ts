@@ -14,7 +14,7 @@ export default defineConfig({
   webServer: {
     command: "node e2e/serve-portal.mjs",
     url: "http://127.0.0.1:4173/millar/",
-    reuseExistingServer: false,
+    reuseExistingServer: !process.env.CI,
     timeout: 15_000,
   },
 });

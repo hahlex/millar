@@ -8,13 +8,15 @@ fs.mkdirSync(SHOTS_DIR, { recursive: true });
 
 const ROUTES = [
   { path: "/millar/", name: "home" },
-  { path: "/millar/foundations/", name: "foundations" },
-  { path: "/millar/marketing/", name: "marketing" },
-  { path: "/millar/product/", name: "product" },
-  { path: "/millar/resources/", name: "resources" },
+  { path: "/millar/foundations/colors/", name: "foundations-colors" },
+  { path: "/millar/foundations/typography/", name: "foundations-typography" },
+  { path: "/millar/marketing/visual-assets/", name: "marketing-visual-assets" },
+  { path: "/millar/marketing/do-dont/", name: "marketing-do-dont" },
+  { path: "/millar/components/button/", name: "components-button" },
+  { path: "/millar/resources/mcp/", name: "resources-mcp" },
 ];
 
-test.describe("Millar Portal E2E, Real-Browser WCAG AA Accessibility & Visual Capture", () => {
+test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA & Visual Capture", () => {
   for (const route of ROUTES) {
     test(`renders ${route.path} cleanly with 0 console/404 errors and 0 axe-core WCAG AA violations (Light & Dark)`, async ({ page }) => {
       const consoleErrors: string[] = [];
@@ -34,6 +36,9 @@ test.describe("Millar Portal E2E, Real-Browser WCAG AA Accessibility & Visual Ca
       expect(consoleErrors, `Console errors on ${route.path}`).toEqual([]);
       expect(failedResponses, `Failed HTTP responses on ${route.path}`).toEqual([]);
 
+      // Verify persistent desktop sidebar navigation is visible
+      await expect(page.getByRole("navigation", { name: "Primary documentation" })).toBeVisible();
+
       // Verify single top-level <main> and top-level <footer> strictly outside <main>
       const landmarkCheck = await page.evaluate(() => {
         const mains = document.querySelectorAll("main");
@@ -52,7 +57,7 @@ test.describe("Millar Portal E2E, Real-Browser WCAG AA Accessibility & Visual Ca
       const overflowDesktop = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
       expect(overflowDesktop).toBe(false);
 
-      // Light mode axe-core WCAG 2.0/2.1/2.2 AA scan (excluding ONLY intentional "Don't" anti-pattern visual specimens)
+      // Light mode axe-core WCAG 2.0/2.1 AA scan (excluding ONLY intentional "Don't" anti-pattern visual specimens)
       const axeLight = await new AxeBuilder({ page })
         .exclude('[data-millar-antipattern-specimen="true"]')
         .withTags(["wcag2a", "wcag2aa", "wcag21aa"])
@@ -62,7 +67,7 @@ test.describe("Millar Portal E2E, Real-Browser WCAG AA Accessibility & Visual Ca
 
       await page.screenshot({ path: path.join(SHOTS_DIR, `${route.name}-desktop-light.png`), fullPage: false });
 
-      // Switch to Dark theme and wait for 140ms button/surface CSS transitions to finish before scanning
+      // Switch to Dark theme and wait for CSS transitions to settle
       await page.getByRole("button", { name: "Dark", exact: true }).first().click();
       await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
       await page.waitForTimeout(260);
@@ -74,13 +79,13 @@ test.describe("Millar Portal E2E, Real-Browser WCAG AA Accessibility & Visual Ca
       const blockingDark = axeDark.violations.filter((v) => v.impact === "critical" || v.impact === "serious");
       expect(blockingDark, `Dark mode axe violations on ${route.path}: ${JSON.stringify(blockingDark, null, 2)}`).toEqual([]);
 
-      if (route.name === "home" || route.name === "marketing") {
+      if (route.name === "home" || route.name === "components-button") {
         await page.screenshot({ path: path.join(SHOTS_DIR, `${route.name}-desktop-dark.png`), fullPage: false });
       }
     });
   }
 
-  test("keyboard workflows: Skip link, Ctrl+K Search Dialog, Escape close, VI locale toggle, and Mobile Drawer at 375px", async ({ page }) => {
+  test("sidebar navigation, Ctrl+K Search Dialog, VI locale toggle, 768px Tablet & 375px Mobile Drawer", async ({ page }) => {
     await page.setViewportSize({ width: 1440, height: 900 });
     await page.goto("/millar/", { waitUntil: "networkidle" });
 
@@ -88,6 +93,11 @@ test.describe("Millar Portal E2E, Real-Browser WCAG AA Accessibility & Visual Ca
     await page.keyboard.press("Tab");
     const focusedText = await page.evaluate(() => document.activeElement?.textContent?.trim());
     expect(focusedText).toBe("Skip to main content");
+
+    // Sidebar link click jumps directly to dedicated Button page
+    await page.getByRole("navigation", { name: "Primary documentation" }).getByRole("link", { name: "Button" }).click();
+    await expect(page).toHaveURL(/\/millar\/components\/button\/?/);
+    await expect(page.getByRole("heading", { level: 1, name: "Button" })).toBeVisible();
 
     // Ctrl+K opens global Search Dialog and queries registry
     await page.keyboard.press("Control+k");
@@ -98,13 +108,13 @@ test.describe("Millar Portal E2E, Real-Browser WCAG AA Accessibility & Visual Ca
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
 
-    // VI specimen toggle updates <html lang="vi"> for :root:lang(vi) diacritic safety
-    await page.goto("/millar/foundations/", { waitUntil: "networkidle" });
+    // VI specimen toggle updates <html lang="vi">
+    await page.goto("/millar/foundations/typography/", { waitUntil: "networkidle" });
     await page.getByRole("button", { name: "VI", exact: true }).first().click();
     await expect(page.locator("html")).toHaveAttribute("lang", "vi");
     await page.screenshot({ path: path.join(SHOTS_DIR, "foundations-vi-light.png"), fullPage: false });
 
-    // Tablet 768px check: zero horizontal overflow
+    // Tablet 768px check
     await page.setViewportSize({ width: 768, height: 1024 });
     await page.goto("/millar/", { waitUntil: "networkidle" });
     const overflowTablet = await page.evaluate(() => document.documentElement.scrollWidth > window.innerWidth + 1);
@@ -120,16 +130,15 @@ test.describe("Millar Portal E2E, Real-Browser WCAG AA Accessibility & Visual Ca
     const menuBtn = page.getByRole("button", { name: "Open navigation menu" });
     await expect(menuBtn).toBeVisible();
     await menuBtn.click();
-    await expect(page.getByRole("navigation", { name: "Mobile navigation" }).getByRole("link", { name: "Marketing" })).toBeVisible();
+    await expect(page.getByRole("navigation", { name: "Mobile navigation" }).getByRole("link", { name: "Colors & Themes" })).toBeVisible();
     await page.screenshot({ path: path.join(SHOTS_DIR, "home-mobile-light.png"), fullPage: false });
   });
 
-  test("static-first reduced-motion rendering on Marketing Visual Asset Gallery", async ({ page }) => {
+  test("static-first reduced-motion rendering on Marketing Visual Assets", async ({ page }) => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.setViewportSize({ width: 1280, height: 800 });
-    await page.goto("/millar/marketing/", { waitUntil: "networkidle" });
+    await page.goto("/millar/marketing/visual-assets/", { waitUntil: "networkidle" });
 
-    await expect(page.getByRole("heading", { name: "Six Diverse Composition Patterns" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Code-Native Visual Asset Gallery & Playground" })).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Code-Native Visual Assets" })).toBeVisible();
   });
 });

@@ -18,7 +18,19 @@ const MIME = {
 };
 
 const server = http.createServer((req, res) => {
-  const urlPath = (req.url ?? "/").split("?")[0];
+  let urlPath = (req.url ?? "/").split("?")[0];
+  try {
+    urlPath = decodeURIComponent(urlPath);
+  } catch {
+    res.writeHead(400);
+    res.end("Bad Request");
+    return;
+  }
+  if (urlPath === "/") {
+    res.writeHead(302, { Location: "/millar/" });
+    res.end();
+    return;
+  }
   if (urlPath === "/favicon.ico") {
     const iconSvg = path.join(OUT_DIR, "brand", "hahlex-mark-color.svg");
     if (fs.existsSync(iconSvg)) {
