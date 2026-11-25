@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import registry from "@hahlex/millar-tokens/registry";
@@ -9,6 +9,20 @@ import { HahlexLockup, MillarSiteFooter } from "@hahlex/millar-marketing";
 import { FLAT_NAV_ITEMS, SIDEBAR_GROUPS, normalizePath } from "@/lib/navigation";
 import { DocPagination } from "./DocPrimitives";
 import { RightSidebar } from "./RightSidebar";
+
+interface PortalLocaleContextValue {
+  locale: "en" | "vi";
+  setLocale: (next: "en" | "vi") => void;
+}
+
+const PortalLocaleContext = createContext<PortalLocaleContextValue>({
+  locale: "en",
+  setLocale: () => {},
+});
+
+export function usePortalLocale() {
+  return useContext(PortalLocaleContext);
+}
 
 interface SearchEntry {
   id: string;
@@ -171,7 +185,8 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "var(--bg-app)", color: "var(--fg-default)" }}>
+    <PortalLocaleContext.Provider value={{ locale, setLocale }}>
+      <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", backgroundColor: "var(--bg-app)", color: "var(--fg-default)" }}>
       <a
         href="#portal-main"
         className="millar-focus"
@@ -395,6 +410,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
           </div>
         </div>
       </Dialog>
-    </div>
+      </div>
+    </PortalLocaleContext.Provider>
   );
 }

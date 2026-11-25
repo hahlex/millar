@@ -245,10 +245,11 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
 
     const wfPrompt = await client.getPrompt({
       name: "millar-web-workflow",
-      arguments: { request: "Build full Hahlex Studio marketing + app site", track: "L" },
+      arguments: { request: "Build full Hahlex Studio marketing + app site", track: "L", lang: "vi" },
     });
     expect(wfPrompt.messages.length).toBe(3);
     expect(JSON.stringify(wfPrompt.messages)).toContain("millar://skills/millar-web-workflow");
+    expect(JSON.stringify(wfPrompt.messages)).toContain("Tiếng Việt");
     expect(JSON.stringify(wfPrompt.messages)).toContain("Track L");
   });
 });

@@ -2,7 +2,9 @@
 
 import React, { useState } from "react";
 import { Alert, Badge, Card, ChoiceToggle, DataTable, Tabs } from "@hahlex/millar-ui";
+import { CodeCopyBox } from "@/components/CodeCopyBox";
 import { DocHeader, SpecimenFrame } from "@/components/DocPrimitives";
+import { usePortalLocale } from "@/components/PortalShell";
 
 interface SkillDocItem {
   id: string;
@@ -13,7 +15,10 @@ interface SkillDocItem {
   uri: string;
   references: Array<{ file: string; purpose: string }>;
   mcpCalls: string[];
-  promptExample: string;
+  promptExample: {
+    vi: string;
+    en: string;
+  };
 }
 
 const BOOTSTRAP_PROMPTS = {
@@ -96,8 +101,10 @@ const SKILLS: SkillDocItem[] = [
       { file: "creative-divergence-protocol.md", purpose: "Rut-Naming, 3-Family Cultural Derivation, and One Authored Signature Moment per surface." },
     ],
     mcpCalls: ["list_skills", "get_skill", "get_design_guidelines", "validate_design"],
-    promptExample:
-      "Run millar-web-workflow (Track L) to design and build our multi-page launch website + workspace app, running Creative Divergence first and gating completion on millar-verify-web.",
+    promptExample: {
+      vi: "Hãy dùng millar-web-workflow (Track L) để thiết kế và lập trình trọn bộ website giới thiệu sản phẩm cùng trang ứng dụng, chạy Creative Divergence trước để tránh khuôn mẫu AI sáo mòn và bắt buộc nghiệm thu đủ 5 lớp qua millar-verify-web trước khi bàn giao.",
+      en: "Run millar-web-workflow (Track L) to design and build our multi-page launch website + workspace app, running Creative Divergence first and gating completion on millar-verify-web.",
+    },
   },
   {
     id: "millar-deep-research",
@@ -112,8 +119,10 @@ const SKILLS: SkillDocItem[] = [
       { file: "world-class-benchmarks.md", purpose: "Curated benchmarks (Vercel Geist, Linear, Stripe, Anthropic, Emil Kowalski, Rauno Freiberg)." },
     ],
     mcpCalls: ["get_design_guidelines", "get_design_tokens", "get_visual_assets", "get_motion_presets"],
-    promptExample:
-      "Run millar-deep-research on assets/hero-stage.png and src/components/HeroMotion.tsx to extract exact lighting, palette language, framing, and spring physics into .millar/research-dossier.md.",
+    promptExample: {
+      vi: "Hãy chạy millar-deep-research trên ảnh assets/hero-stage.png và file animation src/components/HeroMotion.tsx để trích xuất ánh sáng, bảng màu, chất liệu bề mặt, framing và vật lý chuyển động vào .millar/research-dossier.md trước khi thiết kế các trang phụ.",
+      en: "Run millar-deep-research on assets/hero-stage.png and src/components/HeroMotion.tsx to extract exact lighting, palette language, framing, and spring physics into .millar/research-dossier.md.",
+    },
   },
   {
     id: "millar-design",
@@ -129,8 +138,10 @@ const SKILLS: SkillDocItem[] = [
       { file: "cross-page-sync-audit.md", purpose: "6-axis screenshot continuity rubric (requires >= 4/5 across every secondary route)." },
     ],
     mcpCalls: ["get_design_guidelines", "get_design_tokens", "get_component", "get_visual_assets", "validate_design"],
-    promptExample:
-      "Use millar-design to build /features, /pricing, and /about fully synced to our existing homepage hero image and animation physics. Lock .millar/style-dna.md first and audit every route for cross-page continuity.",
+    promptExample: {
+      vi: "Hãy dùng millar-design để dựng các trang /features, /pricing và /about đồng bộ hoàn toàn với hình ảnh và animation ở trang chủ hiện có. Khóa hợp đồng 12 trục .millar/style-dna.md trước và kiểm định từng trang phụ đạt >= 4/5 theo 6 trục đồng bộ thẩm mỹ.",
+      en: "Use millar-design to build /features, /pricing, and /about fully synced to our existing homepage hero image and animation physics. Lock .millar/style-dna.md first and audit every route for cross-page continuity.",
+    },
   },
   {
     id: "millar-create-image",
@@ -145,8 +156,10 @@ const SKILLS: SkillDocItem[] = [
       { file: "multi-page-asset-map.md", purpose: "Multi-page scale variation blueprint (Home, Features, Pricing, About, Docs, Empty States)." },
     ],
     mcpCalls: ["get_design_guidelines", "get_design_tokens", "get_visual_assets"],
-    promptExample:
-      "Run millar-create-image using .millar/style-dna.md to generate matching 4:3 feature plates and a 3:2 editorial studio scene for /features and /about with identical lighting and matte sand temperature.",
+    promptExample: {
+      vi: "Hãy chạy millar-create-image dựa trên .millar/style-dna.md để tạo bộ ảnh 4:3 cho trang /features và ảnh studio biên tập 3:2 cho trang /about cùng một hướng ánh sáng, chất liệu giấy ấm và hệ màu như ảnh Hero trang chủ.",
+      en: "Run millar-create-image using .millar/style-dna.md to generate matching 4:3 feature plates and a 3:2 editorial studio scene for /features and /about with identical lighting and matte sand temperature.",
+    },
   },
   {
     id: "millar-animation",
@@ -161,8 +174,10 @@ const SKILLS: SkillDocItem[] = [
       { file: "animation-research-patterns.md", purpose: "Translating subjective motion intent into exact curves and rejecting blank scroll traps." },
     ],
     mcpCalls: ["get_motion_presets", "get_design_guidelines", "validate_design"],
-    promptExample:
-      "Run millar-animation to unify spring timing and View Transitions across all routes matching our hero reveal physics, with static-first prefers-reduced-motion fallbacks.",
+    promptExample: {
+      vi: "Hãy chạy millar-animation để đồng bộ đường cong spring, micro-interaction và CSS View Transitions giữa tất cả các trang khớp với nhịp chuyển động của Hero, bảo đảm 60fps trên GPU và có fallback prefers-reduced-motion đầy đủ.",
+      en: "Run millar-animation to unify spring timing and View Transitions across all routes matching our hero reveal physics, with static-first prefers-reduced-motion fallbacks.",
+    },
   },
   {
     id: "millar-build-web",
@@ -177,8 +192,10 @@ const SKILLS: SkillDocItem[] = [
       { file: "seo-cwv-and-copy.md", purpose: "LCP < 2.5s, INP < 200ms, CLS < 0.1, semantic landmarks, JSON-LD, Zero Em-Dash & :lang(vi) safety." },
     ],
     mcpCalls: ["get_design_tokens", "search_components", "get_component", "search_sections", "validate_design"],
-    promptExample:
-      "Run millar-build-web to implement /pricing and /dashboard as Server-First vertical slices with lean client leaves, full loading/empty/error states, and zero hardcoded hex values.",
+    promptExample: {
+      vi: "Hãy chạy millar-build-web để lập trình trang /pricing và /dashboard theo kiến trúc Server-First (chỉ đẩy 'use client' xuống lá tương tác), đủ 5 trạng thái default/loading/empty/error/disabled, tối ưu Core Web Vitals và dùng đúng token Millar.",
+      en: "Run millar-build-web to implement /pricing and /dashboard as Server-First vertical slices with lean client leaves, full loading/empty/error states, and zero hardcoded hex values.",
+    },
   },
   {
     id: "millar-verify-web",
@@ -193,8 +210,10 @@ const SKILLS: SkillDocItem[] = [
       { file: "two-axis-review-rubric.md", purpose: "Unmerged Spec Fidelity vs Engineering Standards review + Fowler code-smell baseline." },
     ],
     mcpCalls: ["validate_design", "get_design_guidelines"],
-    promptExample:
-      "Run millar-verify-web across all built routes at 1440px/768px/375px (Light & Dark), verify every interactive control, check cross-page continuity >= 4/5, and output a two-axis Spec vs Standards report.",
+    promptExample: {
+      vi: "Hãy chạy cổng kiểm định 5 lớp millar-verify-web trên toàn bộ trang vừa dựng ở 3 kích thước 1440px/768px/375px (Light & Dark), bấm kiểm tra mọi nút/bộ lọc/dialog, chấm đồng bộ giao diện >= 4/5 và xuất báo cáo review 2 trục Spec vs Standards.",
+      en: "Run millar-verify-web across all built routes at 1440px/768px/375px (Light & Dark), verify every interactive control, check cross-page continuity >= 4/5, and output a two-axis Spec vs Standards report.",
+    },
   },
 ];
 
@@ -250,8 +269,8 @@ const RECIPES = [
 ] as const;
 
 export default function SkillsResourcePage() {
+  const { locale, setLocale } = usePortalLocale();
   const [promptPreset, setPromptPreset] = useState<keyof typeof BOOTSTRAP_PROMPTS>("all-in-one");
-  const [promptLang, setPromptLang] = useState<"vi" | "en">("vi");
   const [recipeId, setRecipeId] = useState<(typeof RECIPES)[number]["id"]>("track-m");
   const [activeSkillTab, setActiveSkillTab] = useState<string>("millar-web-workflow");
 
@@ -275,7 +294,7 @@ export default function SkillsResourcePage() {
       {/* Ready-to-Send AI Agent Bootstrap Prompts */}
       <SpecimenFrame
         title="One-Click AI Agent Bootstrap Prompts (Auto-Install Skills & MCP)"
-        description="Prefer zero manual setup? Copy one prompt below and send it straight to Antigravity, Claude Code, Codex, or Cursor so your agent automatically installs all 7 Millar Skills and connects Millar MCP."
+        description="Prefer zero manual setup? Switch between Tiếng Việt and English (synced with the topbar EN/VI switch), click Copy, and paste straight into Antigravity, Claude Code, Codex, or Cursor."
         toolbar={
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
             <ChoiceToggle
@@ -290,8 +309,8 @@ export default function SkillsResourcePage() {
             />
             <ChoiceToggle
               label="Prompt language"
-              value={promptLang}
-              onChange={setPromptLang}
+              value={locale}
+              onChange={setLocale}
               options={[
                 { value: "vi", label: "Tiếng Việt" },
                 { value: "en", label: "English" },
@@ -299,14 +318,18 @@ export default function SkillsResourcePage() {
             />
           </div>
         }
-        code={activePrompt[promptLang]}
-        codeTitle={`Send to Antigravity / Claude Code / Codex / Cursor · ${activePrompt.label} (${promptLang.toUpperCase()})`}
+        code={activePrompt[locale]}
+        codeTitle={`Send to Antigravity / Claude Code / Codex / Cursor · ${activePrompt.label} (${locale.toUpperCase()})`}
         wrapCode
       >
         <Alert
           tone="info"
-          title="Zero-friction onboarding for any coding agent"
-          message="Click Copy on the prompt box below and paste directly into chat. Your agent will run npx skills add, wire @hahlex/millar-mcp, and verify list_skills() automatically."
+          title={locale === "vi" ? "Tự động cài đặt chỉ bằng 1 prompt gửi AI" : "Zero-friction onboarding for any coding agent"}
+          message={
+            locale === "vi"
+              ? "Bấm Copy ở khung prompt bên dưới rồi dán vào khung chat của Antigravity, Claude Code, Codex hoặc Cursor. Agent sẽ tự chạy npx skills add, kết nối @hahlex/millar-mcp và kiểm tra list_skills()."
+              : "Click Copy on the prompt box below and paste directly into chat. Your agent will run npx skills add, wire @hahlex/millar-mcp, and verify list_skills() automatically."
+          }
         />
       </SpecimenFrame>
 
@@ -357,9 +380,20 @@ ${activeRecipe.chain.map((s) => `get_skill({ name: "${s}", includeAllReferences:
 
       {/* Interactive Skill Inspector */}
       <section aria-labelledby="skill-inspector-heading" style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        <h2 id="skill-inspector-heading" style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-section-title)", fontWeight: 600 }}>
-          Inspect All 7 Skills &amp; Bundled Playbooks
-        </h2>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
+          <h2 id="skill-inspector-heading" style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-section-title)", fontWeight: 600 }}>
+            Inspect All 7 Skills &amp; Bundled Playbooks
+          </h2>
+          <ChoiceToggle
+            label="Skill example prompt language"
+            value={locale}
+            onChange={setLocale}
+            options={[
+              { value: "vi", label: "Tiếng Việt" },
+              { value: "en", label: "English" },
+            ]}
+          />
+        </div>
         <Tabs
           ariaLabel="Millar Agent Skills"
           activeId={activeSkillTab}
@@ -394,12 +428,11 @@ ${activeRecipe.chain.map((s) => `get_skill({ name: "${s}", includeAllReferences:
                   rowKey={(r) => r.id}
                 />
 
-                <div style={{ padding: 14, borderRadius: "var(--radius-md)", border: "1px solid var(--border-default)", backgroundColor: "var(--bg-surface)", display: "flex", flexDirection: "column", gap: 6 }}>
-                  <strong style={{ fontSize: "var(--text-micro)", color: "var(--fg-muted)" }}>Example Prompt Invocation</strong>
-                  <code style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro)", color: "var(--fg-default)", lineHeight: 1.55 }}>
-                    {skill.promptExample}
-                  </code>
-                </div>
+                <CodeCopyBox
+                  title={`${skill.name} · ${locale === "vi" ? "Prompt mẫu (Tiếng Việt)" : "Example Prompt (English)"}`}
+                  code={skill.promptExample[locale]}
+                  wrap
+                />
               </div>
             ),
           }))}
