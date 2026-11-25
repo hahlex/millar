@@ -267,13 +267,26 @@ export function EditorialEssaySplit({ heading, body, quote, quoteAttribution, vi
               borderRadius: "var(--radius-lg, 16px)",
               backgroundColor: "var(--bg-editorial-card)",
               border: "1px solid var(--border-default)",
+              borderLeft: "3px solid var(--accent-crimson)",
               display: "flex",
               flexDirection: "column",
               gap: 10,
             }}
           >
+            <span
+              aria-hidden="true"
+              style={{
+                fontFamily: "var(--font-display)",
+                fontSize: "2rem",
+                lineHeight: 0.75,
+                fontWeight: 500,
+                color: "var(--accent-crimson)",
+              }}
+            >
+              &ldquo;
+            </span>
             <blockquote style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-lead, 1.125rem)", fontWeight: 400, lineHeight: 1.45, color: "var(--fg-default)" }}>
-              &ldquo;{quote}&rdquo;
+              {quote}
             </blockquote>
             <figcaption style={{ fontSize: "var(--text-meta, 0.8125rem)", color: "var(--fg-muted)" }}>{quoteAttribution}</figcaption>
           </figure>
@@ -601,14 +614,14 @@ export function MetricMirrorSection({
           {heading}
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 16 }}>
-          <MetricPlateCard value="5 -> 3" label="Unified font families" detail="Retired Archivo, Poppins, Bebas Neue, and Cormorant in favor of Geist + Inter + Geist Mono." tone="brand" />
+          <MetricPlateCard value="1,880vh -> 0vh" label="Legacy blank scroll voids removed" detail="Eliminated photo-starved sticky empty frames (Hahlex Crimson tension callout)." tone="error" />
           <MetricPlateCard value="1.00:1 -> 7.69:1" label="Dark active toggle contrast" detail="Fixed invisible dark-mode toggle with --fg-on-accent-soft." tone="espresso" />
           <MetricPlateCard value="0 -> 100%" label="Photo-free section readiness" detail="Every section renders complete visual proof at 0% scroll." tone="brand" />
         </div>
         <BeforeAfterLedger
           rows={[
-            { criterion: "Token Sync", before: "4 hand-copied files drifting silently", after: "1 W3C DTCG 2025.10 source compiling all targets" },
-            { criterion: "Marketing Visuals", before: "5 fake chatboxes + 1,880vh blank sticky voids", after: "6 diverse composition patterns + 12 code-native assets" },
+            { criterion: "Token Sync", before: "4 hand-copied files drifting silently", after: "1 W3C DTCG 2025.10 source anchored to App Warm Sand + Crimson" },
+            { criterion: "Marketing Visuals", before: "5 fake chatboxes + 1,880vh blank sticky voids", after: "6 diverse composition patterns + 14 code-native assets" },
             { criterion: "AI Governance", before: "Ad-hoc prose prompts & invented hex values", after: "MCP Resources + 11 Tools + automated vs. aesthetic validator" },
           ]}
         />

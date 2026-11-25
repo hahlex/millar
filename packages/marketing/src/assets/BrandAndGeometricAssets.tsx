@@ -226,7 +226,8 @@ export function ConcentricArcCanvas({ tone = "light", height = 240, caption }: C
     const cy = h * 0.88;
     const baseR = Math.min(width * 0.42, h * 0.78);
     const strokePrimary = tone === "dark" ? "rgba(214, 180, 138, 0.36)" : "rgba(107, 77, 53, 0.24)";
-    const strokeAccent = tone === "dark" ? "rgba(192, 138, 74, 0.72)" : "rgba(122, 78, 22, 0.52)";
+    const strokeAccent = tone === "dark" ? "rgba(209, 160, 104, 0.78)" : "rgba(165, 107, 35, 0.62)";
+    const crimsonAccent = tone === "dark" ? "#F0857F" : "#B3121B";
 
     // Concentric shelter arcs with calibrated radial spacing
     const rings = [0.35, 0.52, 0.68, 0.84, 1.0];
@@ -240,25 +241,32 @@ export function ConcentricArcCanvas({ tone = "light", height = 240, caption }: C
     });
     ctx.setLineDash([]);
 
-    // Calibrated tick marks along the outer measuring arc
+    // Calibrated tick marks along the outer measuring arc (zenith meridian marked in Hahlex Crimson)
     for (let deg = 180; deg <= 360; deg += 15) {
       const rad = (deg * Math.PI) / 180;
-      const rIn = baseR * 0.96;
-      const rOut = baseR * (deg % 45 === 0 ? 1.05 : 1.02);
+      const isZenith = deg === 270;
+      const rIn = baseR * (isZenith ? 0.92 : 0.96);
+      const rOut = baseR * (isZenith ? 1.07 : deg % 45 === 0 ? 1.05 : 1.02);
       ctx.beginPath();
       ctx.moveTo(cx + Math.cos(rad) * rIn, cy + Math.sin(rad) * rIn);
       ctx.lineTo(cx + Math.cos(rad) * rOut, cy + Math.sin(rad) * rOut);
-      ctx.strokeStyle = deg % 45 === 0 ? strokeAccent : strokePrimary;
-      ctx.lineWidth = deg % 45 === 0 ? 1.5 : 1;
+      ctx.strokeStyle = isZenith ? crimsonAccent : deg % 45 === 0 ? strokeAccent : strokePrimary;
+      ctx.lineWidth = isZenith ? 2 : deg % 45 === 0 ? 1.5 : 1;
       ctx.stroke();
     }
 
-    // Subtle three-pillar Hahlex proportion echo at center
+    // Precision Hahlex Crimson focal registration dot at zenith (< 1% surface budget)
+    ctx.beginPath();
+    ctx.arc(cx, cy - baseR * 0.68, 3.2, 0, Math.PI * 2);
+    ctx.fillStyle = crimsonAccent;
+    ctx.fill();
+
+    // Subtle three-pillar Hahlex proportion echo anchored strictly to App Warm Sand constants
     const barW = 8;
     const bars = [
-      { dx: -24, height: baseR * 0.34, fill: tone === "dark" ? "#FAF8F5" : "#2B1F16" },
+      { dx: -24, height: baseR * 0.34, fill: tone === "dark" ? "#FAFAFA" : "#2B1F16" },
       { dx: 0, height: baseR * 0.50, fill: tone === "dark" ? "#D6B48A" : "#A56B23" },
-      { dx: 24, height: baseR * 0.34, fill: tone === "dark" ? "#C08A4A" : "#6B4D35" },
+      { dx: 24, height: baseR * 0.34, fill: tone === "dark" ? "#D1A068" : "#6B4D35" },
     ];
     for (const b of bars) {
       ctx.fillStyle = b.fill;
@@ -355,7 +363,7 @@ export function WarmHorizonWash({ children, intensity = "subtle", style }: WarmH
         borderRadius: "var(--radius-xl, 22px)",
         border: "1px solid var(--border-stage-dark)",
         overflow: "hidden",
-        backgroundImage: `radial-gradient(ellipse 75% 55% at 50% 0%, rgba(192, 138, 74, ${alpha}), transparent 70%)`,
+        backgroundImage: `radial-gradient(ellipse 75% 55% at 50% 0%, rgba(209, 160, 104, ${alpha}), transparent 70%)`,
         ...style,
       }}
     >

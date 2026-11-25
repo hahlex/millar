@@ -65,11 +65,12 @@ export const MILLAR_GUIDELINES: GuidelineSpec[] = [
     summary:
       "How to compose memorable, museum-grade Hahlex marketing websites using 6 diverse Composition Patterns and code-native CSS/SVG/Canvas/React Visual Assets that look complete with zero photos and zero animation.",
     rules: [
+      "Derive ALL Marketing colors directly from the canonical Hahlex App Warm Sand + Crimson palette (Charcoal #2B1F16, Espresso #3D2A1C / #1A130D, CTA Brown #4A3022, Deep Sand #6B4D35, Bronze #A56B23, Caramel #D1A068, Soft Sand #D6B48A, Sand #F2E6CD, Cream #FAF3EA, and Hahlex Crimson #B3121B light / #F0857F dark) so Marketing and Product share unmistakable brand unity.",
+      "Use Hahlex Crimson (--accent-crimson: #B3121B light / #F0857F dark) deliberately as Marketing's high-conviction tension accent (< 1.5% surface area) for problem keywords, pain metrics, editorial quotation marks, and Before/After friction contrast; never apply Crimson to primary CTA buttons, team member titles, or positive headings.",
       "Never lock an entire site into one repetitive layout style; vary rhythm across Millar's 6 Composition Patterns (Editorial Magazine Split, Spatial Product Stage, Architectural Visible-Rule Grid, Narrative Sequence Flow, Monumental Typographic Poster, and Asymmetric Bento Mosaic).",
       "Every section must look visually complete at 0% scroll with zero stock photos and zero animation (static-first craft).",
-      "Use Editorial Cream (#FFFCF8 / #FCF8F3) and Deep Espresso (#1A130D / #120C08) alternation with crisp 1px hairlines or PaperTearDivider transitions rather than harsh white jumps.",
+      "Alternate App-rooted Warm Cream (#FAF8F5 / #FAF3EA) and Deep Espresso (#1A130D / #120C08) stages with crisp 1px Warm Sand hairlines or PaperTearDivider transitions rather than harsh uncalibrated jumps.",
       "Purposeful gradients are allowed ONLY inside explicitly approved Marketing Visual Assets (gradientPolicy: 'approved-visual-asset', e.g., WarmHorizonWash); never apply ad-hoc gradients, neon glows, or frosted glassmorphism over flat cards.",
-      "Reserve Crimson (#B3121B) strictly for errors, friction/problem callouts, and destructive warnings; never color team titles, positive headlines, or brand headings red.",
       "Every interactive showcase must expose real accessible controls and never rely on blank 400px scroll-scrubbed voids or dimmed 16%-opacity text.",
     ],
     doItems: [

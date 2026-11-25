@@ -19,19 +19,21 @@ FONTS_DIR = ROOT / ".agents" / "skills" / "canvas-design" / "canvas-fonts"
 OUT_DIR = ROOT / "assets" / "brand"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-# Calibrated Millar Mineral Palette
-CREAM = "#FFFCF8"
-SAND_SOFT = "#F6EBDE"
-BORDER_SAND = "#DFCBB2"
+# Calibrated Millar Mineral Palette (strictly anchored to Hahlex App Warm Sand + Crimson)
+CREAM = "#FAF8F5"
+SAND_SOFT = "#F2E6CD"
+BORDER_SAND = "#EBE3D7"
 ESPRESSO = "#1A130D"
 ESPRESSO_DEEP = "#120C08"
 CHARCOAL = "#2B1F16"
 DEEP_SAND = "#6B4D35"
 BRONZE = "#A56B23"
-BRONZE_LIGHT = "#C08A4A"
+BRONZE_LIGHT = "#D1A068"
 SOFT_SAND = "#D6B48A"
 TAN = "#E4CBAF"
 MUTED = "#5F4F40"
+CRIMSON = "#B3121B"
+CRIMSON_DARK = "#F0857F"
 
 FONT_DISPLAY = FONTS_DIR / "Jura-Light.ttf"
 FONT_MEDIUM = FONTS_DIR / "WorkSans-Bold.ttf"
@@ -98,10 +100,10 @@ def build_png():
     # Baseline horizon axis across stage
     draw.line([stage_left + 64, cy, stage_right - 64, cy], fill="#4A3829", width=2)
 
-    # Zenith floating marker dot cleanly crowning above the primary shelter arch (zero tangent collision)
+    # Zenith floating marker dot cleanly crowning above the primary shelter arch with precision Hahlex Crimson center
     apex_y = cy - 415
     draw.ellipse([cx - 22, apex_y - 22, cx + 22, apex_y + 22], fill=TAN)
-    draw.ellipse([cx - 6, apex_y - 6, cx + 6, apex_y + 6], fill=ESPRESSO)
+    draw.ellipse([cx - 8, apex_y - 8, cx + 8, apex_y + 8], fill=CRIMSON_DARK)
 
     # Arc terminal dots
     for dx in (-360, 360):
@@ -118,14 +120,14 @@ def build_png():
         y0 = cy - ph
         draw.rounded_rectangle([x0, y0, x0 + pw, cy + 44], radius=pw // 2, fill=col)
 
-    # Calibrated Albers mineral color swatch strip below stage (5 mineral squares)
+    # Calibrated Albers mineral color swatch strip anchored to App Warm Sand + Crimson
     strip_y = stage_bottom + 54
     swatches = [
-        ("#FFFCF8", BORDER_SAND, "CREAM 50"),
-        ("#F6EBDE", BORDER_SAND, "SAND 200"),
+        ("#FAF3EA", BORDER_SAND, "CREAM"),
+        ("#F2E6CD", BORDER_SAND, "SAND"),
         ("#D6B48A", "#D6B48A", "SOFT SAND"),
-        ("#7A4E16", "#7A4E16", "BRONZE 700"),
         ("#4A3022", "#4A3022", "CTA BROWN"),
+        ("#B3121B", "#B3121B", "CRIMSON"),
         ("#1A130D", "#1A130D", "ESPRESSO"),
     ]
     sw_w = (stage_right - stage_left - 5 * 20) // 6
@@ -159,7 +161,7 @@ def build_png():
 
     col2_x = stage_left + 560
     draw.text((col2_x, meta_y), "OPTICAL STANDARD", fill=DEEP_SAND, font=f_sub)
-    draw.text((col2_x, meta_y + 36), "OKLCH  ·  WCAG 2.1 AA  ·  80/80 PASS", fill=CHARCOAL, font=f_foot)
+    draw.text((col2_x, meta_y + 36), "OKLCH  ·  WCAG 2.1 AA  ·  97/97 PASS", fill=CHARCOAL, font=f_foot)
 
     c3_h = "CANONICAL URI"
     c3_v = "hahlex.com/millar"
@@ -219,8 +221,8 @@ def build_pdf():
     c.line(sl + 24, cy, sr - 24, cy)
     c.setFillColor(HexColor(TAN))
     c.circle(cx, cy + 158, 8, stroke=0, fill=1)
-    c.setFillColor(HexColor(ESPRESSO))
-    c.circle(cx, cy + 158, 2.5, stroke=0, fill=1)
+    c.setFillColor(HexColor(CRIMSON_DARK))
+    c.circle(cx, cy + 158, 3, stroke=0, fill=1)
     c.setFillColor(HexColor(SOFT_SAND))
     c.circle(cx - 136, cy, 5, stroke=0, fill=1)
     c.circle(cx + 136, cy, 5, stroke=0, fill=1)
@@ -230,13 +232,13 @@ def build_pdf():
         c.setFillColor(HexColor(col))
         c.roundRect(cx + dx - pw / 2, cy - 16, pw, ph + 16, pw / 2, stroke=0, fill=1)
 
-    # Mineral strip
+    # Mineral strip anchored to App Warm Sand + Crimson
     swatches = [
-        ("#FFFCF8", BORDER_SAND, "CREAM 50"),
-        ("#F6EBDE", BORDER_SAND, "SAND 200"),
+        ("#FAF3EA", BORDER_SAND, "CREAM"),
+        ("#F2E6CD", BORDER_SAND, "SAND"),
         ("#D6B48A", "#D6B48A", "SOFT SAND"),
-        ("#7A4E16", "#7A4E16", "BRONZE 700"),
         ("#4A3022", "#4A3022", "CTA BROWN"),
+        ("#B3121B", "#B3121B", "CRIMSON"),
         ("#1A130D", "#1A130D", "ESPRESSO"),
     ]
     sw_w = (sr - sl - 5 * 8) / 6
@@ -269,7 +271,7 @@ def build_pdf():
     c.setFont("JBMono", 7.5)
     c.setFillColor(HexColor(CHARCOAL))
     c.drawString(sl, 114, "GEIST 300-600 · INTER · GEIST MONO")
-    c.drawString(sl + 205, 114, "OKLCH · WCAG 2.1 AA · 80/80 PASS")
+    c.drawString(sl + 205, 114, "OKLCH · WCAG 2.1 AA · 97/97 PASS")
     c.drawRightString(sr, 114, "hahlex.com/millar")
 
     c.showPage()

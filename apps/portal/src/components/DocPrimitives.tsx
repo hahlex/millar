@@ -12,7 +12,7 @@ export interface DocHeaderProps {
   title: string;
   description: string;
   status?: string;
-  badges?: Array<{ label: string; tone?: "neutral" | "brand" | "sage" | "sand" | "success" }>;
+  badges?: Array<{ label: string; tone?: "neutral" | "brand" | "sage" | "sand" | "success" | "warning" | "error" }>;
   importPath?: string;
 }
 

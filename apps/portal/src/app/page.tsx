@@ -32,15 +32,15 @@ export default function MillarIntroductionPage() {
       href: "/foundations/colors",
       section: "Foundations",
       title: "Colors & Themes",
-      caption: "OKLCH Warm Sand, Bronze, Espresso, Status & CVD-safe Data-Viz",
+      caption: "App-rooted Warm Sand, Bronze, Espresso, Hahlex Crimson & Data-Viz",
       preview: (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 6, width: "100%" }}>
           {[
-            "var(--bg-editorial)",
+            "var(--bg-editorial-alt)",
             "var(--accent-soft)",
-            "var(--accent-editorial)",
+            "var(--tone-brand)",
             "var(--accent)",
-            "var(--status-success)",
+            "var(--accent-crimson)",
             "var(--bg-stage-dark)",
           ].map((c) => (
             <span

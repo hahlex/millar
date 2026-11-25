@@ -9,10 +9,10 @@
       "bg-surface-2": { "$value": "{color.neutral.surface-inset-light}", "$description": "Warm-sand inset surface for table headers, filter wells, and code blocks." },
       "bg-elevated": { "$value": "{color.neutral.white}", "$description": "Floating overlays, popovers, and dropdown menus." },
       "bg-elevated-hover": { "$value": "{color.neutral.surface-hover-light}", "$description": "Interactive row, menu item, and control hover fill." },
-      "bg-editorial": { "$value": "{color.neutral.cream-50}", "$description": "Marketing primary Editorial Cream paper canvas." },
-      "bg-editorial-alt": { "$value": "{color.neutral.cream-100}", "$description": "Marketing alternating warm cream surface." },
-      "bg-editorial-card": { "$value": "{color.neutral.sand-card}", "$description": "Marketing warm sand feature card surface." },
-      "bg-stage-dark": { "$value": "{color.brand.espresso-900}", "$description": "Marketing dark espresso showcase stage (invariant across themes)." },
+      "bg-editorial": { "$value": "{color.neutral.sidebar-light}", "$description": "Marketing editorial primary paper canvas anchored to App Warm Sand (#faf8f5)." },
+      "bg-editorial-alt": { "$value": "{color.brand.cream}", "$description": "Marketing alternating warm cream section canvas anchored to App --hah-cream (#faf3ea)." },
+      "bg-editorial-card": { "$value": "{color.brand.sand}", "$description": "Marketing warm sand feature card anchored to App --hah-sand (#f2e6cd)." },
+      "bg-stage-dark": { "$value": "{color.brand.espresso-900}", "$description": "Marketing dark espresso showcase stage harmonized with App Charcoal (#2b1f16) and Espresso (#3d2a1c)." },
       "bg-stage-dark-deep": { "$value": "{color.brand.espresso-950}", "$description": "Marketing deepest espresso backdrop/footer." },
       "bg-stage-dark-card": { "$value": "{color.brand.espresso-800}", "$description": "Card surface seated inside dark editorial stages." },
 
@@ -32,19 +32,37 @@
         "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-app", "semantic.color.bg-surface", "semantic.color.bg-elevated-hover", "semantic.color.bg-editorial"], "minContrast": 4.5 } }
       },
       "fg-on-stage-dark": {
-        "$value": "{color.neutral.paper}",
-        "$description": "Warm ivory ink on dark editorial espresso stages (17.44:1).",
+        "$value": "{color.neutral.ink-dark}",
+        "$description": "High-contrast warm white ink on dark espresso stages anchored to App dark ink (17.8:1 AAA).",
         "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-stage-dark", "semantic.color.bg-stage-dark-deep", "semantic.color.bg-stage-dark-card"], "minContrast": 4.5 } }
       },
       "fg-muted-on-stage-dark": {
-        "$value": "{color.neutral.paper-muted}",
-        "$description": "Muted ivory prose on dark editorial stages.",
+        "$value": "{color.neutral.ink-muted-dark}",
+        "$description": "Muted warm stone prose on dark espresso stages anchored to App dark muted ink (12.3:1 AAA).",
         "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-stage-dark", "semantic.color.bg-stage-dark-card"], "minContrast": 4.5 } }
       },
       "fg-accent-on-stage-dark": {
-        "$value": "{color.brand.bronze-400}",
-        "$description": "Luminous bronze text/eyebrow accent on dark editorial stages (6.10:1).",
+        "$value": "{color.brand.soft-sand}",
+        "$description": "App Soft Sand (#d6b48a) brand highlight on dark espresso stages (9.6:1 AAA).",
         "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-stage-dark", "semantic.color.bg-stage-dark-deep"], "minContrast": 4.5 } }
+      },
+      "accent-crimson": {
+        "$value": "{color.status.crimson-600}",
+        "$description": "Hahlex Crimson (#b3121b, App --hah-crimson) editorial accent for Marketing tension, pain metrics, quote marks, and Before/After friction (< 1.5% surface area; never for primary CTAs).",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-app", "semantic.color.bg-surface", "semantic.color.bg-editorial", "semantic.color.bg-editorial-alt", "semantic.color.bg-editorial-card"], "minContrast": 4.5 } }
+      },
+      "accent-crimson-soft": {
+        "$value": "{color.status.crimson-50}",
+        "$description": "Soft crimson callout wash anchored to App --status-error-soft (#fcefee)."
+      },
+      "accent-crimson-border": {
+        "$value": "{color.status.crimson-200}",
+        "$description": "Crisp 1px crimson callout border anchored to App --status-error-border (#f1c4c2)."
+      },
+      "accent-crimson-on-stage-dark": {
+        "$value": "{color.status.crimson-300}",
+        "$description": "Hahlex Crimson highlight (#f0857f, App dark crimson) on dark espresso stages for tension stats and quote markers (7.8:1 AAA).",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-stage-dark", "semantic.color.bg-stage-dark-card"], "minContrast": 4.5 } }
       },
 
       "border-soft": { "$value": "{color.neutral.border-soft-light}", "$description": "Subtle internal row divider." },
@@ -61,12 +79,12 @@
         "$description": "Primary CTA hover fill (15.01:1 AAA with white label)."
       },
       "accent-editorial": {
-        "$value": "{color.brand.bronze-700}",
-        "$description": "AA/AAA editorial bronze button fill on light marketing surfaces (7.17:1 with white)."
+        "$value": "{color.brand.cta-brown}",
+        "$description": "Editorial primary CTA fill unified with App --hah-cta-brown (#4a3022, 12.09:1 AAA with white)."
       },
       "accent-editorial-hover": {
-        "$value": "{color.brand.bronze-600}",
-        "$description": "AA editorial bronze hover fill (5.58:1 with white; fixes 2.86:1 failure from legacy site)."
+        "$value": "{color.brand.cta-brown-hover}",
+        "$description": "Editorial CTA hover fill unified with App --hah-cta-brown-hover (#362218, 15.01:1 AAA with white)."
       },
       "accent-on-stage-dark": {
         "$value": "{color.brand.deep-sand}",

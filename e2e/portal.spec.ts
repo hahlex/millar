@@ -10,6 +10,8 @@ const ROUTES = [
   { path: "/millar/", name: "home" },
   { path: "/millar/foundations/colors/", name: "foundations-colors" },
   { path: "/millar/foundations/typography/", name: "foundations-typography" },
+  { path: "/millar/marketing/art-direction/", name: "marketing-art-direction" },
+  { path: "/millar/marketing/compositions/", name: "marketing-compositions" },
   { path: "/millar/marketing/visual-assets/", name: "marketing-visual-assets" },
   { path: "/millar/marketing/do-dont/", name: "marketing-do-dont" },
   { path: "/millar/components/button/", name: "components-button" },

@@ -32,19 +32,37 @@
         "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-app", "semantic.color.bg-surface", "semantic.color.bg-elevated-hover", "semantic.color.bg-editorial"], "minContrast": 4.5 } }
       },
       "fg-on-stage-dark": {
-        "$value": "{color.neutral.paper}",
-        "$description": "Warm ivory ink on dark editorial stages.",
+        "$value": "{color.neutral.ink-dark}",
+        "$description": "High-contrast warm white ink on dark espresso stages anchored to App dark ink.",
         "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-stage-dark", "semantic.color.bg-stage-dark-card"], "minContrast": 4.5 } }
       },
       "fg-muted-on-stage-dark": {
-        "$value": "{color.neutral.paper-muted}",
-        "$description": "Muted ivory prose on dark stages.",
+        "$value": "{color.neutral.ink-muted-dark}",
+        "$description": "Muted warm stone prose on dark stages anchored to App dark muted ink.",
         "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-stage-dark", "semantic.color.bg-stage-dark-card"], "minContrast": 4.5 } }
       },
       "fg-accent-on-stage-dark": {
-        "$value": "{color.brand.bronze-400}",
-        "$description": "Warm bronze highlight on dark stages.",
+        "$value": "{color.brand.soft-sand}",
+        "$description": "App Soft Sand (#d6b48a) brand highlight on dark stages.",
         "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-stage-dark"], "minContrast": 4.5 } }
+      },
+      "accent-crimson": {
+        "$value": "{color.status.crimson-300}",
+        "$description": "Hahlex Crimson editorial accent in dark mode (#f0857f, App dark crimson, >= 6.9:1 on obsidian and espresso).",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-app", "semantic.color.bg-surface", "semantic.color.bg-editorial", "semantic.color.bg-editorial-card"], "minContrast": 4.5 } }
+      },
+      "accent-crimson-soft": {
+        "$value": "{color.status.crimson-950}",
+        "$description": "Soft crimson callout wash in dark mode (#2e1a19)."
+      },
+      "accent-crimson-border": {
+        "$value": "{color.status.crimson-900}",
+        "$description": "Crisp 1px crimson callout border in dark mode (#5b2a28)."
+      },
+      "accent-crimson-on-stage-dark": {
+        "$value": "{color.status.crimson-300}",
+        "$description": "Hahlex Crimson highlight (#f0857f) on dark espresso stages for tension stats and quote markers.",
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-stage-dark", "semantic.color.bg-stage-dark-card"], "minContrast": 4.5 } }
       },
 
       "border-soft": { "$value": { "colorSpace": "srgb", "components": [0.9804, 0.9804, 0.9765], "alpha": 0.07, "hex": "#282624" }, "$description": "Subtle dark internal divider (rgba 250,250,249,0.07)." },

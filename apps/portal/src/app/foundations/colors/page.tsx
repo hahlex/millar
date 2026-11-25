@@ -5,10 +5,24 @@ import registry from "@hahlex/millar-tokens/registry";
 import { Badge, ChoiceToggle, DataTable, IconCheck, IconCopy } from "@hahlex/millar-ui";
 import { DocHeader, SpecimenFrame } from "@/components/DocPrimitives";
 
+const APP_ROOT_RAMP = [
+  { name: "Charcoal", token: "--hah-charcoal", hex: "#2b1f16", role: "Primary ink" },
+  { name: "Espresso", token: "--hah-espresso", hex: "#3d2a1c", role: "Dark anchor & chart" },
+  { name: "CTA Brown", token: "--hah-cta-brown", hex: "#4a3022", role: "Primary CTA (12.1:1)" },
+  { name: "Deep Sand", token: "--hah-deep-sand", hex: "#6b4d35", role: "Logo & dark CTA" },
+  { name: "Bronze", token: "--hah-bronze", hex: "#a56b23", role: "Brand accent & icons" },
+  { name: "Caramel", token: "--hah-caramel", hex: "#d1a068", role: "Highlights & glow" },
+  { name: "Soft Sand", token: "--hah-soft-sand", hex: "#d6b48a", role: "Dark accent & focus" },
+  { name: "Tan", token: "--hah-tan", hex: "#e4cbaf", role: "Borders & center pillar" },
+  { name: "Sand", token: "--hah-sand", hex: "#f2e6cd", role: "Editorial cards" },
+  { name: "Cream", token: "--hah-cream", hex: "#faf3ea", role: "Editorial alt & wash" },
+  { name: "Hahlex Crimson", token: "--hah-crimson", hex: "#b3121b", role: "Tension, quotes & errors" },
+] as const;
+
 const COLOR_GROUPS = [
   { id: "surfaces", label: "Surfaces & Canvas", match: (cssVar: string) => cssVar.startsWith("--bg-") },
   { id: "foreground", label: "Foreground & Ink", match: (cssVar: string) => cssVar.startsWith("--fg-") },
-  { id: "brand", label: "Brand, Accent & Focus", match: (cssVar: string) => cssVar.startsWith("--accent") || cssVar.startsWith("--focus") || cssVar.startsWith("--tone-") },
+  { id: "brand", label: "Brand, Editorial Crimson & Focus", match: (cssVar: string) => cssVar.startsWith("--accent") || cssVar.startsWith("--focus") || cssVar.startsWith("--tone-") },
   { id: "borders", label: "Borders & Hairlines", match: (cssVar: string) => cssVar.startsWith("--border-") },
   { id: "status", label: "Semantic Status (Moss / Ochre / Crimson)", match: (cssVar: string) => cssVar.startsWith("--status-") },
   { id: "charts", label: "Data Visualization (CVD-Safe)", match: (cssVar: string) => cssVar.startsWith("--chart-") },
@@ -25,7 +39,7 @@ export default function ColorsFoundationPage() {
 
   const copyVar = async (cssVar: string) => {
     try {
-      await navigator.clipboard.writeText(`var(${cssVar})`);
+      await navigator.clipboard.writeText(cssVar.startsWith("--") ? `var(${cssVar})` : cssVar);
       setCopied(cssVar);
       setTimeout(() => setCopied(null), 1500);
     } catch {
@@ -38,7 +52,7 @@ export default function ColorsFoundationPage() {
       <DocHeader
         section="Foundations"
         title="Colors & Themes"
-        description="OKLCH-calibrated Warm Sand, Bronze, Deep Espresso, Warm Obsidian, Status, and Machado CVD-verified Data-Viz color tokens. Every foreground/background pair clears WCAG 2.1 AA at compile time."
+        description="Unified OKLCH palette anchored directly to the Hahlex App (hahlex-edu) Warm Sand + Crimson root ramp. Both Product and Marketing derive every surface, ink, and Crimson tension accent from this single source."
         badges={[
           { label: `${registry.contrastSummary.passed}/${registry.contrastSummary.totalChecked} AA Pass`, tone: "success" },
           { label: `CVD Delta-E ${registry.colorBlindSummary.minDeltaE}`, tone: "sage" },
@@ -46,9 +60,57 @@ export default function ColorsFoundationPage() {
         importPath="@hahlex/millar-tokens/tokens.css"
       />
 
+      {/* Canonical App Brand Deck Root Ramp (Warm Sand + Hahlex Crimson) */}
+      <SpecimenFrame
+        title="Hahlex App Root Ramp (Warm Sand + Crimson)"
+        description="The canonical 11-step brand ramp from hahlex-edu (base.css). Marketing Cream, Sand, Espresso stages, Caramel horizon lighting, and Hahlex Crimson (#B3121B / #F0857F) all derive directly from these exact anchors."
+      >
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(150px, 1fr))", gap: 10 }}>
+          {APP_ROOT_RAMP.map((item) => (
+            <button
+              key={item.token}
+              type="button"
+              onClick={() => copyVar(item.hex)}
+              className="millar-focus"
+              style={{
+                textAlign: "left",
+                padding: 10,
+                borderRadius: "var(--radius-md)",
+                border: item.token === "--hah-crimson" ? "1px solid var(--accent-crimson-border)" : "1px solid var(--border-default)",
+                backgroundColor: "var(--bg-surface)",
+                color: "var(--fg-default)",
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+              }}
+            >
+              <span
+                aria-hidden="true"
+                style={{
+                  height: 36,
+                  width: "100%",
+                  borderRadius: 8,
+                  backgroundColor: item.hex,
+                  border: "1px solid var(--border-default)",
+                  display: "block",
+                }}
+              />
+              <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                <strong style={{ fontSize: "var(--text-meta)", fontWeight: 600 }}>{item.name}</strong>
+                <code style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro)", color: "var(--fg-accent)" }}>
+                  {copied === item.hex ? "Copied!" : item.hex}
+                </code>
+                <span style={{ fontSize: "var(--text-micro)", color: "var(--fg-muted)" }}>{item.role}</span>
+              </div>
+            </button>
+          ))}
+        </div>
+      </SpecimenFrame>
+
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap" }}>
         <span style={{ fontSize: "var(--text-body-sm)", color: "var(--fg-muted)" }}>
-          Click any color swatch to copy its semantic CSS custom property.
+          Semantic tokens switch automatically across Light and Dark polarity. Click any swatch to copy its CSS variable.
         </span>
         <ChoiceToggle
           label="Color palette polarity"
@@ -139,7 +201,7 @@ export default function ColorsFoundationPage() {
 
       <SpecimenFrame
         title="Critical Contrast Guardrails"
-        description="Verified pairs preventing audited dark-mode and legacy bronze failures."
+        description="Verified App-rooted pairs ensuring zero WCAG AA regressions across Product and Marketing."
       >
         <DataTable
           caption="Color safety rules enforced across Millar"
@@ -150,10 +212,11 @@ export default function ColorsFoundationPage() {
             { key: "note", header: "Rule" },
           ]}
           rows={[
-            { id: "1", surface: "--accent-soft (#D9BFA1)", ink: "--fg-on-accent-soft (#362218)", ratio: "7.69:1 AAA", note: "Fixes 1.00:1 dark-mode invisible toggle defect" },
-            { id: "2", surface: "--accent-editorial (#7A4E16)", ink: "--fg-on-accent (#FFFFFF)", ratio: "7.17:1 AAA", note: "Fixes legacy #A26A25 (4.31:1) and #C08A4A (2.86:1)" },
-            { id: "3", surface: "--bg-surface (Dark #1C1917)", ink: "--status-error (#F0857F)", ratio: "6.97:1 AA+", note: "Always use outlined Danger button in dark mode" },
-            { id: "4", surface: "--bg-stage-dark (#1A130D)", ink: "--fg-on-stage-dark (#FFF8F0)", ratio: "17.44:1 AAA", note: "Deep Espresso marketing showcase stages" },
+            { id: "1", surface: "--accent-soft (#D6B48A)", ink: "--fg-on-accent-soft (#362218)", ratio: "7.69:1 AAA", note: "Fixes 1.00:1 dark-mode invisible toggle defect" },
+            { id: "2", surface: "--accent-editorial (#4A3022)", ink: "--fg-on-accent (#FFFFFF)", ratio: "12.09:1 AAA", note: "Unified App CTA Brown replacing low-contrast legacy bronze" },
+            { id: "3", surface: "--bg-editorial-alt (#FAF3EA)", ink: "--accent-crimson (#B3121B)", ratio: "6.34:1 AA+", note: "App Hahlex Crimson tension & editorial quote accent (< 1.5% area)" },
+            { id: "4", surface: "--bg-stage-dark (#1A130D)", ink: "--accent-crimson-on-stage-dark (#F0857F)", ratio: "7.88:1 AAA", note: "Dark-stage Hahlex Crimson highlight on Deep Espresso" },
+            { id: "5", surface: "--bg-stage-dark (#1A130D)", ink: "--fg-on-stage-dark (#FAFAFA)", ratio: "17.8+:1 AAA", note: "Deep Espresso marketing showcase stages anchored to App dark ink" },
           ]}
           rowKey={(r) => r.id}
         />
