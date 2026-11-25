@@ -7,6 +7,7 @@ import type { MillarRegistryBundle, ResolvedToken } from "@hahlex/millar-core";
 import rawRegistry from "@hahlex/millar-tokens/registry";
 import dtcgRaw from "@hahlex/millar-tokens/dtcg";
 import { validateDesign } from "@hahlex/millar-validator";
+import { loadMillarSkills, SKILL_COMBINATION_RECIPES } from "./skills-loader.js";
 
 const registry = rawRegistry as unknown as MillarRegistryBundle;
 
@@ -91,6 +92,7 @@ function formatGuidelinesMarkdown(register: string): string {
 
 export function createMillarMcpServer(options: MillarMcpServerOptions = {}): McpServer {
   const rootDir = options.rootDir ?? path.resolve(import.meta.dirname, "../../..");
+  const skills = loadMillarSkills(rootDir);
 
   const server = new McpServer(
     {
@@ -407,8 +409,113 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     }),
   );
 
+  server.registerResource(
+    "millar-skills-index",
+    "millar://skills",
+    {
+      title: "Millar Agent Skills Suite Index",
+      description:
+        "Catalog of composable Hahlex/Millar agent skills (millar-design, millar-deep-research, millar-create-image, millar-animation) with progressive-disclosure reference URIs and multi-skill recipes.",
+      mimeType: "application/json",
+    },
+    async (uri) => ({
+      contents: [
+        {
+          uri: uri.href,
+          mimeType: "application/json",
+          text: JSON.stringify(
+            {
+              lifecycleStatus: "draft",
+              installCommand: "npx skills add https://github.com/hahlex/millar",
+              skills: skills.map((s) => ({
+                id: s.id,
+                name: s.name,
+                version: s.version,
+                description: s.description,
+                solves: s.solves,
+                roleLens: s.roleLens,
+                recommendedWith: s.recommendedWith,
+                mcpToolsUsed: s.mcpToolsUsed,
+                uri: s.uri,
+                references: s.references.map((r) => ({ file: r.file, title: r.title, uri: r.uri })),
+              })),
+              recipes: SKILL_COMBINATION_RECIPES,
+            },
+            null,
+            2,
+          ),
+        },
+      ],
+    }),
+  );
+
+  server.registerResource(
+    "millar-skill-by-name",
+    new ResourceTemplate("millar://skills/{name}", {
+      list: async () => ({
+        resources: skills.map((s) => ({
+          uri: s.uri,
+          name: `Skill: ${s.name}`,
+          mimeType: "text/markdown",
+        })),
+      }),
+    }),
+    {
+      title: "Millar Agent Skill Definition (SKILL.md)",
+      description: "Full SKILL.md playbook for millar-design, millar-deep-research, millar-create-image, or millar-animation.",
+      mimeType: "text/markdown",
+    },
+    async (uri, vars) => {
+      const name = String(vars.name ?? "");
+      const found = skills.find((s) => s.id === name);
+      if (!found) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          `Unknown Millar skill "${name}". Expected one of: ${skills.map((s) => s.id).join(", ")}.`,
+        );
+      }
+      return { contents: [{ uri: uri.href, mimeType: "text/markdown", text: found.skillMarkdown }] };
+    },
+  );
+
+  server.registerResource(
+    "millar-skill-reference",
+    new ResourceTemplate("millar://skills/{name}/references/{ref}", {
+      list: async () => ({
+        resources: skills.flatMap((s) =>
+          s.references.map((r) => ({
+            uri: r.uri,
+            name: `${s.name} / ${r.title}`,
+            mimeType: "text/markdown",
+          })),
+        ),
+      }),
+    }),
+    {
+      title: "Millar Agent Skill Reference Playbook",
+      description: "Progressive-disclosure reference document bundled inside a Millar skill.",
+      mimeType: "text/markdown",
+    },
+    async (uri, vars) => {
+      const name = String(vars.name ?? "");
+      const ref = String(vars.ref ?? "");
+      const skill = skills.find((s) => s.id === name);
+      if (!skill) {
+        throw new McpError(ErrorCode.InvalidParams, `Unknown Millar skill "${name}".`);
+      }
+      const foundRef = skill.references.find((r) => r.file === ref || r.file === `${ref}.md`);
+      if (!foundRef) {
+        throw new McpError(
+          ErrorCode.InvalidParams,
+          `Reference "${ref}" not found in skill "${name}". Available: ${skill.references.map((r) => r.file).join(", ")}.`,
+        );
+      }
+      return { contents: [{ uri: uri.href, mimeType: "text/markdown", text: foundRef.content }] };
+    },
+  );
+
   /* ==========================================================================
-   * 2. ALL 11 DEDICATED MCP TOOLS (Read-Only, Idempotent, Cross-Client Schemas)
+   * 2. ALL 13 DEDICATED MCP TOOLS (Read-Only, Idempotent, Cross-Client Schemas)
    * ========================================================================== */
 
   // Tool 1: get_design_guidelines
@@ -789,8 +896,116 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     },
   );
 
+  // Tool 12: list_skills
+  server.registerTool(
+    "list_skills",
+    {
+      title: "List Millar Agent Skills Suite",
+      description:
+        "Lists composable Hahlex/Millar design studio skills (millar-design, millar-deep-research, millar-create-image, millar-animation), bundled reference playbooks, and multi-skill recipes for Antigravity, Claude Code, Codex, and Cursor.",
+      inputSchema: {
+        query: z.string().optional().describe("Optional search keyword (e.g. 'animation', 'image', 'sync', 'research', 'style')."),
+      },
+      annotations: READ_ONLY_ANNOTATIONS,
+    },
+    async ({ query }) => {
+      const q = query?.trim().toLowerCase();
+      const matched = skills.filter(
+        (s) =>
+          !q ||
+          s.id.toLowerCase().includes(q) ||
+          s.description.toLowerCase().includes(q) ||
+          s.solves.toLowerCase().includes(q) ||
+          s.roleLens.some((r) => r.toLowerCase().includes(q)),
+      );
+      return toolJsonResult(
+        {
+          lifecycleStatus: "draft",
+          count: matched.length,
+          installCommand: "npx skills add https://github.com/hahlex/millar",
+          skills: matched.map((s) => ({
+            id: s.id,
+            name: s.name,
+            version: s.version,
+            description: s.description,
+            solves: s.solves,
+            roleLens: s.roleLens,
+            recommendedWith: s.recommendedWith,
+            mcpToolsUsed: s.mcpToolsUsed,
+            uri: s.uri,
+            references: s.references.map((r) => ({ file: r.file, title: r.title, uri: r.uri })),
+          })),
+          recipes: SKILL_COMBINATION_RECIPES,
+        },
+        matched.map((s) => ({ uri: s.uri, name: `Skill: ${s.name}`, mimeType: "text/markdown" })),
+      );
+    },
+  );
+
+  // Tool 13: get_skill
+  server.registerTool(
+    "get_skill",
+    {
+      title: "Get Millar Agent Skill Playbook & References",
+      description:
+        "Fetches the complete SKILL.md instructions and optional progressive-disclosure reference playbooks for millar-design, millar-deep-research, millar-create-image, or millar-animation.",
+      inputSchema: {
+        name: z
+          .enum(["millar-design", "millar-deep-research", "millar-create-image", "millar-animation"])
+          .describe("Skill identifier to retrieve."),
+        reference: z
+          .string()
+          .optional()
+          .describe("Optional specific reference filename (e.g. 'style-dna-contract.md' or 'motion-choreography.md')."),
+        includeAllReferences: z
+          .boolean()
+          .optional()
+          .describe("Set true to inline every reference playbook bundled with this skill."),
+      },
+      annotations: READ_ONLY_ANNOTATIONS,
+    },
+    async ({ name, reference, includeAllReferences }) => {
+      const skill = skills.find((s) => s.id === name);
+      if (!skill) {
+        throw new McpError(ErrorCode.InvalidParams, `Millar skill "${name}" not found.`);
+      }
+      let selectedRefs = includeAllReferences ? skill.references : [];
+      if (reference) {
+        const hit = skill.references.find((r) => r.file === reference || r.file === `${reference}.md`);
+        if (!hit) {
+          throw new McpError(
+            ErrorCode.InvalidParams,
+            `Reference "${reference}" not found in "${name}". Available: ${skill.references.map((r) => r.file).join(", ")}.`,
+          );
+        }
+        selectedRefs = [hit];
+      }
+      return toolJsonResult(
+        {
+          lifecycleStatus: "draft",
+          id: skill.id,
+          name: skill.name,
+          version: skill.version,
+          description: skill.description,
+          solves: skill.solves,
+          roleLens: skill.roleLens,
+          recommendedWith: skill.recommendedWith,
+          mcpToolsUsed: skill.mcpToolsUsed,
+          uri: skill.uri,
+          skillMarkdown: skill.skillMarkdown,
+          availableReferences: skill.references.map((r) => ({ file: r.file, title: r.title, uri: r.uri })),
+          includedReferences: selectedRefs.map((r) => ({ file: r.file, title: r.title, uri: r.uri, content: r.content })),
+        },
+        [
+          { uri: skill.uri, name: `Skill: ${skill.name}`, mimeType: "text/markdown" },
+          ...skill.references.map((r) => ({ uri: r.uri, name: r.title, mimeType: "text/markdown" })),
+        ],
+      );
+    },
+  );
+
   /* ==========================================================================
-   * 3. THREE USER-CONTROLLED MCP PROMPTS
+   * 3. SEVEN USER-CONTROLLED MCP PROMPTS (3 Core Workflows + 4 Millar Skills)
    * ========================================================================== */
 
   server.registerPrompt(
@@ -887,6 +1102,155 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           content: {
             type: "text",
             text: `Audit the provided UI code by calling validate_design(register="${register}"). Present (1) automatedChecks violations with exact fixes and docUris, and (2) humanReviewCriteria clearly separated as advisory review questions that require human judgment.`,
+          },
+        },
+      ],
+    }),
+  );
+
+  const embedSkillMessage = (skillId: string) => {
+    const found = skills.find((s) => s.id === skillId);
+    return {
+      role: "user" as const,
+      content: {
+        type: "resource" as const,
+        resource: {
+          uri: found?.uri ?? `millar://skills/${skillId}`,
+          mimeType: "text/markdown",
+          text: found?.skillMarkdown ?? `# ${skillId}\n`,
+        },
+      },
+    };
+  };
+
+  server.registerPrompt(
+    "millar-design",
+    {
+      title: "Millar Design Director & Cross-Page Continuity",
+      description:
+        "Activates the millar-design flagship skill to lock a 12-axis Style DNA Contract and keep all secondary pages visually cohesive with existing hero imagery, custom animations, or Hahlex Measured Warmth.",
+      argsSchema: {
+        brief: z.string().describe("Website, app, or multi-page redesign brief."),
+        existingAssets: z
+          .string()
+          .optional()
+          .describe("Optional paths or notes describing user-supplied images, animations, or an existing hero page to sync."),
+      },
+    },
+    async ({ brief, existingAssets }) => ({
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "resource",
+            resource: { uri: "millar://guidelines/invariants", mimeType: "text/markdown", text: invariantsMarkdown },
+          },
+        },
+        embedSkillMessage("millar-design"),
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: [
+              `Execute the millar-design workflow for: "${brief}".`,
+              existingAssets ? `User-supplied assets/hero context to extract and sync across ALL pages: ${existingAssets}` : "",
+              "Follow every step in millar-design strictly: classify branch -> run millar-deep-research if assets exist -> lock .millar/style-dna.md -> call get_skill for millar-create-image / millar-animation as needed -> audit every secondary page against the 6-axis Cross-Page Visual Continuity rubric and validate_design.",
+            ]
+              .filter(Boolean)
+              .join("\n"),
+          },
+        },
+      ],
+    }),
+  );
+
+  server.registerPrompt(
+    "millar-deep-research",
+    {
+      title: "Millar Visual DNA Extraction & Craft Research",
+      description:
+        "Activates millar-deep-research to decode user intent, extract visual and motion DNA from supplied images/animations, and benchmark world-class styles before building.",
+      argsSchema: {
+        topic: z.string().describe("Target product, visual style, or multi-page aesthetic challenge to research."),
+        existingAssets: z.string().optional().describe("Optional supplied images, animations, or reference URLs to dissect."),
+      },
+    },
+    async ({ topic, existingAssets }) => ({
+      messages: [
+        embedSkillMessage("millar-deep-research"),
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: [
+              `Run millar-deep-research for: "${topic}".`,
+              existingAssets ? `Inspect and extract Visual & Motion DNA from: ${existingAssets}` : "",
+              "Load reference playbooks via get_skill(name='millar-deep-research', includeAllReferences=true) and emit an actionable .millar/research-dossier.md.",
+            ]
+              .filter(Boolean)
+              .join("\n"),
+          },
+        },
+      ],
+    }),
+  );
+
+  server.registerPrompt(
+    "millar-create-image",
+    {
+      title: "Millar Style-Locked Visual Asset & Image Direction",
+      description:
+        "Activates millar-create-image to produce style-locked photography, illustrations, or code-native SVG/Canvas editorial plates across every page.",
+      argsSchema: {
+        subject: z.string().describe("Page, section, or visual asset series to produce."),
+        styleContext: z.string().optional().describe("Optional path to .millar/style-dna.md or existing hero reference image."),
+      },
+    },
+    async ({ subject, styleContext }) => ({
+      messages: [
+        embedSkillMessage("millar-create-image"),
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: [
+              `Run millar-create-image for: "${subject}".`,
+              styleContext ? `Style anchor context: ${styleContext}` : "",
+              "Follow the 80% Fixed / 20% Variable Master Prompt architecture and Cross-Agent Capability Routing Ladder, reading get_skill(name='millar-create-image', includeAllReferences=true) first.",
+            ]
+              .filter(Boolean)
+              .join("\n"),
+          },
+        },
+      ],
+    }),
+  );
+
+  server.registerPrompt(
+    "millar-animation",
+    {
+      title: "Millar Motion Research & Cross-Page Choreography",
+      description:
+        "Activates millar-animation to research matching animation physics, lock a 4-line Motion Thesis, and implement compositor-safe, reduced-motion-compliant choreography.",
+      argsSchema: {
+        target: z.string().describe("Component, page, or multi-page flow to choreograph."),
+        motionFeel: z.string().optional().describe("Optional user motion feel or existing hero animation reference to match."),
+      },
+    },
+    async ({ target, motionFeel }) => ({
+      messages: [
+        embedSkillMessage("millar-animation"),
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: [
+              `Run millar-animation for: "${target}".`,
+              motionFeel ? `Target motion feel / reference: ${motionFeel}` : "",
+              "Call get_motion_presets() and get_skill(name='millar-animation', includeAllReferences=true), write a 4-line Motion Thesis, ship compositor-only animations with prefers-reduced-motion, and verify both normal and reduced motion.",
+            ]
+              .filter(Boolean)
+              .join("\n"),
           },
         },
       ],

@@ -59,8 +59,9 @@ pnpm add @hahlex/millar-tokens@draft @hahlex/millar-ui@draft @hahlex/millar-mark
 | `packages/domain-education` | `@hahlex/millar-domain-education` | Optional vertical extension pack (`SkillDomainBadge`, `LearnerHighlight`) keeping Millar core 100% product-agnostic |
 | `packages/marketing` | `@hahlex/millar-marketing` | 6 diverse Composition Patterns, 14 code-native photo-free Visual Assets (SVG/CSS/Canvas/React), Productive & Expressive Motion Library, 10 Marketing Sections, 4 Page/App Templates, and live Visual Do's & Don'ts |
 | `packages/validator` | `@hahlex/millar-validator` | Deterministic design compliance engine + CLI (`pnpm run check:design`) strictly separating `automatedChecks` from `humanReviewCriteria` |
-| `packages/mcp` | `@hahlex/millar-mcp` | MCP `2026-07-28` server (`dist/stdio.js` + `dist/http.js`) exposing `millar://` Resources, 11 read-only Tools, and 3 Prompts |
-| `apps/portal` | `@hahlex/millar-portal` | Next.js 15 App Router static portal (`basePath: "/millar"`) showcasing Foundations, Marketing, Product, Resources, `Ctrl+K` search, Light/Dark, and EN/VI live specimens |
+| `packages/mcp` | `@hahlex/millar-mcp` | MCP `2026-07-28` server (`dist/stdio.js` + `dist/http.js`) exposing `millar://` Resources (including `millar://skills/*`), 13 read-only Tools, 7 Prompts, and all 4 bundled Millar Agent Skills |
+| `skills/` | Millar Agent Skills | 4 open-standard composable skills (`millar-design`, `millar-deep-research`, `millar-create-image`, `millar-animation`) installable via `npx skills add https://github.com/hahlex/millar` across Antigravity, Claude Code, Codex, and Cursor |
+| `apps/portal` | `@hahlex/millar-portal` | Next.js 15 App Router static portal (`basePath: "/millar"`) showcasing Foundations, Marketing, Product, Agent Skills Suite, Resources, `Ctrl+K` search, Light/Dark, and EN/VI live specimens |
 
 ## Connect the Millar MCP Server
 
@@ -100,7 +101,7 @@ PORT=3105 node packages/mcp/dist/http.js
 | `pnpm run check:governance` | Enforces Draft/Approved/Deprecated lifecycle rules, blocks AI self-approval, and verifies visual-asset referential integrity |
 | `pnpm run typecheck` | Runs `tsc --noEmit` across all 8 workspace packages & apps |
 | `pnpm run test` | Runs Vitest unit, accessibility (`axe-core`), validator, and in-memory MCP protocol tests |
-| `pnpm run test:mcp-stdio` | Spawns real OS stdio child process (`dist/stdio.js`) and verifies all 11 Tools, 66 static Resources, and 3 Prompts |
+| `pnpm run test:mcp-stdio` | Spawns real OS stdio child process (`dist/stdio.js`) and verifies all 13 Tools, static Resources (`millar://skills/*`), and 7 Prompts |
 | `pnpm run check:design -- --register=product <file>` | Runs deterministic CLI compliance checks on any TSX/CSS/HTML file |
 | `pnpm run test:e2e` | Runs Playwright + real-browser `@axe-core/playwright` across Portal routes (Light & Dark, 1440px / 768px / 375px, keyboard, VI locale, reduced-motion, live component interactivity) |
 | `pnpm run publish:dry-run` | Verifies npm tarball packing & topological `workspace:*` resolution for all 7 `@hahlex/millar-*` packages |

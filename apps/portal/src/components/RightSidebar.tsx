@@ -28,6 +28,7 @@ function getMcpUriForPath(path: string): { uri: string; pkg?: string } {
   if (path === "/marketing/templates") return { uri: "millar://templates/product-launch-template", pkg: "@hahlex/millar-marketing" };
   if (path.startsWith("/marketing")) return { uri: "millar://guidelines/marketing", pkg: "@hahlex/millar-marketing" };
   if (path === "/resources/changelog") return { uri: "millar://changelog" };
+  if (path === "/resources/skills") return { uri: "millar://skills", pkg: "@hahlex/millar-mcp" };
   if (path === "/resources/mcp") return { uri: "millar://guidelines/invariants", pkg: "@hahlex/millar-mcp" };
   return { uri: "millar://guidelines/invariants", pkg: "@hahlex/millar-tokens" };
 }

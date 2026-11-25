@@ -28,7 +28,7 @@ await esbuild.build({
   outfile: path.join(pkgDir, "dist/http.js"),
 });
 
-// Bundle standalone glossary & changelog docs so npx @hahlex/millar-mcp works outside the monorepo
+// Bundle standalone glossary, changelog, and Millar Agent Skills so npx @hahlex/millar-mcp works outside the monorepo
 const docsOut = path.join(pkgDir, "dist/docs");
 fs.mkdirSync(docsOut, { recursive: true });
 for (const docFile of ["GLOSSARY.md", "CHANGELOG.md"]) {
@@ -38,4 +38,11 @@ for (const docFile of ["GLOSSARY.md", "CHANGELOG.md"]) {
   }
 }
 
-console.log("PASS: Bundled @hahlex/millar-mcp dist/stdio.js, dist/http.js, and standalone docs");
+const skillsSrc = path.join(repoRoot, "skills");
+const skillsOut = path.join(pkgDir, "dist/skills");
+if (fs.existsSync(skillsSrc)) {
+  fs.rmSync(skillsOut, { recursive: true, force: true });
+  fs.cpSync(skillsSrc, skillsOut, { recursive: true });
+}
+
+console.log("PASS: Bundled @hahlex/millar-mcp dist/stdio.js, dist/http.js, standalone docs, and 4 Millar Skills");

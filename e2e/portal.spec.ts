@@ -15,6 +15,7 @@ const ROUTES = [
   { path: "/millar/marketing/visual-assets/", name: "marketing-visual-assets" },
   { path: "/millar/marketing/do-dont/", name: "marketing-do-dont" },
   { path: "/millar/components/button/", name: "components-button" },
+  { path: "/millar/resources/skills/", name: "resources-skills" },
   { path: "/millar/resources/mcp/", name: "resources-mcp" },
 ];
 
@@ -100,6 +101,7 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
     // Sidebar link click jumps directly to dedicated Button page
     await page.getByRole("navigation", { name: "Primary documentation" }).getByRole("link", { name: "Button" }).click();
     await expect(page).toHaveURL(/\/millar\/components\/button\/?/);
+    await page.waitForLoadState("networkidle");
     await expect(page.getByRole("heading", { level: 1, name: "Button" })).toBeVisible();
 
     // Ctrl+K opens global Search Dialog and queries registry
@@ -190,5 +192,12 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
     await page.goto("/millar/components/templates/", { waitUntil: "networkidle" });
     await page.getByRole("button", { name: "New proposal" }).click();
     await expect(page.getByRole("cell", { name: "Domain Proposal #1" })).toBeVisible();
+
+    // 8. Agent Skills Suite interactive scenario planner & skill tabs
+    await page.goto("/millar/resources/skills/", { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "Photo-Free Hahlex Launch" }).click();
+    await expect(page.getByText(/14 code-native SVG\/CSS\/Canvas visual assets/)).toBeVisible();
+    await page.getByRole("tab", { name: "millar-animation" }).click();
+    await expect(page.getByText("motion-choreography.md")).toBeVisible();
   });
 });

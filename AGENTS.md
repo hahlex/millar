@@ -38,7 +38,16 @@ When evolving Millar inside `d:\projects\millar`:
 4. Run full verification gate: `pnpm run verify && pnpm run test:mcp-stdio`.
 5. If Portal UI changed: `pnpm --filter @hahlex/millar-portal run build && pnpm run test:e2e` and visually inspect captured screenshots in `e2e/screenshots/`.
 
-## 4. Context Pointers
+## 4. Composable Millar Agent Skills Suite (`skills/` & MCP `millar://skills`)
+
+Millar ships four open-standard skills (`SKILL.md` + progressive-disclosure `references/`) bundled directly inside `@hahlex/millar-mcp` (`list_skills`, `get_skill`, `millar://skills/*`, and 4 dedicated MCP Prompts) and installable via `npx skills add https://github.com/hahlex/millar`:
+
+- **`millar-design`** (`skills/millar-design/SKILL.md`): Flagship Design Director & Cross-Page Continuity orchestrator. Locks `.millar/style-dna.md` (12 axes) and enforces the Secondary-Page Richness Contract + 6-axis Cross-Page Visual Continuity audit so secondary pages never degrade into bland industrial cards.
+- **`millar-deep-research`** (`skills/millar-deep-research/SKILL.md`): Visual & Motion DNA extraction from user-supplied images/animations plus world-class design and choreography benchmarking.
+- **`millar-create-image`** (`skills/millar-create-image/SKILL.md`): Style-locked 80% Fixed / 20% Variable art direction across native AI image generators (Antigravity `image-generator`, Codex, Claude, Imagen/Flux) and `canvas-design` code-native SVG/Canvas editorial plates.
+- **`millar-animation`** (`skills/millar-animation/SKILL.md`): User-aligned motion research, 4-line Motion Thesis, compositor-safe interruptible springs, CSS View Transitions, scroll-driven reveals, and mandatory `prefers-reduced-motion` fallbacks.
+
+## 5. Context Pointers
 
 - **Design system summary & invariants**: [`DESIGN.md`](DESIGN.md)
 - **Domain terminology**: [`GLOSSARY.md`](GLOSSARY.md)

@@ -6,7 +6,7 @@ import { createMillarMcpServer } from "./server.js";
 
 const REPO_ROOT = path.resolve(import.meta.dirname, "../../..");
 
-describe("@hahlex/millar-mcp: Resources, 11 Tools, 3 Prompts & Cross-Client Compatibility", () => {
+describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skills Suite", () => {
   let closePair: (() => Promise<void>) | null = null;
 
   async function connectClient() {
@@ -28,7 +28,7 @@ describe("@hahlex/millar-mcp: Resources, 11 Tools, 3 Prompts & Cross-Client Comp
     }
   });
 
-  it("exposes all 11 dedicated MCP tools with cross-client compatible flat object schemas and readOnlyHint", async () => {
+  it("exposes all 13 dedicated MCP tools with cross-client compatible flat object schemas and readOnlyHint", async () => {
     const client = await connectClient();
     const { tools } = await client.listTools();
 
@@ -39,8 +39,10 @@ describe("@hahlex/millar-mcp: Resources, 11 Tools, 3 Prompts & Cross-Client Comp
       "get_design_tokens",
       "get_motion_presets",
       "get_section",
+      "get_skill",
       "get_template",
       "get_visual_assets",
+      "list_skills",
       "search_components",
       "search_sections",
       "search_templates",
@@ -56,7 +58,7 @@ describe("@hahlex/millar-mcp: Resources, 11 Tools, 3 Prompts & Cross-Client Comp
     }
   });
 
-  it("serves canonical MCP Resources (millar://) and returns JSON-RPC -32602 for unknown IDs", async () => {
+  it("serves canonical MCP Resources (including millar://skills/*) and returns JSON-RPC -32602 for unknown IDs", async () => {
     const client = await connectClient();
     const { resources } = await client.listResources();
     const uris = resources.map((r) => r.uri);
@@ -66,6 +68,9 @@ describe("@hahlex/millar-mcp: Resources, 11 Tools, 3 Prompts & Cross-Client Comp
     expect(uris).toContain("millar://tokens/dtcg");
     expect(uris).toContain("millar://registry/index");
     expect(uris).toContain("millar://glossary");
+    expect(uris).toContain("millar://skills");
+    expect(uris).toContain("millar://skills/millar-design");
+    expect(uris).toContain("millar://skills/millar-design/references/style-dna-contract.md");
 
     const inv = await client.readResource({ uri: "millar://guidelines/invariants" });
     const invFirst = inv.contents[0];
@@ -79,15 +84,24 @@ describe("@hahlex/millar-mcp: Resources, 11 Tools, 3 Prompts & Cross-Client Comp
     const regFirst = regTok.contents[0];
     expect(regFirst && "text" in regFirst ? regFirst.text : "").toContain("approved-visual-assets-only");
 
-    // Verify previously merged asset IDs resolve cleanly without -32602
     const metricAsset = await client.readResource({ uri: "millar://visual-assets/metric-plate-card" });
     const metricFirst = metricAsset.contents[0];
     expect(metricFirst && "text" in metricFirst ? metricFirst.text : "").toContain("MetricPlateCard");
 
+    const skillMd = await client.readResource({ uri: "millar://skills/millar-design" });
+    const skillFirst = skillMd.contents[0];
+    expect(skillFirst && "text" in skillFirst ? skillFirst.text : "").toContain("Cross-Page Continuity");
+
+    const skillRef = await client.readResource({ uri: "millar://skills/millar-design/references/cross-page-sync-audit.md" });
+    const refFirst = skillRef.contents[0];
+    expect(refFirst && "text" in refFirst ? refFirst.text : "").toContain("The 6 Continuity Axes");
+
     await expect(client.readResource({ uri: "millar://components/nonexistent-widget" })).rejects.toThrow();
+    await expect(client.readResource({ uri: "millar://skills/nonexistent-skill" })).rejects.toThrow();
+    await expect(client.readResource({ uri: "millar://skills/millar-design/references/nope.md" })).rejects.toThrow();
   });
 
-  it("executes all 11 tools end-to-end from the same SSoT registry with dual content + structuredContent", async () => {
+  it("executes all 13 tools end-to-end from the same SSoT registry & skills bundle with dual content + structuredContent", async () => {
     const client = await connectClient();
 
     const guidelines = await client.callTool({
@@ -149,15 +163,47 @@ describe("@hahlex/millar-mcp: Resources, 11 Tools, 3 Prompts & Cross-Client Comp
     expect(vData.automatedChecks.violations.some((v) => v.ruleId === "millar/gradient-policy")).toBe(true);
     expect(vData.humanReviewCriteria.automated).toBe(false);
     expect(vData.humanReviewCriteria.criteria.length).toBeGreaterThanOrEqual(4);
+
+    const skillList = await client.callTool({ name: "list_skills", arguments: {} });
+    const sListData = skillList.structuredContent as { count: number; skills: Array<{ id: string }>; recipes: unknown[] };
+    expect(sListData.count).toBe(4);
+    expect(sListData.skills.map((s) => s.id).sort()).toEqual([
+      "millar-animation",
+      "millar-create-image",
+      "millar-deep-research",
+      "millar-design",
+    ]);
+    expect(sListData.recipes.length).toBeGreaterThanOrEqual(4);
+
+    const skillDetail = await client.callTool({
+      name: "get_skill",
+      arguments: { name: "millar-design", includeAllReferences: true },
+    });
+    const sDetailData = skillDetail.structuredContent as {
+      id: string;
+      skillMarkdown: string;
+      includedReferences: Array<{ file: string; content: string }>;
+    };
+    expect(sDetailData.id).toBe("millar-design");
+    expect(sDetailData.skillMarkdown).toContain(".millar/style-dna.md");
+    expect(sDetailData.includedReferences.map((r) => r.file).sort()).toEqual([
+      "aesthetic-movements.md",
+      "cross-page-sync-audit.md",
+      "style-dna-contract.md",
+    ]);
   });
 
-  it("exposes all 3 user-controlled MCP Prompts embedding millar://guidelines/invariants", async () => {
+  it("exposes all 7 user-controlled MCP Prompts (3 core workflows + 4 composable Millar Skills)", async () => {
     const client = await connectClient();
     const { prompts } = await client.listPrompts();
     expect(prompts.map((p) => p.name).sort()).toEqual([
+      "millar-animation",
       "millar-audit-code",
       "millar-build-marketing",
       "millar-build-product",
+      "millar-create-image",
+      "millar-deep-research",
+      "millar-design",
     ]);
 
     const res = await client.getPrompt({
@@ -166,5 +212,16 @@ describe("@hahlex/millar-mcp: Resources, 11 Tools, 3 Prompts & Cross-Client Comp
     });
     expect(res.messages.length).toBe(2);
     expect(JSON.stringify(res.messages)).toContain("millar://guidelines/invariants");
+
+    const designPrompt = await client.getPrompt({
+      name: "millar-design",
+      arguments: {
+        brief: "Multi-page SaaS site synced to user hero visuals",
+        existingAssets: "public/hero-stage.png and HeroCanvas.tsx",
+      },
+    });
+    expect(designPrompt.messages.length).toBe(3);
+    expect(JSON.stringify(designPrompt.messages)).toContain("millar://skills/millar-design");
+    expect(JSON.stringify(designPrompt.messages)).toContain("public/hero-stage.png");
   });
 });
