@@ -145,6 +145,7 @@ export interface SectionSpec extends LifecycleMetadata {
   visualAssetsUsed: string[];
   usageGuidelines: string[];
   responsiveBehavior: string;
+  reducedMotionFallback: string;
   accessibilityNotes: string[];
   importPath: string;
   exampleCode: string;
@@ -156,10 +157,13 @@ export interface TemplateSpec extends LifecycleMetadata {
   name: string;
   register: "marketing" | "product";
   summary: string;
+  photoFree: boolean;
+  visualAssetsUsed: string[];
   compositionPatternsUsed: string[];
   sectionsOrRegions: string[];
   usageGuidelines: string[];
   responsiveBehavior: string;
+  reducedMotionFallback: string;
   importPath: string;
   exampleCode: string;
   sourcePath: string;
@@ -226,6 +230,10 @@ export interface MillarRegistryBundle {
     light: ResolvedToken[];
     dark: ResolvedToken[];
     localeVi: ResolvedToken[];
+    registers: {
+      product: ResolvedToken[];
+      marketing: ResolvedToken[];
+    };
     educationExtension: {
       light: ResolvedToken[];
       dark: ResolvedToken[];

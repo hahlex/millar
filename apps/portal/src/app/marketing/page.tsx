@@ -57,6 +57,7 @@ export default function MarketingPage() {
       case "hero-spatial-stage":
         return (
           <HeroSpatialStage
+            headingLevel="h3"
             headline="One measured language for every Hahlex surface."
             lead="Photo-free marketing craft backed by W3C DTCG tokens and MCP verification."
             primaryCtaLabel="Explore Millar"
@@ -66,6 +67,7 @@ export default function MarketingPage() {
       case "hero-typographic-poster":
         return (
           <HeroTypographicPoster
+            headingLevel="h3"
             headline="Design systems should enforce craft, not write essays about it."
             lead="Monolithic Geist 300 display statements paired with tabular proof metrics."
             ctaLabel="Read Architecture"
@@ -328,7 +330,7 @@ export default function MarketingPage() {
                   }}
                 />
               </div>
-              <code style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, color: "var(--fg-subtle)" }}>
+              <code style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro)", color: "var(--fg-subtle)" }}>
                 {preset.easingCss}
               </code>
               <span style={{ fontSize: "var(--text-micro)", color: "var(--fg-muted)" }}>{preset.reducedMotionFallback}</span>
@@ -419,7 +421,7 @@ export default function MarketingPage() {
           />
         </div>
         <div style={{ borderRadius: "var(--radius-lg)", border: "1px solid var(--border-default)", overflow: "hidden", maxHeight: 620, overflowY: "auto" }}>
-          {selectedTemplate === "launch" ? <ProductLaunchTemplate /> : <EditorialFeatureTemplate />}
+          {selectedTemplate === "launch" ? <ProductLaunchTemplate embedded /> : <EditorialFeatureTemplate embedded />}
         </div>
       </section>
 

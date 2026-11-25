@@ -16,7 +16,7 @@ export function Card({ surface = "base", padding = "default", className, style, 
     surface === "inset"
       ? { backgroundColor: "var(--bg-surface-2)", border: "1px solid var(--border-default)", boxShadow: "none" }
       : surface === "raised"
-        ? { backgroundColor: "var(--bg-elevated)", border: "1px solid var(--border-soft)", boxShadow: "var(--shadow-card)" }
+        ? { backgroundColor: "var(--bg-elevated)", border: "none", boxShadow: "var(--shadow-card)" }
         : { backgroundColor: "var(--bg-surface)", border: "1px solid var(--border-default)", boxShadow: "none" };
 
   return (
@@ -525,8 +525,8 @@ export function FilterBar({
                   display: "inline-flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  width: 20,
-                  height: 20,
+                  width: 24,
+                  height: 24,
                   padding: 0,
                   border: "none",
                   borderRadius: 9999,

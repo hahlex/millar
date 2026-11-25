@@ -24,6 +24,21 @@ describe("@hahlex/millar-validator: Deterministic Rules vs. Human Aesthetic Revi
       code: '<WarmHorizonWash data-millar-approved-gradient="warm-horizon-wash" style={{ backgroundImage: "radial-gradient(circle, rgba(192,138,74,0.14), transparent)" }}>Hero</WarmHorizonWash>',
     });
     expect(marketingApproved.automatedChecks.violations.some((v) => v.ruleId === "millar/gradient-policy")).toBe(false);
+
+    // Regression guard: mentioning WarmHorizonWash in one section MUST NOT whitelist unrelated gradients elsewhere in the file
+    const marketingBypassAttempt = validateDesign({
+      register: "marketing",
+      language: "tsx",
+      code: [
+        "<WarmHorizonWash>Hero</WarmHorizonWash>",
+        "",
+        "",
+        '<div style={{ background: "linear-gradient(135deg, #6366f1, #ec4899)" }}>Unapproved card</div>',
+      ].join("\n"),
+    });
+    expect(marketingBypassAttempt.automatedChecks.passed).toBe(false);
+    expect(marketingBypassAttempt.automatedChecks.violations.some((v) => v.ruleId === "millar/gradient-policy")).toBe(true);
+    expect(marketingBypassAttempt.lifecycleStatus).toBe("draft");
   });
 
   it("enforces Zero Em-Dash on Hahlex UI copy while NEVER flagging user-data, quotes, or third-party text (Q4)", () => {

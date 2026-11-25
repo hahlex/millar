@@ -42,6 +42,7 @@ export interface HumanReviewCriterion {
 export interface ValidateDesignReport {
   register: ValidationRegister;
   sourceKind: ContentSourceKind;
+  lifecycleStatus: "draft" | "approved" | "deprecated";
   /** Deterministic, machine-verifiable compliance rules ONLY. */
   automatedChecks: {
     passed: boolean;
@@ -165,9 +166,19 @@ export function validateDesign(input: ValidateDesignInput): ValidateDesignReport
     });
   }
 
-  // 2. Register-aware CSS gradient policy (Q2 boundary)
+  // 2. Register-aware CSS gradient policy (Q2 boundary, strictly line-bound so one approved asset never whitelists unrelated gradients)
   rulesEvaluated.push("millar/gradient-policy");
-  const hasApprovedMarker = APPROVED_GRADIENT_MARKER_RE.test(code);
+  const isLineApprovedGradient = (lineIdx: number): boolean => {
+    const start = Math.max(0, lineIdx - 2);
+    const end = Math.min(lines.length - 1, lineIdx + 1);
+    for (let i = start; i <= end; i += 1) {
+      const candidate = lines[i] ?? "";
+      if (/data-millar-approved-gradient|millar-approved-gradient\s*:/.test(candidate)) {
+        return true;
+      }
+    }
+    return false;
+  };
   lines.forEach((line, idx) => {
     if (!GRADIENT_RE.test(line)) return;
     if (register === "product" || register === "shared") {
@@ -180,14 +191,14 @@ export function validateDesign(input: ValidateDesignInput): ValidateDesignReport
         suggestion: "Use solid Millar surface tokens (--bg-surface, --bg-surface-2, --tone-brand-soft) and 1px warm-sand borders.",
         docUri: "millar://guidelines/invariants",
       });
-    } else if (!hasApprovedMarker) {
+    } else if (!isLineApprovedGradient(idx)) {
       violations.push({
         ruleId: "millar/gradient-policy",
         severity: "error",
         line: idx + 1,
         message: "Unapproved decorative CSS gradient in Marketing code.",
         found: line.trim().slice(0, 90),
-        suggestion: "Use solid editorial surfaces or an explicitly approved Marketing Visual Asset (e.g., <WarmHorizonWash /> with data-millar-approved-gradient).",
+        suggestion: "Use solid editorial surfaces or an explicitly approved Marketing Visual Asset (e.g., <WarmHorizonWash /> with local data-millar-approved-gradient binding).",
         docUri: "millar://guidelines/marketing",
       });
     }
@@ -341,6 +352,7 @@ export function validateDesign(input: ValidateDesignInput): ValidateDesignReport
   return {
     register,
     sourceKind,
+    lifecycleStatus: "draft",
     automatedChecks: {
       passed: errorCount === 0,
       errorCount,

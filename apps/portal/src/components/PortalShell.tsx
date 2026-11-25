@@ -136,7 +136,9 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
             <Link href="/" className="millar-focus" style={{ textDecoration: "none", borderRadius: 8 }}>
               <HahlexLockup variant={theme === "dark" ? "on-dark" : "color"} size={26} sublabel="Millar" />
             </Link>
-            <Badge tone="brand">v{registry.version} Draft</Badge>
+            <span className="portal-nav-desktop">
+              <Badge tone="brand">v{registry.version} Draft</Badge>
+            </span>
           </div>
 
           <nav aria-label="Primary navigation" className="portal-nav-desktop" style={{ alignItems: "center", gap: 4 }}>
@@ -176,7 +178,7 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
             >
               <span className="portal-nav-desktop" style={{ gap: 6, alignItems: "center" }}>
                 <span>Search</span>
-                <kbd style={{ fontFamily: "var(--font-mono)", fontSize: 11, color: "var(--fg-subtle)" }}>Ctrl K</kbd>
+                <kbd style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro, 0.75rem)", color: "var(--fg-muted)" }}>Ctrl K</kbd>
               </span>
             </Button>
 
@@ -201,16 +203,17 @@ export function PortalShell({ children }: { children: React.ReactNode }) {
               />
             </div>
 
-            <Button
-              variant="white"
-              size="sm"
-              iconOnly
-              className="portal-nav-mobile-trigger"
-              aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
-              aria-expanded={mobileMenuOpen}
-              onClick={() => setMobileMenuOpen((prev) => !prev)}
-              icon={mobileMenuOpen ? <IconClose size="md" /> : <IconMenu size="md" />}
-            />
+            <span className="portal-nav-mobile-trigger">
+              <Button
+                variant="white"
+                size="sm"
+                iconOnly
+                aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+                aria-expanded={mobileMenuOpen}
+                onClick={() => setMobileMenuOpen((prev) => !prev)}
+                icon={mobileMenuOpen ? <IconClose size="md" /> : <IconMenu size="md" />}
+              />
+            </span>
           </div>
         </div>
 

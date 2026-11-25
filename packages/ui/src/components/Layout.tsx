@@ -9,11 +9,14 @@ export interface PageHeaderProps {
   meta?: React.ReactNode;
   primaryAction?: React.ReactNode;
   secondaryActions?: React.ReactNode;
+  embedded?: boolean;
 }
 
-export function PageHeader({ title, meta, primaryAction, secondaryActions }: PageHeaderProps) {
+export function PageHeader({ title, meta, primaryAction, secondaryActions, embedded = false }: PageHeaderProps) {
+  const Wrapper = embedded ? "div" : "header";
+  const Heading = embedded ? "h3" : "h1";
   return (
-    <header
+    <Wrapper
       style={{
         display: "flex",
         alignItems: "center",
@@ -23,7 +26,7 @@ export function PageHeader({ title, meta, primaryAction, secondaryActions }: Pag
       }}
     >
       <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
-        <h1
+        <Heading
           style={{
             margin: 0,
             fontFamily: "var(--font-display)",
@@ -35,7 +38,7 @@ export function PageHeader({ title, meta, primaryAction, secondaryActions }: Pag
           }}
         >
           {title}
-        </h1>
+        </Heading>
         {meta}
       </div>
       {primaryAction || secondaryActions ? (
@@ -44,7 +47,7 @@ export function PageHeader({ title, meta, primaryAction, secondaryActions }: Pag
           {primaryAction}
         </div>
       ) : null}
-    </header>
+    </Wrapper>
   );
 }
 
@@ -63,43 +66,48 @@ export interface AppShellProps {
   navItems: AppShellNavItem[];
   onNavigate?: (id: string) => void;
   toolbarExtra?: React.ReactNode;
+  embedded?: boolean;
   children: React.ReactNode;
 }
 
-export function AppShell({ brand, navItems, onNavigate, toolbarExtra, children }: AppShellProps) {
-  const [mobileOpen, setMobileOpen] = useState(false);
+export function AppShell({ brand, navItems, onNavigate, toolbarExtra, embedded = false, children }: AppShellProps) {
+  const [navExpanded, setNavExpanded] = useState(true);
+  const SidebarTag = embedded ? "div" : "aside";
+  const MainTag = embedded ? "div" : "main";
 
   return (
     <div style={{ minHeight: "100%", display: "flex", flexDirection: "column", backgroundColor: "var(--bg-app)", color: "var(--fg-default)" }}>
-      <a
-        href="#millar-main-content"
-        className="millar-focus"
-        style={{
-          position: "absolute",
-          left: -9999,
-          top: 8,
-          zIndex: 12000,
-          padding: "8px 14px",
-          borderRadius: "var(--radius-sm, 8px)",
-          backgroundColor: "var(--accent)",
-          color: "var(--fg-on-accent)",
-          textDecoration: "none",
-          fontSize: "var(--text-body-sm, 0.875rem)",
-          fontWeight: 500,
-        }}
-        onFocus={(e) => {
-          e.currentTarget.style.left = "12px";
-        }}
-        onBlur={(e) => {
-          e.currentTarget.style.left = "-9999px";
-        }}
-      >
-        Skip to main content
-      </a>
+      {!embedded ? (
+        <a
+          href="#millar-main-content"
+          className="millar-focus"
+          style={{
+            position: "absolute",
+            left: -9999,
+            top: 8,
+            zIndex: 12000,
+            padding: "8px 14px",
+            borderRadius: "var(--radius-sm, 8px)",
+            backgroundColor: "var(--accent)",
+            color: "var(--fg-on-accent)",
+            textDecoration: "none",
+            fontSize: "var(--text-body-sm, 0.875rem)",
+            fontWeight: 500,
+          }}
+          onFocus={(e) => {
+            e.currentTarget.style.left = "12px";
+          }}
+          onBlur={(e) => {
+            e.currentTarget.style.left = "-9999px";
+          }}
+        >
+          Skip to main content
+        </a>
+      ) : null}
 
       <div style={{ display: "grid", gridTemplateColumns: "240px minmax(0, 1fr)", minHeight: 520, border: "1px solid var(--border-default)", borderRadius: "var(--radius-lg, 16px)", overflow: "hidden" }}>
-        <aside
-          aria-label="Primary navigation"
+        <SidebarTag
+          aria-label={embedded ? undefined : "Primary navigation"}
           style={{
             backgroundColor: "var(--bg-sidebar)",
             borderRight: "1px solid var(--border-default)",
@@ -115,50 +123,53 @@ export function AppShell({ brand, navItems, onNavigate, toolbarExtra, children }
               variant="ghost"
               size="sm"
               iconOnly
-              aria-label={mobileOpen ? "Close menu" : "Open menu"}
-              onClick={() => setMobileOpen((prev) => !prev)}
-              icon={mobileOpen ? <IconClose size="md" /> : <IconMenu size="md" />}
+              aria-label={navExpanded ? "Collapse navigation" : "Expand navigation"}
+              aria-expanded={navExpanded}
+              onClick={() => setNavExpanded((prev) => !prev)}
+              icon={navExpanded ? <IconClose size="md" /> : <IconMenu size="md" />}
             />
           </div>
-          <nav aria-label="Workspace sections" style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            {navItems.map((item) => (
-              <a
-                key={item.id}
-                href={item.href}
-                aria-current={item.active ? "page" : undefined}
-                onClick={(e) => {
-                  if (onNavigate) {
-                    e.preventDefault();
-                    onNavigate(item.id);
-                  }
-                }}
-                className="millar-focus"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 10,
-                  padding: "8px 10px",
-                  borderRadius: "var(--radius-sm, 8px)",
-                  border: "1px solid",
-                  borderColor: item.active ? "var(--tone-brand-border)" : "transparent",
-                  backgroundColor: item.active ? "var(--tone-brand-soft)" : "transparent",
-                  color: item.active ? "var(--tone-brand-fg)" : "var(--fg-muted)",
-                  fontSize: "var(--text-body-sm, 0.875rem)",
-                  fontWeight: item.active ? 600 : 500,
-                  textDecoration: "none",
-                }}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </a>
-            ))}
-          </nav>
+          {navExpanded ? (
+            <nav aria-label={embedded ? "Workspace preview sections" : "Workspace sections"} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              {navItems.map((item) => (
+                <a
+                  key={item.id}
+                  href={item.href}
+                  aria-current={item.active ? "page" : undefined}
+                  onClick={(e) => {
+                    if (onNavigate) {
+                      e.preventDefault();
+                      onNavigate(item.id);
+                    }
+                  }}
+                  className="millar-focus"
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 10,
+                    padding: "8px 10px",
+                    borderRadius: "var(--radius-sm, 8px)",
+                    border: "1px solid",
+                    borderColor: item.active ? "var(--tone-brand-border)" : "transparent",
+                    backgroundColor: item.active ? "var(--tone-brand-soft)" : "transparent",
+                    color: item.active ? "var(--tone-brand-fg)" : "var(--fg-muted)",
+                    fontSize: "var(--text-body-sm, 0.875rem)",
+                    fontWeight: item.active ? 600 : 500,
+                    textDecoration: "none",
+                  }}
+                >
+                  {item.icon}
+                  <span>{item.label}</span>
+                </a>
+              ))}
+            </nav>
+          ) : null}
           {toolbarExtra ? <div style={{ marginTop: "auto" }}>{toolbarExtra}</div> : null}
-        </aside>
+        </SidebarTag>
 
-        <main id="millar-main-content" tabIndex={-1} style={{ padding: 24, display: "flex", flexDirection: "column", gap: 20 }}>
+        <MainTag id={embedded ? undefined : "millar-main-content"} tabIndex={embedded ? undefined : -1} style={{ padding: 24, display: "flex", flexDirection: "column", gap: 20 }}>
           {children}
-        </main>
+        </MainTag>
       </div>
     </div>
   );

@@ -13,11 +13,16 @@
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:mcp-stdio": "node packages/mcp/scripts/smoke-stdio.mjs",
+    "check:design": "tsx packages/validator/src/cli.ts",
     "check:em-dash": "node scripts/check-em-dash.mjs",
     "check:governance": "node scripts/check-governance.mjs",
     "verify": "pnpm run check:em-dash && pnpm run check:governance && pnpm run typecheck && pnpm run test"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.1",
     "@types/node": "^22.15.0",
     "tsx": "^4.19.4",
     "typescript": "^5.8.3",

@@ -262,6 +262,7 @@ export default function ProductPage() {
       default:
         return (
           <PageHeader
+            embedded
             title="Operational Directory"
             meta={<Badge tone="brand">1 Primary CTA Max</Badge>}
             secondaryActions={<Button variant="white">Export</Button>}
@@ -335,7 +336,7 @@ export default function ProductPage() {
                   label: "Guidelines & Agent Guardrails",
                   content: (
                     <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 16 }}>
-                      <Card surface="inset" padding="compact">
+                      <div style={{ padding: "14px 16px", borderRadius: "var(--radius-md)", backgroundColor: "var(--bg-surface-2)", display: "flex", flexDirection: "column", gap: 10 }}>
                         <strong>When to use</strong>
                         <ul style={{ margin: 0, paddingLeft: 18, fontSize: "var(--text-body-sm)", color: "var(--fg-muted)" }}>
                           {component.usageGuidelines.whenToUse.map((u) => (
@@ -344,15 +345,15 @@ export default function ProductPage() {
                         </ul>
                         <strong>Responsive behavior</strong>
                         <p style={{ margin: 0, fontSize: "var(--text-body-sm)", color: "var(--fg-muted)" }}>{component.responsiveBehavior}</p>
-                      </Card>
-                      <Card surface="inset" padding="compact">
+                      </div>
+                      <div style={{ padding: "14px 16px", borderRadius: "var(--radius-md)", backgroundColor: "var(--bg-surface-2)", display: "flex", flexDirection: "column", gap: 10 }}>
                         <strong style={{ color: "var(--status-error)" }}>Anti-Hallucination Guardrails (AI &amp; Human)</strong>
                         <ul style={{ margin: 0, paddingLeft: 18, fontSize: "var(--text-body-sm)", color: "var(--fg-default)" }}>
                           {component.invalidPropGuardrails.map((g) => (
                             <li key={g}>{g}</li>
                           ))}
                         </ul>
-                      </Card>
+                      </div>
                     </div>
                   ),
                 },
@@ -428,7 +429,7 @@ export default function ProductPage() {
             ]}
           />
         </div>
-        {appTemplate === "directory" ? <DirectoryWorkspaceTemplate /> : <AnalyticsDashboardTemplate />}
+        {appTemplate === "directory" ? <DirectoryWorkspaceTemplate embedded /> : <AnalyticsDashboardTemplate embedded />}
       </section>
 
       {/* 3. Optional Domain Extension Proof (Education decoupled from Core) */}

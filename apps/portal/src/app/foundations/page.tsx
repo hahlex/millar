@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from "react";
 import registry from "@hahlex/millar-tokens/registry";
-import { Badge, Button, Card, ChoiceToggle, FilterBar, IconCheck, IconCopy, MILLAR_CORE_ICONS } from "@hahlex/millar-ui";
+import { Badge, Card, ChoiceToggle, FilterBar, IconCheck, IconCopy, MILLAR_CORE_ICONS } from "@hahlex/millar-ui";
 import { HahlexLockup, HahlexMark, type BrandMarkVariant } from "@hahlex/millar-marketing";
 import { CodeCopyBox, LifecycleBadge } from "@/components/CodeCopyBox";
 
@@ -73,10 +73,25 @@ export default function FoundationsPage() {
               Normalized symmetric Arch + 3 Pillars vector SVG paired with canonical Title Case Hahlex in Geist 600 (-0.02em tracking).
             </p>
           </div>
-          <a href="/millar/brand/hahlex-mark-color.svg" download style={{ textDecoration: "none" }}>
-            <Button variant="white" size="sm">
-              Download Color SVG
-            </Button>
+          <a
+            href="/millar/brand/hahlex-mark-color.svg"
+            download
+            className="millar-focus"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              height: 34,
+              padding: "0 12px",
+              borderRadius: "var(--radius-sm, 8px)",
+              border: "1px solid var(--border-default)",
+              backgroundColor: "var(--bg-surface)",
+              color: "var(--fg-default)",
+              fontSize: "var(--text-meta, 0.8125rem)",
+              fontWeight: 500,
+              textDecoration: "none",
+            }}
+          >
+            Download Color SVG
           </a>
         </div>
 
@@ -278,7 +293,7 @@ export default function FoundationsPage() {
                           {isCopied ? <IconCheck size="sm" /> : <IconCopy size="sm" />}
                         </span>
                       </div>
-                      <span style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, color: "var(--fg-subtle)" }}>
+                      <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro)", color: "var(--fg-subtle)" }}>
                         {tok.value}
                       </span>
                     </div>
@@ -337,7 +352,7 @@ export default function FoundationsPage() {
               }}
             >
               <IconComp size="lg" />
-              <code style={{ fontFamily: "var(--font-mono)", fontSize: 11.5, color: copiedIcon === name ? "var(--status-success)" : "var(--fg-muted)" }}>
+              <code style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro)", color: copiedIcon === name ? "var(--status-success)" : "var(--fg-muted)" }}>
                 {copiedIcon === name ? "Copied!" : name}
               </code>
             </button>

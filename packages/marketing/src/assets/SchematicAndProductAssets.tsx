@@ -483,7 +483,7 @@ export function MetricPlateCard({ value, label, detail, tone = "brand" }: Metric
           fontWeight: 300,
           lineHeight: 1.1,
           letterSpacing: "var(--tracking-display, -0.02em)",
-          color: isError ? "var(--status-error)" : isDark ? "var(--fg-accent-on-stage-dark)" : "var(--accent-editorial)",
+          color: isError ? "var(--status-error)" : isDark ? "var(--fg-accent-on-stage-dark)" : "var(--fg-accent)",
         }}
       >
         {value}

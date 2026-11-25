@@ -75,6 +75,15 @@ describe("@hahlex/millar-mcp: Resources, 11 Tools, 3 Prompts & Cross-Client Comp
     const btnFirst = btn.contents[0];
     expect(btnFirst && "text" in btnFirst ? btnFirst.text : "").toContain("invalidPropGuardrails");
 
+    const regTok = await client.readResource({ uri: "millar://tokens/resolved/dark/marketing" });
+    const regFirst = regTok.contents[0];
+    expect(regFirst && "text" in regFirst ? regFirst.text : "").toContain("approved-visual-assets-only");
+
+    // Verify previously merged asset IDs resolve cleanly without -32602
+    const metricAsset = await client.readResource({ uri: "millar://visual-assets/metric-plate-card" });
+    const metricFirst = metricAsset.contents[0];
+    expect(metricFirst && "text" in metricFirst ? metricFirst.text : "").toContain("MetricPlateCard");
+
     await expect(client.readResource({ uri: "millar://components/nonexistent-widget" })).rejects.toThrow();
   });
 
@@ -92,7 +101,8 @@ describe("@hahlex/millar-mcp: Resources, 11 Tools, 3 Prompts & Cross-Client Comp
       name: "get_design_tokens",
       arguments: { theme: "dark", category: "color", query: "accent" },
     });
-    const tData = tokens.structuredContent as { dark: Array<{ cssVar: string }> };
+    const tData = tokens.structuredContent as { lifecycleStatus: string; dark: Array<{ cssVar: string }> };
+    expect(tData.lifecycleStatus).toBe("draft");
     expect(tData.dark.some((t) => t.cssVar === "--fg-on-accent-soft")).toBe(true);
 
     const compSearch = await client.callTool({ name: "search_components", arguments: { query: "button" } });
@@ -130,9 +140,11 @@ describe("@hahlex/millar-mcp: Resources, 11 Tools, 3 Prompts & Cross-Client Comp
       },
     });
     const vData = validation.structuredContent as {
+      lifecycleStatus: string;
       automatedChecks: { passed: boolean; violations: Array<{ ruleId: string }> };
       humanReviewCriteria: { automated: boolean; criteria: unknown[] };
     };
+    expect(vData.lifecycleStatus).toBe("draft");
     expect(vData.automatedChecks.passed).toBe(false);
     expect(vData.automatedChecks.violations.some((v) => v.ruleId === "millar/gradient-policy")).toBe(true);
     expect(vData.humanReviewCriteria.automated).toBe(false);

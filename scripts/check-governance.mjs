@@ -64,6 +64,30 @@ for (const collectionKey of [
   }
 }
 
+// Verify referential integrity of visual asset IDs across patterns, sections, and templates
+const validAssetIds = new Set((registry.visualAssets ?? []).map((v) => v.id));
+for (const pat of registry.compositionPatterns ?? []) {
+  for (const ref of pat.pairedAssets ?? []) {
+    if (!validAssetIds.has(ref)) {
+      errors.push(`compositionPatterns:${pat.id} references unknown visual asset "${ref}"`);
+    }
+  }
+}
+for (const sec of registry.sections ?? []) {
+  for (const ref of sec.visualAssetsUsed ?? []) {
+    if (!validAssetIds.has(ref)) {
+      errors.push(`sections:${sec.id} references unknown visual asset "${ref}"`);
+    }
+  }
+}
+for (const tpl of registry.templates ?? []) {
+  for (const ref of tpl.visualAssetsUsed ?? []) {
+    if (!validAssetIds.has(ref)) {
+      errors.push(`templates:${tpl.id} references unknown visual asset "${ref}"`);
+    }
+  }
+}
+
 if (errors.length > 0) {
   console.error(`FAIL: Governance check failed with ${errors.length} violation(s):`);
   for (const e of errors) console.error(`  - ${e}`);

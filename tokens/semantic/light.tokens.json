@@ -68,10 +68,14 @@
         "$value": "{color.brand.bronze-600}",
         "$description": "AA editorial bronze hover fill (5.58:1 with white; fixes 2.86:1 failure from legacy site)."
       },
+      "accent-on-stage-dark": {
+        "$value": "{color.brand.deep-sand}",
+        "$description": "High-contrast warm bronze CTA fill on always-dark espresso showcase stages (7.67:1 AAA with white)."
+      },
       "fg-on-accent": {
         "$value": "{color.neutral.white}",
         "$description": "Ink on primary and editorial CTA buttons.",
-        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.accent", "semantic.color.accent-hover", "semantic.color.accent-editorial", "semantic.color.accent-editorial-hover"], "minContrast": 4.5 } }
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.accent", "semantic.color.accent-hover", "semantic.color.accent-editorial", "semantic.color.accent-editorial-hover", "semantic.color.accent-on-stage-dark"], "minContrast": 4.5 } }
       },
       "accent-soft": {
         "$value": "{color.brand.soft-sand}",
@@ -85,7 +89,7 @@
       "fg-accent": {
         "$value": "{color.brand.deep-sand}",
         "$description": "Brand ink for links, active indicators, eyebrows, and icons on light surfaces.",
-        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-app", "semantic.color.bg-surface", "semantic.color.bg-editorial"], "minContrast": 4.5 } }
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-app", "semantic.color.bg-surface", "semantic.color.bg-editorial", "semantic.color.bg-editorial-card"], "minContrast": 4.5 } }
       },
       "fg-accent-hover": {
         "$value": "{color.brand.cta-brown}",

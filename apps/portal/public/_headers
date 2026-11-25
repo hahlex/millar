@@ -1,7 +1,6 @@
-/*
- * Defense-in-depth headers for Millar Portal (Cloudflare Workers Static Assets).
- * Per ADR-0003: CSP is defense-in-depth ONLY and NEVER replaces CMS origin isolation.
- */
+# Defense-in-depth headers for Millar Portal (Cloudflare Workers Static Assets).
+# Per ADR-0003: CSP is defense-in-depth ONLY and NEVER replaces CMS origin isolation.
+# For static Next.js export, Worker middleware should upgrade script-src with per-request nonces before production launch.
 /*
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY

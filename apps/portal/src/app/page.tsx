@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import registry from "@hahlex/millar-tokens/registry";
-import { Badge, Button, Card, IconArrowRight, IconCode, IconLayers, IconPalette, IconShield } from "@hahlex/millar-ui";
+import { Card, IconArrowRight, IconCode, IconLayers, IconPalette, IconShield } from "@hahlex/millar-ui";
 import {
   BentoNarrativeMosaic,
   ConcentricArcCanvas,
@@ -50,21 +50,65 @@ export default function MillarHomePage() {
               </p>
 
               <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap", paddingTop: 4 }}>
-                <Link href="/foundations" style={{ textDecoration: "none" }}>
-                  <Button variant="primary" size="lg" style={{ backgroundColor: "#6B4D35", borderColor: "#6B4D35", color: "#FFFFFF" }}>
-                    Explore Foundations
-                    <IconArrowRight size="md" />
-                  </Button>
+                <Link
+                  href="/foundations"
+                  className="millar-focus"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    height: 44,
+                    padding: "0 18px",
+                    borderRadius: "var(--radius-control, 10px)",
+                    border: "1px solid var(--accent-on-stage-dark)",
+                    backgroundColor: "var(--accent-on-stage-dark)",
+                    color: "var(--fg-on-accent)",
+                    fontSize: "var(--text-body, 0.9375rem)",
+                    fontWeight: 500,
+                    textDecoration: "none",
+                  }}
+                >
+                  <span>Explore Foundations</span>
+                  <IconArrowRight size="md" />
                 </Link>
-                <Link href="/marketing" style={{ textDecoration: "none" }}>
-                  <Button variant="ghost" size="lg" style={{ color: "var(--fg-on-stage-dark)", borderColor: "var(--border-stage-dark)" }}>
-                    Visual Asset Gallery
-                  </Button>
+                <Link
+                  href="/marketing"
+                  className="millar-focus"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 8,
+                    height: 44,
+                    padding: "0 18px",
+                    borderRadius: "var(--radius-control, 10px)",
+                    border: "1px solid var(--border-stage-dark)",
+                    backgroundColor: "transparent",
+                    color: "var(--fg-on-stage-dark)",
+                    fontSize: "var(--text-body, 0.9375rem)",
+                    fontWeight: 500,
+                    textDecoration: "none",
+                  }}
+                >
+                  Visual Asset Gallery
                 </Link>
-                <Link href="/resources" style={{ textDecoration: "none" }}>
-                  <Button variant="ghost" size="lg" style={{ color: "var(--fg-on-stage-dark)", borderColor: "var(--border-stage-dark)" }}>
-                    Connect MCP Server
-                  </Button>
+                <Link
+                  href="/resources"
+                  className="millar-focus"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    padding: "6px 4px",
+                    borderRadius: "var(--radius-sm, 8px)",
+                    color: "var(--fg-accent-on-stage-dark)",
+                    fontSize: "var(--text-body-sm, 0.875rem)",
+                    fontWeight: 500,
+                    textDecoration: "underline",
+                    textUnderlineOffset: "3px",
+                  }}
+                >
+                  <span>MCP Server</span>
+                  <IconArrowRight size="sm" />
                 </Link>
               </div>
 
@@ -112,8 +156,8 @@ export default function MillarHomePage() {
                         padding: "5px 12px",
                         borderRadius: "var(--radius-pill, 9999px)",
                         border: `1px solid ${heroRegister === reg ? "var(--fg-accent-on-stage-dark)" : "var(--border-stage-dark)"}`,
-                        backgroundColor: heroRegister === reg ? "#6B4D35" : "var(--bg-stage-dark-card)",
-                        color: "#FFFFFF",
+                        backgroundColor: heroRegister === reg ? "var(--accent-on-stage-dark)" : "var(--bg-stage-dark-card)",
+                        color: "var(--fg-on-accent)",
                         fontSize: "var(--text-micro, 0.75rem)",
                         fontWeight: 500,
                         cursor: "pointer",
@@ -217,7 +261,6 @@ export default function MillarHomePage() {
       <section style={{ padding: "clamp(48px, 7vw, 80px) clamp(16px, 4vw, 48px)", backgroundColor: "var(--bg-editorial)" }}>
         <div style={{ maxWidth: 1240, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))", gap: 36, alignItems: "center" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <Badge tone="brand">Measured Warmth · Visual Philosophy</Badge>
             <h2 style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "clamp(1.85rem, 3.2vw, 2.5rem)", fontWeight: 300, lineHeight: 1.15 }}>
               Tactile warmth calibrated like an architectural instrument.
             </h2>
@@ -225,11 +268,44 @@ export default function MillarHomePage() {
               From archival Warm Cream and Deep Espresso stages to Josef Albers mineral surface steps, Millar gives designers and AI coding agents an unmistakable Hahlex visual voice without copying Vercel, Linear, or ElevenLabs.
             </p>
             <div style={{ display: "flex", gap: 10, flexWrap: "wrap", paddingTop: 6 }}>
-              <a href="/millar/brand/measured-warmth-poster.pdf" download style={{ textDecoration: "none" }}>
-                <Button variant="primary">Download Specimen PDF</Button>
+              <a
+                href="/millar/brand/measured-warmth-poster.pdf"
+                download
+                className="millar-focus"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  height: 40,
+                  padding: "0 14px",
+                  borderRadius: "var(--radius-control, 10px)",
+                  border: "1px solid var(--accent)",
+                  backgroundColor: "var(--accent)",
+                  color: "var(--fg-on-accent)",
+                  fontSize: "var(--text-body-sm, 0.875rem)",
+                  fontWeight: 500,
+                  textDecoration: "none",
+                }}
+              >
+                Download Specimen PDF
               </a>
-              <Link href="/marketing" style={{ textDecoration: "none" }}>
-                <Button variant="white">Inspect 6 Composition Patterns</Button>
+              <Link
+                href="/marketing"
+                className="millar-focus"
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  height: 40,
+                  padding: "0 14px",
+                  borderRadius: "var(--radius-control, 10px)",
+                  border: "1px solid var(--border-default)",
+                  backgroundColor: "var(--bg-surface)",
+                  color: "var(--fg-default)",
+                  fontSize: "var(--text-body-sm, 0.875rem)",
+                  fontWeight: 500,
+                  textDecoration: "none",
+                }}
+              >
+                Inspect 6 Composition Patterns
               </Link>
             </div>
           </div>

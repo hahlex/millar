@@ -386,11 +386,12 @@ export function Checkbox({ checked, onChange, label, disabled = false }: Checkbo
         checked={checked}
         disabled={disabled}
         onChange={(e) => onChange(e.target.checked)}
-        className="millar-focus"
+        className="millar-checkbox-input"
         style={{ position: "absolute", opacity: 0, width: 1, height: 1 }}
       />
       <span
         aria-hidden="true"
+        className="millar-checkbox-box"
         style={{
           display: "inline-flex",
           alignItems: "center",

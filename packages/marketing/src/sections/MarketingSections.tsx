@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useId, useRef, useState } from "react";
 import { Badge, Button, IconArrowRight, IconCheck, IconClose, IconShield } from "@hahlex/millar-ui";
 import {
   AssistantThreadPreview,
@@ -29,6 +29,7 @@ export interface HeroSpatialStageProps {
   onPrimaryCta?: () => void;
   onSecondaryCta?: () => void;
   stageVisual?: React.ReactNode;
+  headingLevel?: "h1" | "h3";
 }
 
 export function HeroSpatialStage({
@@ -39,7 +40,9 @@ export function HeroSpatialStage({
   onPrimaryCta,
   onSecondaryCta,
   stageVisual,
+  headingLevel = "h1",
 }: HeroSpatialStageProps) {
+  const Heading = headingLevel;
   return (
     <section style={{ padding: "clamp(32px, 5vw, 64px) clamp(16px, 4vw, 48px)" }}>
       <WarmHorizonWash intensity="editorial" style={{ maxWidth: 1320, margin: "0 auto", padding: "clamp(32px, 5vw, 64px)" }}>
@@ -52,7 +55,7 @@ export function HeroSpatialStage({
           }}
         >
           <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-            <h1
+            <Heading
               style={{
                 margin: 0,
                 fontFamily: "var(--font-display)",
@@ -64,7 +67,7 @@ export function HeroSpatialStage({
               }}
             >
               {headline}
-            </h1>
+            </Heading>
             <p
               style={{
                 margin: 0,
@@ -82,7 +85,7 @@ export function HeroSpatialStage({
                 variant="primary"
                 size="lg"
                 onClick={onPrimaryCta}
-                style={{ backgroundColor: "#6B4D35", borderColor: "#6B4D35", color: "#FFFFFF" }}
+                style={{ backgroundColor: "var(--accent-on-stage-dark)", borderColor: "var(--accent-on-stage-dark)", color: "var(--fg-on-accent)" }}
               >
                 {primaryCtaLabel}
                 <IconArrowRight size="md" />
@@ -116,6 +119,7 @@ export interface HeroTypographicPosterProps {
   ctaLabel: string;
   onCta?: () => void;
   metrics?: Array<{ value: string; label: string }>;
+  headingLevel?: "h1" | "h3";
 }
 
 export function HeroTypographicPoster({
@@ -128,7 +132,9 @@ export function HeroTypographicPoster({
     { value: "6", label: "Marketing composition patterns" },
     { value: "11", label: "MCP tools from one SSoT" },
   ],
+  headingLevel = "h1",
 }: HeroTypographicPosterProps) {
+  const Heading = headingLevel;
   return (
     <section
       style={{
@@ -139,7 +145,7 @@ export function HeroTypographicPoster({
       }}
     >
       <div style={{ maxWidth: 1240, margin: "0 auto", display: "flex", flexDirection: "column", gap: 36 }}>
-        <h1
+        <Heading
           style={{
             margin: 0,
             maxWidth: 960,
@@ -152,7 +158,7 @@ export function HeroTypographicPoster({
           }}
         >
           {headline}
-        </h1>
+        </Heading>
         <div
           style={{
             display: "grid",
@@ -193,7 +199,7 @@ export function HeroTypographicPoster({
                     fontFamily: "var(--font-display)",
                     fontSize: "clamp(1.5rem, 2.5vw, 2.125rem)",
                     fontWeight: 300,
-                    color: "var(--accent-editorial)",
+                    color: "var(--fg-accent)",
                   }}
                 >
                   {m.value}
@@ -381,7 +387,24 @@ export function ProductStageShowcase({
     },
   ];
   const [activeId, setActiveId] = useState(items[0]!.id);
+  const baseId = useId();
+  const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const current = items.find((v) => v.id === activeId) ?? items[0]!;
+
+  const handleTabKeyDown = (e: React.KeyboardEvent<HTMLButtonElement>, idx: number) => {
+    let nextIdx = idx;
+    if (e.key === "ArrowRight") nextIdx = (idx + 1) % items.length;
+    else if (e.key === "ArrowLeft") nextIdx = (idx - 1 + items.length) % items.length;
+    else if (e.key === "Home") nextIdx = 0;
+    else if (e.key === "End") nextIdx = items.length - 1;
+    else return;
+    e.preventDefault();
+    const target = items[nextIdx];
+    if (target) {
+      setActiveId(target.id);
+      tabRefs.current[nextIdx]?.focus();
+    }
+  };
 
   return (
     <section
@@ -407,22 +430,29 @@ export function ProductStageShowcase({
             {heading}
           </h2>
           <div role="tablist" aria-label="Product showcase views" style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-            {items.map((item) => {
+            {items.map((item, idx) => {
               const selected = item.id === current.id;
               return (
                 <button
                   key={item.id}
+                  ref={(el) => {
+                    tabRefs.current[idx] = el;
+                  }}
+                  id={`${baseId}-tab-${item.id}`}
                   type="button"
                   role="tab"
+                  tabIndex={selected ? 0 : -1}
                   aria-selected={selected}
+                  aria-controls={`${baseId}-panel-${item.id}`}
                   onClick={() => setActiveId(item.id)}
+                  onKeyDown={(e) => handleTabKeyDown(e, idx)}
                   className="millar-focus"
                   style={{
                     padding: "8px 14px",
                     borderRadius: "var(--radius-pill, 9999px)",
                     border: `1px solid ${selected ? "var(--fg-accent-on-stage-dark)" : "var(--border-stage-dark)"}`,
-                    backgroundColor: selected ? "#6B4D35" : "var(--bg-stage-dark-card)",
-                    color: "#FFFFFF",
+                    backgroundColor: selected ? "var(--accent-on-stage-dark)" : "var(--bg-stage-dark-card)",
+                    color: "var(--fg-on-accent)",
                     fontFamily: "var(--font-sans)",
                     fontSize: "var(--text-meta, 0.8125rem)",
                     fontWeight: 500,
@@ -438,7 +468,9 @@ export function ProductStageShowcase({
         <p style={{ margin: 0, maxWidth: 680, fontSize: "var(--text-body, 0.9375rem)", color: "var(--fg-muted-on-stage-dark)" }}>
           {current.summary}
         </p>
-        <div role="tabpanel">{current.content}</div>
+        <div role="tabpanel" id={`${baseId}-panel-${current.id}`} aria-labelledby={`${baseId}-tab-${current.id}`}>
+          {current.content}
+        </div>
       </div>
     </section>
   );
@@ -695,7 +727,7 @@ export function ClosingConversionBand({
             variant="primary"
             size="lg"
             onClick={onCta}
-            style={{ backgroundColor: "#6B4D35", borderColor: "#6B4D35", color: "#FFFFFF" }}
+            style={{ backgroundColor: "var(--accent-on-stage-dark)", borderColor: "var(--accent-on-stage-dark)", color: "var(--fg-on-accent)" }}
           >
             {ctaLabel}
             <IconArrowRight size="md" />
@@ -706,9 +738,11 @@ export function ClosingConversionBand({
   );
 }
 
-export function MillarSiteFooter({ version = "v0.1.0-draft" }: { version?: string }) {
+export function MillarSiteFooter({ version = "v0.1.0-draft", embedded = false }: { version?: string; embedded?: boolean }) {
+  const Tag = embedded ? "div" : "footer";
   return (
-    <footer
+    <Tag
+      data-template-footer={embedded ? "true" : undefined}
       style={{
         backgroundColor: "var(--bg-stage-dark-deep)",
         color: "var(--fg-muted-on-stage-dark)",
@@ -734,7 +768,7 @@ export function MillarSiteFooter({ version = "v0.1.0-draft" }: { version?: strin
           <span>Hahlex Ecosystem</span>
         </div>
       </div>
-    </footer>
+    </Tag>
   );
 }
 
@@ -798,7 +832,10 @@ export function VisualDoDontPair({ title, doLabel, dontLabel, doPreview, dontPre
             flexDirection: "column",
           }}
         >
-          <div style={{ padding: 20, flex: 1, backgroundColor: "var(--bg-surface-2)" }}>{dontPreview}</div>
+          {/* Non-interactive anti-pattern illustration; full accessible guidance sits in the Don't caption below */}
+          <div aria-hidden="true" data-millar-antipattern-specimen="true" style={{ padding: 20, flex: 1, backgroundColor: "var(--bg-surface-2)" }}>
+            {dontPreview}
+          </div>
           <div
             style={{
               padding: "12px 16px",

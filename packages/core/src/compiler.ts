@@ -292,6 +292,8 @@ export function compileMillar(options: CompileMillarOptions): CompileMillarOutpu
   const lightRaw = flattenDtcg(readJson<RawDtcgNode>(path.join(tokensDir, "semantic/light.tokens.json")));
   const darkRaw = flattenDtcg(readJson<RawDtcgNode>(path.join(tokensDir, "semantic/dark.tokens.json")));
   const localeViRaw = flattenDtcg(readJson<RawDtcgNode>(path.join(tokensDir, "semantic/locale-vi.tokens.json")));
+  const productRegisterRaw = flattenDtcg(readJson<RawDtcgNode>(path.join(tokensDir, "semantic/register-product.tokens.json")));
+  const marketingRegisterRaw = flattenDtcg(readJson<RawDtcgNode>(path.join(tokensDir, "semantic/register-marketing.tokens.json")));
   const motionReducedRaw = flattenDtcg(readJson<RawDtcgNode>(path.join(tokensDir, "semantic/motion-reduced.tokens.json")));
   const educationRaw = flattenDtcg(readJson<RawDtcgNode>(path.join(tokensDir, "extensions/education.tokens.json")));
 
@@ -304,6 +306,8 @@ export function compileMillar(options: CompileMillarOptions): CompileMillarOutpu
   const lightTokens = resolveRawList(lightRaw, lightLookup);
   const darkTokens = resolveRawList(darkRaw, darkLookup);
   const localeViTokens = resolveRawList(localeViRaw, baseMap);
+  const productRegisterTokens = resolveRawList(productRegisterRaw, baseMap);
+  const marketingRegisterTokens = resolveRawList(marketingRegisterRaw, baseMap);
   const motionReducedTokens = resolveRawList(motionReducedRaw, baseMap);
 
   const eduLightTokens = resolveRawList(
@@ -429,9 +433,18 @@ export function compileMillar(options: CompileMillarOptions): CompileMillarOutpu
     "    --ring-shadow-active: 0 0 0 1px var(--border-strong);",
     "  }",
     "",
-    '  :root[data-theme="dark"] {',
+    '  :root[data-theme="dark"],',
+    '  [data-theme="dark"] {',
     "    color-scheme: dark;",
     formatDecls(darkTokens).replace(/^/gm, "  "),
+    "  }",
+    "",
+    '  [data-register="product"] {',
+    formatDecls(productRegisterTokens).replace(/^/gm, "  "),
+    "  }",
+    "",
+    '  [data-register="marketing"] {',
+    formatDecls(marketingRegisterTokens).replace(/^/gm, "  "),
     "  }",
     "",
     "  :root:lang(vi) {",
@@ -450,7 +463,8 @@ export function compileMillar(options: CompileMillarOptions): CompileMillarOutpu
     "  }",
     "",
     "  .millar-focus:focus-visible,",
-    "  .hhx-focus:focus-visible {",
+    "  .hhx-focus:focus-visible,",
+    "  .millar-checkbox-input:focus-visible + .millar-checkbox-box {",
     "    outline: 2px solid var(--focus-ring);",
     "    outline-offset: 2px;",
     "    box-shadow: none;",
@@ -594,7 +608,8 @@ export function compileMillar(options: CompileMillarOptions): CompileMillarOutpu
     "  :root {",
     formatDecls(eduLightTokens).replace(/^/gm, "  "),
     "  }",
-    '  :root[data-theme="dark"] {',
+    '  :root[data-theme="dark"],',
+    '  [data-theme="dark"] {',
     formatDecls(eduDarkTokens).replace(/^/gm, "  "),
     "  }",
     "}",
@@ -632,6 +647,10 @@ export function compileMillar(options: CompileMillarOptions): CompileMillarOutpu
       light: lightTokens,
       dark: darkTokens,
       localeVi: localeViTokens,
+      registers: {
+        product: productRegisterTokens,
+        marketing: marketingRegisterTokens,
+      },
       educationExtension: {
         light: eduLightTokens,
         dark: eduDarkTokens,

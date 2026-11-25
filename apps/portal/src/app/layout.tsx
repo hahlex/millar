@@ -4,7 +4,7 @@ import "./globals.css";
 import { PortalShell } from "@/components/PortalShell";
 
 const geist = Geist({
-  subsets: ["latin"],
+  subsets: ["latin", "latin-ext"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--next-font-geist",
   display: "swap",

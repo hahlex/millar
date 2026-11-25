@@ -47,7 +47,7 @@ export const MILLAR_GUIDELINES: GuidelineSpec[] = [
       "Apply tabular-nums on all KPI anchors (--text-kpi), data tables, counters, and timers.",
     ],
     doItems: [
-      "Pair whisper-light Geist 300 display headlines with crisp Geist Mono uppercase eyebrows (+0.08em tracking).",
+      "Pair whisper-light Geist 300 display headlines with calm Inter body prose and tabular-numeral data anchors.",
       "Use Inter opsz 24 at weight 380 (light) / 370 (dark) for long-form AI assistant threads.",
     ],
     dontItems: [

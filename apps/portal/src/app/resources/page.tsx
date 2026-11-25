@@ -2,7 +2,7 @@
 
 import React from "react";
 import registry from "@hahlex/millar-tokens/registry";
-import { Alert, Badge, Button, Card, DataTable, IconDownload } from "@hahlex/millar-ui";
+import { Alert, Badge, Card, DataTable, IconDownload } from "@hahlex/millar-ui";
 import { CodeCopyBox, LifecycleBadge } from "@/components/CodeCopyBox";
 
 const MCP_TOOLS = [
@@ -25,11 +25,16 @@ const MCP_RESOURCES = [
   { uri: "millar://brand/identity", mime: "application/json", purpose: "Canonical Vector SVG marks + Geist 600 wordmark spec." },
   { uri: "millar://tokens/dtcg", mime: "application/design-tokens+json", purpose: "Raw W3C DTCG 2025.10 token tree." },
   { uri: "millar://tokens/resolved/{theme}", mime: "application/json", purpose: "Resolved light or dark tokens with WCAG contrast checks." },
-  { uri: "millar://registry/index", mime: "application/json", purpose: "Lightweight catalog index of all components, assets, sections, templates." },
+  { uri: "millar://tokens/resolved/{theme}/{register}", mime: "application/json", purpose: "Resolved tokens scoped by theme (light|dark) and register (shared|product|marketing)." },
+  { uri: "millar://registry/index", mime: "application/json", purpose: "Lightweight catalog index of all components, patterns, assets, sections, templates." },
   { uri: "millar://components/{id}", mime: "application/json", purpose: "Individual Product/Shared component contract." },
-  { uri: "millar://sections/{id}", mime: "application/json", purpose: "Individual Marketing section spec." },
-  { uri: "millar://visual-assets/{id}", mime: "application/json", purpose: "Individual code-native Visual Asset spec." },
+  { uri: "millar://composition-patterns/{id}", mime: "application/json", purpose: "Individual Marketing Composition Pattern spatial grammar." },
+  { uri: "millar://visual-assets/{id}", mime: "application/json", purpose: "Individual code-native Visual Asset spec & gradientPolicy." },
+  { uri: "millar://sections/{id}", mime: "application/json", purpose: "Individual Marketing section spec & reduced-motion fallback." },
+  { uri: "millar://templates/{id}", mime: "application/json", purpose: "Individual Page or Application Template spec." },
+  { uri: "millar://motion-presets/{id}", mime: "application/json", purpose: "Individual Productive or Expressive motion curve." },
   { uri: "millar://glossary", mime: "text/markdown", purpose: "Canonical Millar domain terminology." },
+  { uri: "millar://changelog", mime: "text/markdown", purpose: "Millar versioning and release changelog." },
 ];
 
 export default function ResourcesPage() {
@@ -53,23 +58,44 @@ export default function ResourcesPage() {
         <h2 id="downloads-heading" style={{ margin: 0, fontFamily: "var(--font-display)", fontSize: "var(--text-display-section)", fontWeight: 300 }}>
           Brand Asset Downloads
         </h2>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14 }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: 14 }}>
           {[
             { label: "Brand Mark (Color SVG)", href: "/millar/brand/hahlex-mark-color.svg", meta: "Canonical vector · 300x282" },
             { label: "Brand Mark (On Light SVG)", href: "/millar/brand/hahlex-mark-on-light.svg", meta: "High-contrast espresso" },
             { label: "Brand Mark (On Dark SVG)", href: "/millar/brand/hahlex-mark-on-dark.svg", meta: "Warm ivory + sand" },
             { label: "Brand Mark (Monochrome SVG)", href: "/millar/brand/hahlex-mark-monochrome.svg", meta: "Uses currentColor" },
+            { label: "PWA Maskable Icon (192px)", href: "/millar/brand/hahlex-icon-192.png", meta: "PNG · 192x192 safe zone" },
+            { label: "PWA Maskable Icon (512px)", href: "/millar/brand/hahlex-icon-512.png", meta: "PNG · 512x512 safe zone" },
             { label: "Measured Warmth Poster (PNG)", href: "/millar/brand/measured-warmth-poster.png", meta: "1600x2133 specimen plate" },
             { label: "Measured Warmth Poster (PDF)", href: "/millar/brand/measured-warmth-poster.pdf", meta: "A4 crisp vector PDF" },
           ].map((file) => (
-            <Card key={file.href} surface="base" padding="compact">
-              <strong style={{ fontSize: "var(--text-body-sm)" }}>{file.label}</strong>
-              <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro)", color: "var(--fg-subtle)" }}>{file.meta}</span>
-              <div>
-                <a href={file.href} download style={{ textDecoration: "none" }}>
-                  <Button variant="white" size="sm" icon={<IconDownload size="sm" />}>
-                    Download
-                  </Button>
+            <Card key={file.href} surface="base" padding="compact" style={{ height: "100%", justifyContent: "space-between" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                <strong style={{ fontSize: "var(--text-body-sm)" }}>{file.label}</strong>
+                <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro)", color: "var(--fg-subtle)" }}>{file.meta}</span>
+              </div>
+              <div style={{ paddingTop: 6 }}>
+                <a
+                  href={file.href}
+                  download
+                  className="millar-focus"
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    height: 32,
+                    padding: "0 10px",
+                    borderRadius: "var(--radius-sm, 8px)",
+                    border: "1px solid var(--border-default)",
+                    backgroundColor: "var(--bg-surface)",
+                    color: "var(--fg-default)",
+                    fontSize: "var(--text-meta, 0.8125rem)",
+                    fontWeight: 500,
+                    textDecoration: "none",
+                  }}
+                >
+                  <IconDownload size="sm" />
+                  <span>Download</span>
                 </a>
               </div>
             </Card>

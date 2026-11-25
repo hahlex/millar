@@ -56,6 +56,10 @@ export function CodeCopyBox({ code, title, language = "tsx" }: { code: string; t
         </Button>
       </div>
       <pre
+        tabIndex={0}
+        role="region"
+        aria-label={`${title ?? language} code snippet`}
+        className="millar-focus"
         style={{
           margin: 0,
           padding: "14px 16px",

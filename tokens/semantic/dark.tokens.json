@@ -56,10 +56,11 @@
       "accent-hover": { "$value": { "colorSpace": "oklch", "components": [0.488, 0.056, 58.0], "alpha": 1, "hex": "#7a5a40" }, "$description": "Dark-mode primary CTA hover fill (6.24:1 AA with white)." },
       "accent-editorial": { "$value": "{color.brand.deep-sand}", "$description": "Dark-mode editorial primary CTA fill." },
       "accent-editorial-hover": { "$value": { "colorSpace": "oklch", "components": [0.488, 0.056, 58.0], "alpha": 1, "hex": "#7a5a40" }, "$description": "Dark-mode editorial CTA hover fill." },
+      "accent-on-stage-dark": { "$value": "{color.brand.deep-sand}", "$description": "High-contrast warm bronze CTA fill on always-dark espresso showcase stages (7.67:1 AAA with white)." },
       "fg-on-accent": {
         "$value": "{color.neutral.white}",
         "$description": "White ink on dark CTA buttons.",
-        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.accent", "semantic.color.accent-hover"], "minContrast": 4.5 } }
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.accent", "semantic.color.accent-hover", "semantic.color.accent-on-stage-dark"], "minContrast": 4.5 } }
       },
       "accent-soft": { "$value": "{color.brand.soft-sand}", "$description": "Theme-invariant soft sand chip fill." },
       "fg-on-accent-soft": {
@@ -70,7 +71,7 @@
       "fg-accent": {
         "$value": "{color.brand.soft-sand}",
         "$description": "Warm sand brand text, link, and icon ink on dark surfaces (9.70:1 AAA).",
-        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-app", "semantic.color.bg-surface", "semantic.color.bg-editorial"], "minContrast": 4.5 } }
+        "$extensions": { "com.hahlex.millar": { "contrastWith": ["semantic.color.bg-app", "semantic.color.bg-surface", "semantic.color.bg-editorial", "semantic.color.bg-editorial-card"], "minContrast": 4.5 } }
       },
       "fg-accent-hover": { "$value": { "colorSpace": "oklch", "components": [0.856, 0.054, 73.0], "alpha": 1, "hex": "#e6cba8" }, "$description": "Dark-mode brand link hover." },
       "focus-ring": {

@@ -216,6 +216,54 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
   );
 
   server.registerResource(
+    "millar-tokens-resolved-register",
+    new ResourceTemplate("millar://tokens/resolved/{theme}/{register}", {
+      list: async () => ({
+        resources: [
+          { uri: "millar://tokens/resolved/light/shared", name: "Resolved Light Tokens (Shared)", mimeType: "application/json" },
+          { uri: "millar://tokens/resolved/dark/shared", name: "Resolved Dark Tokens (Shared)", mimeType: "application/json" },
+          { uri: "millar://tokens/resolved/light/product", name: "Resolved Light Tokens (Product)", mimeType: "application/json" },
+          { uri: "millar://tokens/resolved/dark/product", name: "Resolved Dark Tokens (Product)", mimeType: "application/json" },
+          { uri: "millar://tokens/resolved/light/marketing", name: "Resolved Light Tokens (Marketing)", mimeType: "application/json" },
+          { uri: "millar://tokens/resolved/dark/marketing", name: "Resolved Dark Tokens (Marketing)", mimeType: "application/json" },
+        ],
+      }),
+    }),
+    {
+      title: "Resolved Millar Tokens by Theme & Register",
+      description: "Resolved CSS variables, WCAG contrast checks, and register-specific overrides for light/dark + shared/product/marketing.",
+      mimeType: "application/json",
+    },
+    async (uri, vars) => {
+      const theme = String(vars.theme ?? "");
+      const register = String(vars.register ?? "");
+      if (theme !== "light" && theme !== "dark") {
+        throw new McpError(ErrorCode.InvalidParams, `Unknown theme "${theme}". Expected "light" or "dark".`);
+      }
+      if (register !== "shared" && register !== "product" && register !== "marketing") {
+        throw new McpError(ErrorCode.InvalidParams, `Unknown register "${register}". Expected "shared", "product", or "marketing".`);
+      }
+      const payload = {
+        theme,
+        register,
+        lifecycleStatus: "draft",
+        base: registry.tokens.base,
+        semantic: theme === "dark" ? registry.tokens.dark : registry.tokens.light,
+        registerMeta:
+          register === "product"
+            ? registry.tokens.registers.product
+            : register === "marketing"
+              ? registry.tokens.registers.marketing
+              : [],
+        localeVi: registry.tokens.localeVi,
+      };
+      return {
+        contents: [{ uri: uri.href, mimeType: "application/json", text: JSON.stringify(payload, null, 2) }],
+      };
+    },
+  );
+
+  server.registerResource(
     "millar-registry-index",
     "millar://registry/index",
     {
@@ -428,9 +476,11 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
 
       const payload: Record<string, unknown> = {
         version: registry.version,
+        lifecycleStatus: "draft",
         dtcgSpecVersion: registry.dtcgSpecVersion,
         contrastSummary: registry.contrastSummary,
         base: filterList(registry.tokens.base),
+        registers: registry.tokens.registers,
       };
       if (theme === "light" || theme === "all") payload.light = filterList(registry.tokens.light);
       if (theme === "dark" || theme === "all") payload.dark = filterList(registry.tokens.dark);

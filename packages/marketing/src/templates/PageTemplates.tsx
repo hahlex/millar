@@ -34,11 +34,17 @@ import {
  * Marketing Page Templates (Diverse Compositions, Top-Level <footer> Outside <main>)
  * ============================================================================ */
 
-export function ProductLaunchTemplate() {
+export interface TemplatePreviewProps {
+  embedded?: boolean;
+}
+
+export function ProductLaunchTemplate({ embedded = false }: TemplatePreviewProps = {}) {
+  const MainTag = embedded ? "div" : "main";
   return (
     <div style={{ backgroundColor: "var(--bg-editorial)", color: "var(--fg-default)" }}>
-      <main>
+      <MainTag>
         <HeroSpatialStage
+          headingLevel={embedded ? "h3" : "h1"}
           headline="One measured language for every Hahlex surface."
           lead="Shared foundations, photo-free marketing craft, and accessible product primitives compiled from a single W3C DTCG 2025.10 source."
           primaryCtaLabel="Explore Foundations"
@@ -59,17 +65,19 @@ export function ProductLaunchTemplate() {
         <MetricMirrorSection />
         <NativeAccordionFaq />
         <ClosingConversionBand />
-      </main>
-      <MillarSiteFooter />
+      </MainTag>
+      <MillarSiteFooter embedded={embedded} />
     </div>
   );
 }
 
-export function EditorialFeatureTemplate() {
+export function EditorialFeatureTemplate({ embedded = false }: TemplatePreviewProps = {}) {
+  const MainTag = embedded ? "div" : "main";
   return (
     <div style={{ backgroundColor: "var(--bg-editorial)", color: "var(--fg-default)" }}>
-      <main>
+      <MainTag>
         <HeroTypographicPoster
+          headingLevel={embedded ? "h3" : "h1"}
           headline="Design systems should enforce craft, not write essays about it."
           lead="Millar pairs Swiss typographic restraint with warm Hahlex materiality and machine-verifiable MCP compliance rules."
           ctaLabel="Read Architecture"
@@ -82,8 +90,8 @@ export function EditorialFeatureTemplate() {
           quoteAttribution="Hahlex Design Governance · ADR-0002"
         />
         <ClosingConversionBand headline="Adopt Millar in your next Hahlex release." ctaLabel="View Integration Guide" />
-      </main>
-      <MillarSiteFooter />
+      </MainTag>
+      <MillarSiteFooter embedded={embedded} />
     </div>
   );
 }
@@ -92,7 +100,7 @@ export function EditorialFeatureTemplate() {
  * Product/App Workspace Templates (Zero Gradients, 1-Glance Operational Density)
  * ============================================================================ */
 
-export function DirectoryWorkspaceTemplate() {
+export function DirectoryWorkspaceTemplate({ embedded = false }: TemplatePreviewProps = {}) {
   const [query, setQuery] = useState("");
   const rows = [
     { id: "r1", name: "Warm Sand Tokens", owner: "Core Platform", status: "Approved", contrast: "16.03:1" },
@@ -102,6 +110,7 @@ export function DirectoryWorkspaceTemplate() {
 
   return (
     <AppShell
+      embedded={embedded}
       brand={<HahlexLockup size={24} />}
       navItems={[
         { id: "directory", label: "Catalog", href: "#directory", icon: <IconLayers size="md" />, active: true },
@@ -110,6 +119,7 @@ export function DirectoryWorkspaceTemplate() {
       ]}
     >
       <PageHeader
+        embedded={embedded}
         title="System Packages"
         meta={<Badge tone="brand">{rows.length} items</Badge>}
         primaryAction={
@@ -144,16 +154,17 @@ export function DirectoryWorkspaceTemplate() {
   );
 }
 
-export function AnalyticsDashboardTemplate() {
+export function AnalyticsDashboardTemplate({ embedded = false }: TemplatePreviewProps = {}) {
   return (
     <AppShell
+      embedded={embedded}
       brand={<HahlexLockup size={24} />}
       navItems={[
         { id: "home", label: "Overview", href: "#home", icon: <IconHome size="md" />, active: true },
         { id: "audit", label: "Compliance", href: "#audit", icon: <IconShield size="md" /> },
       ]}
     >
-      <PageHeader title="Design System Health" meta={<Badge tone="success">All gates passing</Badge>} />
+      <PageHeader embedded={embedded} title="Design System Health" meta={<Badge tone="success">All gates passing</Badge>} />
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14 }}>
         <Stat label="WCAG AA Pairs" value="80 / 80" delta="0 failures" tone="success" icon={<IconShield size="md" />} progressPercent={100} />
         <Stat label="CVD Min Delta-E" value="11.13" delta="Protan & Deutan" tone="brand" icon={<IconLayers size="md" />} progressPercent={88} />
