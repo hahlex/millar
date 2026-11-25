@@ -9,7 +9,7 @@ export function LifecycleBadge({ status }: { status: string }) {
   return <Badge tone="brand">Draft</Badge>;
 }
 
-export function CodeCopyBox({ code, title, language = "tsx" }: { code: string; title?: string; language?: string }) {
+export function CodeCopyBox({ code, title, language = "tsx", wrap = false }: { code: string; title?: string; language?: string; wrap?: boolean }) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = async () => {
@@ -64,9 +64,11 @@ export function CodeCopyBox({ code, title, language = "tsx" }: { code: string; t
           margin: 0,
           padding: "14px 16px",
           overflowX: "auto",
-          fontFamily: "var(--font-mono)",
+          whiteSpace: wrap ? "pre-wrap" : "pre",
+          wordBreak: wrap ? "break-word" : "normal",
+          fontFamily: wrap ? "var(--font-sans)" : "var(--font-mono)",
           fontSize: "var(--text-meta, 0.8125rem)",
-          lineHeight: "var(--leading-mono, 1.85)",
+          lineHeight: wrap ? 1.65 : "var(--leading-mono, 1.85)",
           color: "var(--fg-default)",
         }}
       >

@@ -13,6 +13,8 @@
     "build": "pnpm run build:packages && pnpm --filter @hahlex/millar-portal run build",
     "publish:draft": "node scripts/publish-npm.mjs --tag=draft",
     "publish:dry-run": "node scripts/publish-npm.mjs --tag=draft --dry-run",
+    "deploy:portal": "pnpm --filter @hahlex/millar-portal run build && pnpm --filter @hahlex/millar-portal run deploy",
+    "deploy:portal:dry-run": "pnpm --filter @hahlex/millar-portal run build && pnpm --filter @hahlex/millar-portal run deploy:dry-run",
     "typecheck": "pnpm -r --if-present run typecheck",
     "test": "vitest run",
     "test:watch": "vitest",

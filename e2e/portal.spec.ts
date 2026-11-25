@@ -193,13 +193,22 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
     await page.getByRole("button", { name: "New proposal" }).click();
     await expect(page.getByRole("cell", { name: "Domain Proposal #1" })).toBeVisible();
 
-    // 8. Agent Skills Suite interactive Track S/M/L planner & all 7 skill tabs
+    // 8. Agent Skills Suite interactive Bootstrap Prompts, Track S/M/L planner & all 7 skill tabs
     await page.goto("/millar/resources/skills/", { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "7 Skills Only" }).click();
+    await expect(page.getByText(/Skills Only \(7 Skills\) \(VI\)/)).toBeVisible();
+    await page.getByRole("button", { name: "English", exact: true }).click();
+    await expect(page.getByText(/Skills Only \(7 Skills\) \(EN\)/)).toBeVisible();
     await page.getByRole("button", { name: "Photo-Free Hahlex Launch" }).click();
     await expect(page.getByText(/14 code-native SVG\/CSS\/Canvas visual assets/)).toBeVisible();
     await page.getByRole("tab", { name: "millar-verify-web" }).click();
     await expect(page.getByText("five-layer-qa-gate.md")).toBeVisible();
     await page.getByRole("tab", { name: "millar-build-web" }).click();
     await expect(page.getByText("web-architecture-checklist.md")).toBeVisible();
+
+    // 9. MCP page auto-connect prompt language toggle
+    await page.goto("/millar/resources/mcp/", { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "English", exact: true }).click();
+    await expect(page.getByText(/Auto-Install & Connect Millar MCP Prompt \(EN\)/)).toBeVisible();
   });
 });

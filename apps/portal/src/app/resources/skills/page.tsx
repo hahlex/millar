@@ -16,6 +16,72 @@ interface SkillDocItem {
   promptExample: string;
 }
 
+const BOOTSTRAP_PROMPTS = {
+  "all-in-one": {
+    label: "All-in-One (7 Skills + MCP)",
+    vi: `Hãy tự động cài đặt trọn bộ Millar Design System (Hahlex) vào môi trường AI của tôi gồm cả 7 Agent Skills và Millar MCP Server:
+
+1. Cài 7 Millar Skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web):
+   - Chạy lệnh: npx skills add https://github.com/hahlex/millar
+   - Nếu máy chưa có quyền git private repo hoặc lệnh CLI không hỗ trợ IDE hiện tại, hãy clone/pull thư mục skills/ từ https://github.com/hahlex/millar và sao chép vào thư mục skills của IDE đang dùng (~/.gemini/config/skills/, ~/.claude/skills/, ~/.codex/skills/, hoặc .cursor/skills/).
+2. Cấu hình và kết nối Millar MCP Server (@hahlex/millar-mcp):
+   - Thêm MCP server tên "millar" dùng command "npx" với args ["-y", "@hahlex/millar-mcp@draft"] (hoặc trỏ tới dist/stdio.js nếu đã clone repo millar về local).
+3. Kiểm tra lại bằng cách gọi tool list_skills() và get_design_guidelines(register="shared") rồi báo cáo xác nhận đã sẵn sàng đủ 7 skills và 13 MCP tools.`,
+    en: `Automatically install the complete Millar Design System (Hahlex) suite into my AI coding environment, including all 7 Agent Skills and the Millar MCP Server:
+
+1. Install all 7 Millar Skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web):
+   - Run: npx skills add https://github.com/hahlex/millar
+   - If the CLI is unavailable in this IDE, clone https://github.com/hahlex/millar and copy the skills/ directories into this agent's skills root (~/.gemini/config/skills/, ~/.claude/skills/, ~/.codex/skills/, or .cursor/skills/).
+2. Configure and connect the Millar MCP Server (@hahlex/millar-mcp):
+   - Register an MCP server named "millar" running command "npx" with args ["-y", "@hahlex/millar-mcp@draft"] (or point to local packages/mcp/dist/stdio.js if cloned locally).
+3. Verify installation by calling list_skills() and get_design_guidelines(register="shared"), then confirm all 7 skills and 13 MCP tools are active.`,
+  },
+  "skills-only": {
+    label: "Skills Only (7 Skills)",
+    vi: `Hãy tải và cài đặt trọn bộ 7 Millar Agent Skills từ https://github.com/hahlex/millar vào thư mục skills hiện tại của bạn bằng lệnh:
+npx skills add https://github.com/hahlex/millar
+
+Đảm bảo đủ 7 skill (kèm thư mục references/ của mỗi skill):
+- millar-web-workflow
+- millar-deep-research
+- millar-design
+- millar-create-image
+- millar-animation
+- millar-build-web
+- millar-verify-web
+
+Sau khi cài xong, hãy đọc nhanh mô tả từng skill và xác nhận sẵn sàng áp dụng cho dự án web tiếp theo.`,
+    en: `Download and install all 7 Millar Agent Skills from https://github.com/hahlex/millar into your active skills directory by running:
+npx skills add https://github.com/hahlex/millar
+
+Verify all 7 skills (with their bundled references/ playbooks) are installed:
+- millar-web-workflow
+- millar-deep-research
+- millar-design
+- millar-create-image
+- millar-animation
+- millar-build-web
+- millar-verify-web
+
+Confirm when all 7 skills are loaded and ready for web design and implementation tasks.`,
+  },
+  "sync-hero": {
+    label: "Install + Sync Multi-Page Site",
+    vi: `Hãy cài bộ 7 Millar Skills (npx skills add https://github.com/hahlex/millar) hoặc nạp trực tiếp qua Millar MCP (list_skills / get_skill), sau đó chạy quy trình millar-web-workflow ở chế độ Track M cho dự án hiện tại:
+
+1. Chạy millar-deep-research để trích xuất Visual DNA và Motion DNA từ trang chủ / hình ảnh / animation tôi đã cung cấp sẵn.
+2. Chạy millar-design để khóa hợp đồng 12 trục vào .millar/style-dna.md, đảm bảo các trang phụ thừa hưởng trọn vẹn chất liệu bề mặt, ánh sáng, framing và nhịp điệu bố cục (không bị đơn giản hóa kiểu công nghiệp hay chỉ đồng bộ mỗi font).
+3. Dùng millar-create-image và millar-animation để đồng bộ visual và chuyển động cho các trang còn lại.
+4. Code sạch bằng millar-build-web và nghiệm thu đủ 5 lớp bằng millar-verify-web trước khi bàn giao.`,
+    en: `Install the 7 Millar Skills (npx skills add https://github.com/hahlex/millar) or load them via Millar MCP (list_skills / get_skill), then execute millar-web-workflow (Track M) on this project:
+
+1. Run millar-deep-research to extract Visual DNA and Motion DNA from my existing homepage, images, and animations.
+2. Run millar-design to lock the 12-axis .millar/style-dna.md contract so every secondary page inherits full surface materiality, lighting, framing, and layout variety (never dropping to plain industrial cards or font-only sync).
+3. Use millar-create-image and millar-animation to create cohesive visuals and matching motion across all secondary routes.
+4. Implement with millar-build-web and pass all 5 QA layers in millar-verify-web before handoff.`,
+  },
+} as const;
+
 const SKILLS: SkillDocItem[] = [
   {
     id: "millar-web-workflow",
@@ -184,9 +250,12 @@ const RECIPES = [
 ] as const;
 
 export default function SkillsResourcePage() {
+  const [promptPreset, setPromptPreset] = useState<keyof typeof BOOTSTRAP_PROMPTS>("all-in-one");
+  const [promptLang, setPromptLang] = useState<"vi" | "en">("vi");
   const [recipeId, setRecipeId] = useState<(typeof RECIPES)[number]["id"]>("track-m");
   const [activeSkillTab, setActiveSkillTab] = useState<string>("millar-web-workflow");
 
+  const activePrompt = BOOTSTRAP_PROMPTS[promptPreset];
   const activeRecipe = RECIPES.find((r) => r.id === recipeId) ?? RECIPES[0];
 
   return (
@@ -202,6 +271,44 @@ export default function SkillsResourcePage() {
         ]}
         importPath="millar://skills"
       />
+
+      {/* Ready-to-Send AI Agent Bootstrap Prompts */}
+      <SpecimenFrame
+        title="One-Click AI Agent Bootstrap Prompts (Auto-Install Skills & MCP)"
+        description="Prefer zero manual setup? Copy one prompt below and send it straight to Antigravity, Claude Code, Codex, or Cursor so your agent automatically installs all 7 Millar Skills and connects Millar MCP."
+        toolbar={
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            <ChoiceToggle
+              label="Bootstrap prompt preset"
+              value={promptPreset}
+              onChange={setPromptPreset}
+              options={[
+                { value: "all-in-one", label: "All-in-One (Skills + MCP)" },
+                { value: "skills-only", label: "7 Skills Only" },
+                { value: "sync-hero", label: "Install + Sync Site" },
+              ]}
+            />
+            <ChoiceToggle
+              label="Prompt language"
+              value={promptLang}
+              onChange={setPromptLang}
+              options={[
+                { value: "vi", label: "Tiếng Việt" },
+                { value: "en", label: "English" },
+              ]}
+            />
+          </div>
+        }
+        code={activePrompt[promptLang]}
+        codeTitle={`Send to Antigravity / Claude Code / Codex / Cursor · ${activePrompt.label} (${promptLang.toUpperCase()})`}
+        wrapCode
+      >
+        <Alert
+          tone="info"
+          title="Zero-friction onboarding for any coding agent"
+          message="Click Copy on the prompt box below and paste directly into chat. Your agent will run npx skills add, wire @hahlex/millar-mcp, and verify list_skills() automatically."
+        />
+      </SpecimenFrame>
 
       {/* Interactive Scenario & Track Planner */}
       <SpecimenFrame
@@ -221,7 +328,7 @@ npx skills add https://github.com/hahlex/millar
 # 2. Or invoke directly via Millar MCP tools / prompts (zero local skill install required)
 list_skills()
 ${activeRecipe.chain.map((s) => `get_skill({ name: "${s}", includeAllReferences: true })`).join("\n")}`}
-        codeTitle={`Recommended Pipeline · ${activeRecipe.label}`}
+        codeTitle={`Recommended CLI & MCP Pipeline · ${activeRecipe.label}`}
       >
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>

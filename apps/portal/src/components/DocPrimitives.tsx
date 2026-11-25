@@ -70,6 +70,7 @@ export interface SpecimenFrameProps {
   canvasTone?: "surface" | "inset" | "editorial" | "stage-dark";
   code?: string;
   codeTitle?: string;
+  wrapCode?: boolean;
   children: React.ReactNode;
 }
 
@@ -80,6 +81,7 @@ export function SpecimenFrame({
   canvasTone = "surface",
   code,
   codeTitle,
+  wrapCode = false,
   children,
 }: SpecimenFrameProps) {
   const bg =
@@ -135,7 +137,7 @@ export function SpecimenFrame({
         {children}
       </div>
 
-      {code ? <CodeCopyBox title={codeTitle ?? title} code={code} /> : null}
+      {code ? <CodeCopyBox title={codeTitle ?? title} code={code} wrap={wrapCode} /> : null}
     </div>
   );
 }

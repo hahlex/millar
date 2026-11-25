@@ -8,7 +8,9 @@
     "dev": "next dev --port 3100",
     "build": "next build",
     "start": "next start --port 3100",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "deploy": "npx wrangler deploy",
+    "deploy:dry-run": "npx wrangler deploy --dry-run --outdir=.wrangler-dry-run"
   },
   "dependencies": {
     "@hahlex/millar-domain-education": "workspace:*",
