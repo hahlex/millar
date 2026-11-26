@@ -1,74 +1,74 @@
-# Human Editorial & Documentary Photography Playbook (v0.4)
+# Human Editorial & Documentary Photography Playbook (v0.5)
 
-Consult this playbook whenever generating or art-directing **real human photography** (portraits, classrooms, mentorship scenes, hands at craft, founder/team portraits, color or black-and-white editorial series).
+Consult this playbook whenever generating or art-directing **real human photography** (classrooms, teaching, workshops, portraits, hands at craft, community scenes, color or black-and-white editorial series).
 
-**Core Rule:** Author **100% of photographic prompts in crisp, `85-145` word English (`65%` Subject & Emotional Choreography / `35%` Film, Light & Material Lock)**. Never hardcode another brand's palette: derive wardrobe, room tone, and lighting strictly from the researched Brand DNA.
-
----
-
-## 1. Authentic Human Warmth vs. Stock-Ad Clichés (CRITICAL DISTINCTION)
-
-Never confuse **fake stock-photo smiles** with **genuine human warmth**:
-- **BANNED (Stock-Ad Cliché):** Staring straight into the camera with blinding toothy grins, thumbs-up, high-fives, sterile white studios, plastic airbrushed "wax skin", or forced corporate pointing at laptops.
-- **ENCOURAGED (Genuine Absorbed Human Warmth):** People deeply engaged **with each other or with their real work**, NEVER performing for the lens:
-  - A teacher leaning close beside a student with a **gentle, genuine encouraging smile**, pointing softly at an open notebook while both look at the page (never stern, stiff, or standing like an exam proctor unless the brief calls for tension!).
-  - An artisan's calm focused gaze on their hands shaping clay, pouring coffee, or sketching architectural lines.
-  - A quiet moment of real recognition, curiosity, or relief captured mid-action.
-- **Natural Skin & Hands Hygiene (Compact, Never Bloated):**
-  - One crisp phrase is enough: *"natural 35mm film grain, authentic unretouched skin texture, lived-in matte fabrics, anatomically natural hands."*
-  - Do NOT spend 60 words describing pores, stray hairs, creased collars, and wall plaster; that boilerplate steals diffusion focus from faces, light drama, and brand storytelling!
+**Core Rule:** Author **100% of photographic prompts in crisp, `80-135` word English (`65%` Concrete Mid-Action & Natural Light / `35%` Real Film & Authenticity Tail)**. NEVER inject raw `#HEX` strings into photographic prompts (describe real light and materials so skin tones and daylight stay 100% organic!).
 
 ---
 
-## 2. Spotlight & Contrast Choreography (Show BOTH Halves of the Story!)
+## 1. Context-Appropriate Illumination Law (BAN Dark Gloomy Classrooms!)
 
-Whenever a human scene represents a transformation (such as *unseen -> seen*, *isolated -> mentored*, *shadow -> clarity*):
-- **Keep Background Architecture Subordinate:** Do NOT let a huge bright window or peeling lime-washed wall dominate 50% of the frame when the brief calls for dramatic directional spotlight contrast!
-- **Show Real People in BOTH Zones:** Put shallow-focus, desaturated secondary figures naturally in the quiet shadowed third (e.g., left third in deep researched dark tone) so the single warm directional spotlight illuminating the foreground focal subjects on the right tells the entire brand story in **0.5 seconds**!
-- **Integrate Brand Physical Signatures Naturally:** If the brand's visual system features a signature tactile motif (such as a subtle hand-torn cream cotton-paper margin on the far right edge, a signature color garment accent, or an iconic sketchbook/prop), weave it intentionally into the frame edge or foreground table so the photograph is unmistakably owned by THAT brand!
+Match lighting honestly to the **real-world emotional context** of the scene: NEVER force pitch-black shadows onto daytime human life just because a website has a dark hero section!
 
----
-
-## 3. Cultural & Geographic Grounding (Research First)
-
-Ground every setting in the real everyday world of the brand's audience (researched via `millar-deep-research`):
-- **Vietnamese Context Example (When Brief Is Set in Vietnam):** Authentic Vietnamese faces, simple everyday school shirts / warm muted knit cardigans / natural linen, seasoned wooden desks, handwritten paper notebooks, warm natural late-afternoon light (zero US high-school lockers, zero Western corporate glass boxes, zero tourist clichés).
-- **Other Regions & Cultures:** Apply the identical research discipline: verify local everyday clothing, furniture, light quality, and architectural scale before writing the prompt.
+- **Education, Teaching, Schools, Youth, Health, Community, Everyday Craft -> BRIGHT, AIRY NATURAL DAYLIGHT BY DEFAULT:**
+  - Photograph classrooms and teaching moments in **luminous morning or warm afternoon window daylight**, bounced natural fill light, soft open shadows, and real breathable atmosphere!
+  - **How to show focus/contrast ("unseen -> seen") WITHOUT making a gloomy dungeon:** Use **natural shallow depth of field (`50mm f/2.0`)**, warm natural sunlight falling across the foreground desk, and authentic eye-level interaction between teacher and student while classmates behind them remain softly blurred in bright open room daylight!
+  - **CRITICAL BAN:** Never plunge a classroom into pitch-black darkness (`#1A130D` cave walls + theatrical stage spotlight) unless the brief explicitly specifies a night scene. Dark gloomy classrooms feel oppressive, staged, and unnatural for education.
+- **When Low-Key / Moody Light IS Appropriate:** Only when the real subject genuinely inhabits night, evening lamps, theater stages, dark studios, or nocturnal hardware/audio craft.
 
 ---
 
-## 4. Concise `85-135` Word Prompt Patterns (Subject-First)
+## 2. Kinetic Micro-Action Law (Concrete Mid-Motion Actions, NEVER Frozen Poses!)
 
-### A. Dramatic Editorial Spotlight / Narrative Contrast (`16:9`)
+Generic verbs produce stiff, mannequin-like AI images. **BAN** passive museum phrases (`"pointing softly at the page"`, `"leaning gently"`, `"hands resting calmly"`, `"absorbed in quiet stillness"`, `"extending fingers to touch fingertips in mid-air"`).
+
+ALWAYS direct a **Concrete 3-Part Kinetic Micro-Action**:
+1. **Exact Mid-Motion Physical Verb:** *crouching at eye-level sketching a small triangle in the notebook margin*, *measuring an angle together with a clear plastic ruler*, *writing a step on a sunlit chalkboard while turning back to answer a raised hand*, *actively circling a handwritten lesson note with a brass pen while a companion hand steadies the open notebook corner*.
+2. **Lived-In Authentic Props (Proof of Real Life):** Open worn textbook with underlined lines, pencil eraser and wood shavings, ruler, colored sticky page tabs, canvas backpack slung over a wooden chair, chalk dust on fingers, cup of tea on teacher's desk.
+3. **Genuine Mutual Human Reaction (NOT Staring at Camera):** Both people are visibly locked in real dialogue or shared discovery: the teacher's eyes crinkling in a genuine warm half-smile mid-explanation, the student leaning forward with chin on one hand and an authentic spark of understanding. (Ban fake toothy stock grins staring into the lens, NEVER ban natural warm smiles between people!)
+
+---
+
+## 3. Natural Color & Unforced Composition (Drop Staged Grids & Raw `#HEX`!)
+
+- **Avoid Rigid "Left-Third / Center-Right" Stage Blocking** when shooting candid human life: compose naturally like a photojournalist capturing a real moment (`over-the-shoulder`, `35mm environmental candid`, `eye-level across the desk`) with organic breathing room where UI typography can sit naturally.
+- **Never Paste Raw `#HEX` Codes Into Photo Prompts:** Hex strings push diffusion toward artificial heavy color grading. Translate the researched brand palette into real physical light and surfaces (*sunlit warm cream wall, oiled teak desks, oat-linen shirt, warm golden-morning sun, touch of brass pen*).
+- **Compact Skin & Hands Hygiene:** Keep it to one short phrase (*"natural 35mm film grain, unretouched real skin, five natural fingers per hand, authentic candid focus"*): never dump 50 words of pore/wrinkle/wall boilerplate that steals attention from the live human moment!
+
+---
+
+## 4. Concise `80-130` Word Natural Photo Patterns
+
+### A. Bright Sunlit Teaching & Mentorship Scene (`16:9`)
 ```text
-A sweeping, museum-grade 16:9 editorial photograph capturing <1-second narrative contrast> in a <researched real-world setting>.
-Left third in deep <researched dark ground (#HEX)> shadow with desaturated shallow-focus <background subjects> at <authentic furniture>;
-center-right illuminated by a single warm directional <accent light (#HEX to #HEX)> bringing <focal primary subject absorbed in work> and <warm encouraging mentor/companion leaning gently beside them> into crisp natural color,
-grounded by <researched brand signature tactile edge or foreground anchor>.
-Natural 35mm film grain, authentic unretouched skin texture, zero text, zero UI cards, zero cold neon lighting.
+Candid documentary editorial photograph on 35mm lens, f/2.0, bright warm morning daylight streaming through tall louvered windows of a lively Vietnamese classroom.
+In crisp foreground focus, a teacher in a light oat-linen shirt crouches at eye level beside a wooden desk, actively sketching a small geometry diagram with a pencil in the margin of a student's open notebook while the teenage student leans in, chin propped loosely on her hand, smiling with genuine realization.
+An open textbook, plastic ruler, eraser, and pencil case rest naturally on the sunlit desk.
+In the softly blurred, brightly lit background, classmates work quietly at wooden desks beside a pale green chalkboard.
+Warm natural daylight with open breathable shadows, subtle 35mm film grain, authentic unretouched skin, zero dark gloom, zero posed camera smiles, zero text or UI overlays.
 ```
 
-### B. Intimate Hands & Brand-Motif Still-Life (`16:9` or `3:2`)
+### B. Concrete Collaborative Hands & Warm AI Companion (`16:9` or `3:2`)
 ```text
-An intimate three-quarter overhead medium-format photograph (80mm f/2.8) in warm golden-hour window light where <real human hand in researched natural fabric cuff> reaches gently from the left to meet <elevated brand companion object/hand crafted in researched matte tactile materials, never cold chrome/neon> entering from the right,
-above <open heavyweight cotton notebook / craft surface (#HEX)> with delicate <accent-ink annotations> and <tactile tool> on a <researched dark wood/stone desk (#HEX)>.
-Fine medium-format grain, authentic skin and material texture, zero text clutter, zero cold cyan glow, zero holograms.
+Warm natural-light editorial photograph (50mm f/2.4) looking slightly across a sunlit oiled walnut desk beside a bright curtained window.
+Mid-action, a Vietnamese educator's real hand in a rolled oat-linen sleeve holds a slim brass fountain pen actively sketching a small curved diagram inside an open cream cotton notebook, while from the opposite side of the page a warm matte-ivory porcelain and satin brushed-bronze articulated companion hand naturally steadies the paper corner beside a small cream index slip.
+Soft bright morning sunlight fills the desk with gentle warm open shadows and natural wood grain, genuine skin texture, five natural fingers per hand, authentic 35mm film feel, zero awkward hovering hands, zero cold chrome or neon, zero garbled text.
 ```
 
-### C. Matching Black-and-White Documentary Plate (`3:2` or `4:3`)
+### C. Airy Environmental Portrait (`4:3` or `3:4`)
 ```text
-Timeless silver-gelatin monochrome documentary photograph on 50mm f/2.4 matching the series daylight direction:
-<quiet decisive human detail absorbed in real craft or study with calm uncluttered negative space>,
-rich luminous midtones, open detailed shadows, authentic fine 400-ISO film grain, zero harsh HDR, zero posed camera smiles, zero text or watermarks.
+Natural-light documentary portrait on 85mm f/2.2 in bright open window daylight:
+<authentic subject grounded in researched audience/culture, captured mid-thought or quiet warm half-smile pausing between real tasks, natural everyday attire in brand-harmonized warm neutrals>,
+luminous soft catchlights, real unretouched skin texture, airy open background with gentle shallow bokeh, fine 400-ISO film grain, zero dark studio backdrop, zero plastic HDR, zero text.
 ```
 
 ---
 
-## 5. Human-Photo Pass 4 Vision Audit (Instant Reject Triggers)
+## 5. Pass 4 Natural-Human Vision Audit (Instant Reject Triggers)
 
 Inspect every generated human photo at full `2048px` resolution before accepting:
-- [ ] **Brand Story in 0.5 Seconds:** Does the emotional contrast and every requested brand motif read immediately (no empty desks replacing shadowed peers, no stiff/stern faces where warmth belongs)?
-- [ ] **Authentic Skin & Warmth:** Real pores and natural catchlights; genuine absorbed human warmth (zero wax-skin HDR and zero fake camera grins).
-- [ ] **Anatomical Precision:** Exact 5 natural fingers per hand, plausible joints/wrists, clean pencils/notebooks (zero melted props).
-- [ ] **Series Material Cohesion:** Matches the exact dark anchor, light ground, light direction, and tactile finish of all other plates in the series.
+- [ ] **Context-Right Brightness:** Is a teaching/daytime scene genuinely bright, airy, and inviting with open readable shadows? (Instant REJECT if dark, gloomy, or cave-like!)
+- [ ] **Concrete Mid-Action:** Are hands and people visibly doing ONE specific real action (sketching, measuring, holding a page steady, explaining) with real lived-in props? (Instant REJECT if stiff, frozen, vaguely pointing, or hovering awkwardly!)
+- [ ] **Genuine Warmth & Real Skin:** Authentic unretouched faces and real emotional connection (zero wax skin, zero stern proctor stiffness, zero fake staring-at-lens stock grins).
+- [ ] **Anatomical & Prop Integrity:** Exact 5 natural fingers per hand, real pens/rulers/notebooks, zero melted objects or garbled fake handwriting.
 - [ ] **Dual Provenance Embedded:** PNG `tEXt` chunk + `.prompt.json` written via `scripts/embed-provenance.mjs --sidecar`.

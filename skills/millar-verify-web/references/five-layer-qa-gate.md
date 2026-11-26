@@ -71,15 +71,15 @@ Test `1440x900` (Desktop), `768x1024` (Tablet), and `375x812` (Mobile):
 - Add an inline SVG `<link rel="icon" href="data:image/svg+xml,...">` on standalone static HTML pages so local QA servers never fail on `/favicon.ico` 404 responses.
 - Emulate `prefers-reduced-motion: reduce` and assert hero + sections render immediately at `opacity: 1`.
 
-## 4. Layer 3B Visual Artifact & Anti-Clip-Art Rejection Checklist
+## 4. Layer 3B Visual Artifact & Naturalness Rejection Checklist
 
-Open EVERY rendered photograph, PNG, SVG, or Canvas plate directly via vision (AND compare ALL plates in a series side by side!) before passing Layer 3:
-- [ ] **Brand Motif & Emotional Contrast Fidelity:** Every explicit motif from `DESIGN.md` / brief is visibly elevated (zero timid generic substitutions like anonymous orbs dodging a warm AI-hand motif or empty desks replacing shadowed peers; warm genuine absorbed emotion where care/mentorship belongs).
-- [ ] **Countable & Semantic Integrity (`Path H` Trigger):** Every numbered step (`1..9`), arrow, brand logo geometry, and label is 100% mathematically accurate and legible; any diffusion miscount or warped emblem is immediately rebuilt via `Path H` (Hybrid Photo Stage + 2K Playwright SVG Composite).
-- [ ] **Series Material Cohesion (2K Master):** All plates in the set share ONE unified physical world (dark anchor, light paper, signature edge/seam, accent finish, `2048px` sharpness); never drop a flat pale bare diagram beside rich 35mm photographic plates when `Path H` is available.
-- [ ] **Zero Clip-Art / Zero Faux-3D / Zero Wax-Skin:** Zero stick/block people, zero boxy clip-art houses, zero **faux-3D perspective Canvas rooms or fake photorealistic 3D tabletop mugs/vases/books**, zero PowerPoint boxes, zero AI plastic skin or mangled hands.
-- [ ] **Zero Collisions & Crisp Locale Diacritics:** No letter overlaps strokes or seams (`>= 18px` label clearance on 2K plates); Vietnamese diacritics (`ệ, ư, ỗ, ắ, ồ`) render cleanly in Vietnamese-complete fonts (never `Poppins`/`Bebas Neue`); `>= 6%` safe canvas margins.
-- [ ] **Dual Provenance & Zero-Addition Pass 2:** Embedded PNG `tEXt` chunks (`scripts/embed-provenance.mjs`) + `.prompt.json` sidecar exist for every shipping raster; Zero-Addition Pass 2 polish completed.
+Open EVERY rendered photograph, illustration, PNG, SVG, or Canvas plate directly via vision (AND compare ALL plates in a series side by side!) before passing Layer 3:
+- [ ] **Context-Appropriate Daylight (Zero Gloomy Classrooms):** Teaching, school, community, and daytime human scenes are genuinely bright, sunlit, and breathable with open shadows (Instant REJECT if dark, cave-like, or gloomily underexposed!).
+- [ ] **Concrete Kinetic Mid-Action (Zero Frozen Poses):** People and hands are caught mid-motion performing ONE clear physical action with real lived-in props (Instant REJECT if vaguely pointing at a blank page, standing stiffly, or awkwardly hovering fingertips in mid-air!).
+- [ ] **Natural Linework & Organic Print-on-Paper Integration:** Illustrations show expressive variable-weight hand-drawn strokes and breathing paper tooth (zero stiff uniform CAD or corporate Memphis); `Path H` diagrams use ink-soak `multiply` + subtle print tooth + matte foil + bare editorial typography (zero pasted web-UI pill buttons or shiny plastic 3D bevel marbles!).
+- [ ] **Brand Motif & Countable Integrity (`Path H` Trigger):** Every explicit motif from `DESIGN.md` / brief is visibly elevated; every numbered step (`1..9`), arrow, brand logo geometry, and label is 100% mathematically accurate.
+- [ ] **Zero Clip-Art / Zero Faux-3D / Zero Wax-Skin:** Exact 5 natural fingers per hand, real unretouched skin, zero faux-3D Canvas rooms, zero garbled handwriting text.
+- [ ] **Zero Collisions, 2K Master & Dual Provenance:** No overlapping labels (`>= 18px` clearance on `2048px` plates); crisp locale diacritics (`ệ, ư, ỗ, ắ, ồ`); embedded PNG `tEXt` chunks (`scripts/embed-provenance.mjs`) + `.prompt.json` sidecar verified.
 
 ## 5. Fresh-Context Independent Finish-Reviewer Packet (English Brief)
 

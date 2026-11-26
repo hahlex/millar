@@ -1,85 +1,62 @@
-# Image Art Direction & Subject-First English Prompt Engineering (v0.4)
+# Image Art Direction & Subject-First English Prompt Engineering (v0.5)
 
 Always author image-generation prompts in **crisp, idiomatic English**, regardless of the user's conversation language. Never hardcode another brand's colors: derive every palette, material, and **Iconic Brand Motif** dynamically from `.millar/research-dossier.md`, `.millar/style-dna.md`, local `DESIGN.md`, or live Brand MCP tokens.
 
 ---
 
-## 1. The `65/35` Subject-First Prompt Architecture (`85-145` Words Total)
+## 1. The `65/35` Subject-First Prompt Architecture (`80-135` Words Total)
 
-Modern image models (`Gemini Image`, `Imagen`, `Flux`) divide attention across every word you write. Old `80% boilerplate / 20% subject` prompts (`230+` words) starve the focal story and yield stiff, generic rooms. Flip the ratio:
+Modern image models (`Gemini Image`, `Imagen`, `Flux`) divide attention across every word you write. Old `80% boilerplate / 20% subject` prompts (`230+` words) starve the focal story and yield stiff, posed rooms. Use this crisp structure:
 
 ```text
-[65-75% CONCRETE SUBJECT, SPATIAL CHOREOGRAPHY & ICONIC BRAND MOTIFS]
-  1. Exact frame geometry (Left third -> Center-right -> Far edge) and lens/angle.
-  2. Visible narrative contrast (BOTH State A and State B in frame, never an empty backdrop).
-  3. Elevated Iconic Brand Motifs rendered in tactile physical materials anchored to researched #HEX tones.
+[65-75% CONCRETE MID-ACTION SUBJECT, CONTEXT-RIGHT LIGHT & ICONIC BRAND MOTIFS]
+  1. Honest context-appropriate lighting (bright airy daylight for teaching/schools/community; low-key ONLY for genuine night/dark stages).
+  2. Specific kinetic mid-action verb + real lived-in props + genuine mutual human reaction (NEVER frozen "pointing softly" or awkward hovering hands).
+  3. Elevated Iconic Brand Motifs rendered in living tactile materials (NO raw #HEX strings in natural photo/illustration prompts!).
 
 + [25-35% COMPACT LOCKED WORLD TAIL]
-  4. Shared lighting direction, optical grain/film finish, and physical surface bridge linking the series.
-  5. Max 4-6 surgical exclusions (zero text, zero UI cards, zero cold neon, zero wax skin).
-```
-
-### Why `85-145` Words Beats `240` Words
-- **Keep What Only You Know:** Exact spatial layout, who is in shadow vs. light, exact brand motif (e.g., torn cotton-paper margin, matte ivory ceramic & brushed-bronze companion hand), genuine emotional gesture, and researched `#HEX` color anchors paired with physical materials.
-- **Cut Repetitive Filler:** Never list 12 wall/desk/fabric patina adjectives or 15 redundant negative bans; excessive background micro-details pull diffusion attention away from the emotional focal center!
-
-### Generic `65/35` Pattern Template (Fill Dynamically From Brand Research)
-
-```text
-A museum-grade 16:9 <editorial photograph / overhead medium-format studio photograph> (<lens>, <f-stop>) capturing <1-second emotional/brand transformation>.
-Left third: <State A in researched dark/muted polarity (#HEX) with concrete human/environmental presence>.
-Center-right: <single directional warm/calibrated light (#HEX to #HEX) illuminating State B focal subject with genuine natural expression and elevated Iconic Brand Motif>.
-Far edge / tactile frame anchor: <researched signature physical edge or surface material bridging the series>.
-Natural 35mm/medium-format film grain, authentic tactile textures, zero text, zero UI chrome, zero <unwanted clichés>.
+  4. Shared optical/illustration medium (35mm film grain OR hand-held sepia fountain-pen & translucent watercolor wash) bridging the series.
+  5. Max 4-6 surgical exclusions (zero dark gloom, zero stiff poses, zero text clutter, zero cold neon).
 ```
 
 ---
 
-## 2. Brand Motif Elevation Law (Never Substitute Iconic Motifs!)
+## 2. Brand Motif Elevation Without Artificial Gloom or Stiffness
 
-During Pass 1, list EVERY signature motif discovered in `DESIGN.md` / brand deck / live site. When prompting, **elevate** each motif into high-craft physical reality instead of dodging it:
+During Pass 1, list EVERY signature motif discovered in `DESIGN.md` / brand deck / live site, then elevate each one naturally:
 
-| Brand Motif Discovered in Research | Amateur / Timid Substitution (REJECT!) | Millar v0.4 Elevated Craft Execution (SHIP!) |
+| Brand Motif Discovered in Research | Failure Modes to REJECT | Millar v0.5 Natural Kinetic Craft Execution |
 |---|---|---|
-| **Shadowed unseen crowd -> illuminated focal subject** | Empty desks in shadow + 1 person in daylight (loses narrative tension) | Visible desaturated shallow-focus figures in deep shadow on left contrasting warm directional spotlight bringing focal subjects into crisp natural color on right |
-| **Human hand + AI/robotic hand collaboration** | Anonymous smooth ceramic egg/sphere on a napkin (dodges the motif!) | Warm matte-ivory porcelain-ceramic & satin brushed-bronze articulated hand reaching gently to meet a real human hand over a handmade sketchbook & brass pen (zero cold chrome/cyan!) |
-| **Signature physical border/seam (e.g., torn paper, wax seal, stitched folio)** | Dropping the signature edge completely in photo plates | Integrating a subtle real hand-torn cotton-paper margin or deckle seam naturally along the edge or split plane across multiple plates to unify the series |
-| **Fragmented chaos -> exact numbered loop (`1..9`) + brand emblem** | Pure AI diffusion (miscounts `1,2,4,6,6`) OR flat bare Canvas 2D (breaks photo cohesion) | **`Path H` Hybrid:** Photorealistic tactile studio stage (espresso board, tilted physical slips, real torn paper seam) + 2K Playwright precision SVG overlay |
+| **"Every learner seen" (classroom focus & mentorship)** | Pitch-black gloomy cave classroom with theatrical spotlight OR empty desks with a stern standing proctor | **Bright, sunlit morning classroom**: teacher crouched at eye-level actively sketching a geometry step in a student's open notebook margin while the teenager leans in smiling in real discovery; classmates work softly out-of-focus in bright open window daylight behind them (`f/2.0` optical focus, zero gloom!) |
+| **Human + Warm AI collaboration** | Anonymous ceramic orb on a napkin OR two stiff hands hovering awkwardly touching fingertips in mid-air | **Concrete mid-action collaboration**: teacher's hand actively drawing/circling a diagram with a brass pen in a sunlit open sketchbook while the warm matte-ivory ceramic & satin-bronze companion hand naturally steadies the paper corner or slides a cream index slip beside the sketch |
+| **Warm hand-drawn brand storytelling** | Uniform `1px` CAD vector outlines or flat corporate Memphis cartoons | **`Path A-Illustration` (`natural-editorial-illustration.md`)**: expressive variable-weight sepia fountain-pen/graphite linework + loose translucent watercolor/gouache washes + 30-45% breathing warm cotton paper reserve |
+| **Fragmented chaos -> exact numbered loop (`1..9`) + brand emblem** | Pure AI diffusion (miscounts `1,2,4,6,6`) OR sterile web-UI pill buttons & shiny plastic 3D bevel marbles pasted on paper | **`Path H` Organic Hybrid (`hybrid-plate-compositing.md`)**: pure blank photographic paper/board/torn-edge stage + 2K Playwright letterpress SVG (`mix-blend-mode: multiply`, subtle edge tooth, matte foil medallions, bare editorial labels, canonical brand SVG mark) |
 
 ---
 
-## 3. Dynamic HEX-to-Physical-Material Anchoring
+## 3. Natural Pigment & Material Translation (Drop `#HEX` From Natural Art Prompts!)
 
-Pair researched hex codes directly with real physical materials so image models lock BOTH hue accuracy AND tactile realism:
+Raw `#HEX` strings inside natural photography or watercolor illustration prompts push models toward artificial flat digital color-grading. Reserve exact `#HEX` strictly for CSS/SVG tokens (`Path H` Stage 2 & `Path B`); translate them into living light and artist pigments for `Path A`:
 
-| Brand Token Role (From Research / MCP / DESIGN.md) | How to Anchor in English Image Prompts |
+| Brand Token Role (From Research / MCP / DESIGN.md) | Natural Material / Pigment Language for `Path A` Prompts |
 |---|---|
-| **Light Primary Ground** | `heavyweight unbleached cotton paper (<#hex>)`, `warm archival rag paper`, `sunlit chalk plaster`, or `pale raw linen` |
-| **Alternating Secondary Surface** | `pale travertine stone (<#hex>)`, `oatmeal woven linen`, `deckle-edged cream notebook`, or `brushed birch` |
-| **Contrasting Dark Stage** | `deep matte espresso archival board (<#hex>)`, `dark roasted walnut table`, `matte obsidian stone`, or `deep indigo slate` |
-| **Primary Structural Accent** | `satin brushed bronze (<#hex> to <#hex>)`, `burnished brass fountain pen`, `anodized graphite`, or `cobalt enamel` |
-| **High-Tension Focal Accent** | `matte editorial crimson (<#hex>)` strictly constrained to tension/fragmentation marks within the researched accent ceiling |
+| **Light Primary Ground** | `unbleached warm cream cotton paper`, `sunlit pale plaster wall`, `cold-press archival rag paper`, `pale raw linen` |
+| **Alternating Secondary Surface** | `warm oat linen shirt`, `pale travertine stone`, `weathered honey teak desk`, `raw sand paper slip` |
+| **Dark Structural Anchor** | `oiled dark walnut tabletop`, `matte roasted-espresso matboard`, `deep walnut-sepia ink`, `dark slate chalkboard` |
+| **Primary Positive Accent** | `burnished brass fountain pen`, `satin honey-bronze wash`, `raw sienna watercolor`, `warm ochre daylight` |
+| **High-Tension Focal Accent** | `single touch of warm vermilion pencil`, `delicate carmine red marking ink` (kept strictly within researched accent ratio) |
 
 ---
 
-## 4. Unified Physical World Across Multi-Plate Series (`Series Cohesion >= 9.5/10`)
+## 4. Dual Provenance: Embedded PNG `tEXt` + `.prompt.json` Sidecar
 
-A multi-plate set reads as one iconic campaign ONLY when every plate shares the same physical world:
-- **Carry at Least Two Shared Physical Anchors Across Every Plate:** For example, if the brand pairs *deep espresso wood/board*, *warm cream cotton paper*, *hand-torn deckle edge*, and *satin brushed bronze*, carry that physical materiality consistently across **Plate 01 (Photo)**, **Plate 02 (`Path H` Hybrid Photo + Vector)**, and **Plate 03 (Photo)**; never switch Plate 02 into a bare flat line drawing or drop the dark anchor completely on Plate 03!
-- **Honor Researched Polarity Rhythm Without Losing Cohesion:** Alternate light/dark balance per `DESIGN.md` while keeping the **dark anchor** (e.g., espresso desk surface or left espresso split panel) and **light paper** (e.g., open cream sketchbook or torn right paper edge) echoing across plates.
-- **2K Native Master Standard:** Export flagship 16:9 plates at **`2048x1152`** (via Lanczos resample or native 2K Playwright Chromium capture) so photographic and hybrid plates share identical pixel sharpness.
-
----
-
-## 5. Dual Provenance: Embedded PNG `tEXt` + `.prompt.json` Sidecar
-
-Embed provenance directly into every shipping PNG AND write a human-readable sidecar using the bundled zero-dependency Node script:
+Embed provenance directly into every shipping `2048px` PNG AND write a human-readable sidecar using the bundled zero-dependency Node script:
 
 ```bash
 node <skill-dir>/scripts/embed-provenance.mjs path/to/plate-01.png \
   --prompt="<exact English prompt>" \
   --brand="DESIGN.md (Researched Brand DNA)" \
-  --method="path-a-editorial-photography" \
+  --method="path-a-daylight-editorial-photography" \
   --aspect="16:9" \
   --sidecar
 
@@ -89,8 +66,9 @@ node <skill-dir>/scripts/embed-provenance.mjs --read path/to/plate-01.png
 
 ---
 
-## 6. Routing to Specialist Craft Playbooks
+## 5. Routing to Specialist Craft Playbooks
 
-- **Real People / Classrooms / Warm Documentary Emotion:** Read [human-editorial-photography.md](human-editorial-photography.md).
-- **Hybrid Tactile Photo Stage + 2K Precision Vector Diagrams (`Path H`):** Read [hybrid-plate-compositing.md](hybrid-plate-compositing.md).
+- **Bright Sunlit Classrooms, Teaching & Concrete Kinetic Human Photography:** Read [human-editorial-photography.md](human-editorial-photography.md).
+- **Natural Hand-Drawn Editorial Illustration & Organic Linework:** Read [natural-editorial-illustration.md](natural-editorial-illustration.md).
+- **Organic Printed-on-Paper Hybrid Photo + 2K Vector Diagrams (`Path H`):** Read [hybrid-plate-compositing.md](hybrid-plate-compositing.md).
 - **503/Offline Fallback OR Pure Code-Native Monograph Plates (`Path B`):** Read [procedural-gallery-craft.md](procedural-gallery-craft.md).

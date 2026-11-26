@@ -1244,9 +1244,9 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
   server.registerPrompt(
     "millar-create-image",
     {
-      title: "Millar Gallery-Grade Image, Path H Hybrid & Procedural Art Direction",
+      title: "Millar Natural Art Direction, Kinetic Storytelling & Path H Compositing",
       description:
-        "Activates millar-create-image v0.4 (Subject-First 65/35 English prompts 85-145 words, Brand Motif Elevation, Path H Hybrid Tactile Photo + 2K Precision SVG, PNG tEXt provenance, and 503 Honest Medium Pivot).",
+        "Activates millar-create-image v0.5 (Context-Right Bright Daylight for teaching/human scenes, Kinetic Mid-Action Storytelling, Natural Hand-Drawn Editorial Illustration, Brand Motif Elevation, Organic Printed-on-Paper Path H Hybrid, and PNG tEXt provenance).",
       argsSchema: {
         subject: z.string().describe("Page, section, or visual asset series to produce."),
         styleContext: z.string().optional().describe("Optional path to .millar/style-dna.md or existing hero reference image."),
@@ -1261,9 +1261,9 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           content: {
             type: "text",
             text: [
-              `Run millar-create-image v0.4 for: "${subject}".`,
+              `Run millar-create-image v0.5 for: "${subject}".`,
               styleContext ? `Style anchor context: ${styleContext}` : "",
-              "Extract Iconic Brand Motifs from DESIGN.md/research first (never dodge or substitute explicit motifs), write crisp Subject-First 85-145 word English prompts (65% spatial choreography & motifs / 35% shared light & film tail), use Path H (Hybrid Photo Stage + 2K Playwright SVG Composite) for any plate with countable loops/emblems, embed PNG tEXt + .prompt.json provenance via scripts/embed-provenance.mjs, and inspect ALL plates side by side in Pass 4.",
+              "Enforce Context-Appropriate Natural Daylight (bright airy daylight for teaching/classrooms, zero gloomy black caverns), Kinetic Concrete Mid-Action (specific physical verb + lived-in props, zero stiff vague pointing or awkward hovering hands), Natural Hand-Drawn Linework (natural-editorial-illustration.md for illustrations, organic ink-soak letterpress Path H without pasted CSS pills/plastic spheres for countable diagrams), Brand Motif Elevation, crisp 80-135w English prompts (no raw #HEX in natural art prompts), and PNG tEXt provenance via scripts/embed-provenance.mjs.",
               localeLine(lang),
             ]
               .filter(Boolean)

@@ -281,13 +281,19 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
       uri: "millar://skills/millar-create-image/references/human-editorial-photography.md",
     });
     const humanFirst = humanRef.contents[0];
-    expect(humanFirst && "text" in humanFirst ? humanFirst.text : "").toContain("Genuine Absorbed Human Warmth");
+    expect(humanFirst && "text" in humanFirst ? humanFirst.text : "").toContain("Kinetic Micro-Action Law");
+
+    const illusRef = await client.readResource({
+      uri: "millar://skills/millar-create-image/references/natural-editorial-illustration.md",
+    });
+    const illusFirst = illusRef.contents[0];
+    expect(illusFirst && "text" in illusFirst ? illusFirst.text : "").toContain("Variable Hand-Held Line Weight");
 
     const hybridRef = await client.readResource({
       uri: "millar://skills/millar-create-image/references/hybrid-plate-compositing.md",
     });
     const hybridFirst = hybridRef.contents[0];
-    expect(hybridFirst && "text" in hybridFirst ? hybridFirst.text : "").toContain("Path H");
+    expect(hybridFirst && "text" in hybridFirst ? hybridFirst.text : "").toContain("Printed-on-Paper Organic Integration");
 
     const qaRef = await client.readResource({
       uri: "millar://skills/millar-verify-web/references/five-layer-qa-gate.md",
