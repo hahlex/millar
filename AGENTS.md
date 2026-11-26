@@ -40,7 +40,7 @@ When evolving Millar inside `d:\projects\millar`:
 
 ## 4. Composable Millar Agent Skills Suite (7 Skills & MCP `millar://skills`)
 
-Millar ships seven open-standard v0.3.0 skills (`SKILL.md` + 17 progressive-disclosure `references/` + standalone Zero-MCP `scripts/millar-audit.mjs` v0.3) bundled directly inside `@hahlex/millar-mcp` (`list_skills`, `get_skill`, `millar://skills/*`, and 7 skill-backed English MCP Prompts) and installable standalone via `npx millar install`:
+Millar ships seven open-standard skills (`v0.4.0` visual art direction & `v0.3.0` core suite: `SKILL.md` + 18 progressive-disclosure `references/` + standalone Zero-MCP `scripts/millar-audit.mjs` + `scripts/embed-provenance.mjs`) bundled directly inside `@hahlex/millar-mcp` (`list_skills`, `get_skill`, `millar://skills/*`, and 7 skill-backed English MCP Prompts) and installable standalone via `npx millar install`:
 
 - **`millar-web-workflow`** (`skills/millar-web-workflow/SKILL.md`): Master end-to-end web engineering conductor enforcing Brand-First Research (zero hardcoded palettes), routing Track S/M/L, running Anti-Slop Creative Divergence (banning all 4 AI ruts), and orchestrating specialist handoffs.
 - **`millar-deep-research`** (`skills/millar-deep-research/SKILL.md`): Brand-first research from primary sources (local `DESIGN.md`, live MCP, or web research), Visual & Motion DNA extraction from supplied assets, and English `.millar/research-dossier.md` handoff.

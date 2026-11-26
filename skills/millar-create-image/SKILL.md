@@ -1,83 +1,67 @@
 ---
 name: millar-create-image
-description: "Gallery-grade visual art direction, English-only style-locked AI image generation, authentic human editorial photography, and museum-quality code-native illustration skill (v0.3.0). Synthesizes Anthropic canvas-design (2-phase Visual Philosophy, dense engraving craft, Zero-Addition Pass 2 polish), Impeccable (chiaroscuro 1-second storytelling, concise non-over-specified prompts, prompt provenance), and the Honest Medium Pivot Law on 503/offline fallback with zero hardcoded brand hexes."
-version: 0.3.0-draft.1
+description: "Gallery-grade visual art direction, Subject-First English prompting (85-145 words), Brand Motif Elevation, authentic human editorial photography, Path H Hybrid Photo+2K Vector Compositing, and 503/offline 4-layer procedural craft (v0.4.0). Synthesizes Impeccable (brand motif fidelity, hybrid tactile-photo + precision-SVG plates, crisp non-over-specified prompts, PNG tEXt provenance) with canvas-design (museum engraving depth, Zero-Addition Pass 2 polish) and zero hardcoded brand hexes."
+version: 0.4.0-draft.1
 license: MIT
 ---
 
-# Millar Create Image v0.3: Gallery-Grade Art Direction & Dual-Soul Visual Craft
+# Millar Create Image v0.4: Brand-Faithful Art Direction & Triple-Path Visual Craft
 
-Produce museum-grade, emotionally resonant visual series across real human editorial photography, still-life/architectural imagery, and code-native procedural illustrations. Never produce AI wax-skin stock clichés, flat geometric clip-art humans/houses, or PowerPoint process slides, even when AI image APIs return `503` or run offline.
+Produce museum-grade, brand-unmistakable visual series across authentic human editorial photography (`Path A`), hybrid photorealistic-stage + 2K precision SVG composites (`Path H`), and code-native procedural plates (`Path B`). Never produce generic stock clichés, stern lifeless scenes, vague abstract cop-outs that ignore brand motifs, miscounted AI diagrams, flat clip-art, or disconnected series styling.
 
 ## Non-Negotiable Laws
 
-1. **100% English Prompting Law:** Author EVERY image-generation prompt, Master Style Prefix, procedural art brief, and negative exclusion clause in **crisp, idiomatic English** (cinematography, lighting, printmaking, architectural vocabulary) regardless of the user's chat language. Only visible text rendered inside the artwork itself (signage, chalkboards, editorial titles) uses the user's target locale (e.g., Vietnamese UTF-8 with verified diacritics).
-2. **Research the Brand First (Zero Hardcoded Colors):** NEVER hardcode Hahlex hex values or any fixed palette inside prompts. Pull the active brand's true palette, surface polarity cadence (light vs. dark balance), accent budget ceiling, and cultural home from `.millar/style-dna.md`, `.millar/research-dossier.md`, local `DESIGN.md`, connected Brand MCP (`get_design_tokens` / `get_design_guidelines`), or fresh web research before drafting Pass 1.
-3. **Dual-Soul Visual Formula:** Unite two complementary qualities grounded in the researched brand's polarity:
-   - **Soul A (Human Storytelling & Chiaroscuro Depth from `Impeccable`):** Communicate an unmistakable human or environmental truth within **1 second** through directional natural/volumetric light, glowing thresholds, candid life, and layered foreground/midground/background depth.
-   - **Soul B (Systematic Master Craft from `canvas-design`):** Reward close inspection with patient, hours-long craftsmanship: dense engraving/guilloche linework, halftone topographies, authentic tactile grain, disciplined `90%` visual form / `10%` surgical typography, and a strict **Zero-Addition Pass 2 refinement**.
-4. **Surface vs. Artwork Boundary:** Operational Product UI chrome may forbid CSS gradients under the brand's rules. **Standalone artworks, editorial plates, illustrations, and approved atmospheric canvases REQUIRE rich volumetric light, radial glow falloff, shadows, and tonal depth.** Never flatten artworks because of Product UI rules.
+1. **100% English Subject-First Prompting Law (`65/35`, `85-145` Words):** Author EVERY image-generation prompt and art brief in **crisp, idiomatic English** (`85-145` words total). Dedicate **65-75%** of the prompt to concrete visual choreography (left-to-right spatial layout, real subjects, emotional contrast, elevated brand motifs, exact `#HEX`-anchored materials) and only **25-35%** to compact shared lens/light/film tail + max `4-6` surgical exclusions. Bloated 230-word style boilerplate starves the subject and produces generic, stiff outputs!
+2. **Research the Brand First & Elevate Iconic Motifs (NEVER Hardcode, NEVER Substitute):** Pull the active brand's true palette, surface polarity, accent ceiling, AND **Iconic Brand Motifs** from `.millar/style-dna.md`, `.millar/research-dossier.md`, local `DESIGN.md`, or live Brand MCP BEFORE Pass 1.
+   - **NEVER replace an explicit brand motif with a timid generic substitute** (e.g., never turn a brand's explicit "human hand meeting warm robotic hand" into an anonymous ceramic orb, and never replace "unseen learners in shadow vs. seen learner in spotlight" with empty desks!). Elevate the brand's real motifs into tactile museum craft (e.g., matte warm-ivory ceramic + satin brushed-bronze joints instead of cold chrome/neon).
+   - **Dramatic Contrast Law:** Whenever a brief contrasts State A -> State B (*unseen -> seen*, *fragmented -> unified*), BOTH halves MUST appear visibly inside the frame with unmistakable tension.
+3. **Triple-Path Medium Discipline (Unified Physical World Across Every Plate):**
+   - **`Path A` (Pure Editorial Photography):** Real people, classrooms, portraits, hands, tactile physical still-life with zero countable diagrams.
+   - **`Path H` (Hybrid Photo Material Stage + 2K Precision Vector Composite):** MANDATORY whenever an image generator is online AND the plate combines tactile physical materials (paper, torn deckle edges, studio boards, tilted cards, cast shadows) WITH countable steps (`1..9`), exact brand SVG logos, or crisp semantic diagrams. Never drop a flat bare 2D Canvas line drawing into the middle of a photographic series!
+   - **`Path B` (503/Offline OR Pure Code-Native Poster):** 4-Layer Procedural Gallery Craft + Honest Medium Pivot Law (`references/procedural-gallery-craft.md`).
+4. **Surface vs. Artwork Boundary:** Operational Product UI chrome may forbid CSS gradients under the brand's rules. **Standalone artworks, editorial plates, photographs, and atmospheric canvases REQUIRE rich volumetric light, radial glow falloff, shadows, and tonal depth.**
 
 ## Structured 4-Role Studio Pipeline (Mandatory Passes)
 
-### Pass 1: Visual Storyteller (Philosophy Manifesto & 1-Second Metaphor)
+### Pass 1: Visual Storyteller (Brand Motif Checklist & Visual Philosophy)
 
-Before prompting an image model or writing rendering code, write a concise **Visual Philosophy Manifesto** in English (saved inside `.millar/visual-philosophy.md` or `.millar/style-dna.md`):
-- **Movement Name (1-2 evocative words):** Derived from the researched brand and audience culture (never recycled blindly).
-- **4-6 Concise Paragraphs (`canvas-design` Phase 1):** Define Space & Form, Light & Materiality, Scale & Rhythm, Composition & Balance, and repeatedly anchor patient, museum-grade craftsmanship.
-- **Per-Asset Concept Card:** For each visual in the series, define:
-  - *1-Second Emotional Subject/Metaphor:* Concrete real human moment or physical architectural/light scene (never generic corporate buzzwords).
-  - *Craft Medium:* Documentary Human Photography (`references/human-editorial-photography.md`), Editorial Still-Life / Architecture (`references/image-art-direction.md`), OR 4-Layer Procedural Gallery Plate (`references/procedural-gallery-craft.md`).
-  - *Researched Polarity Assignment:* Honor the brand's actual light/dark balance across the series (for example, `3 Light + 1 Dark` or `2 Light + 2 Dark` for light-first editorial brands; never drifting accidentally into `4/4` dark monochrome unless the researched brand is strictly dark-first).
+Before prompting or coding, extract the brand's **Non-Negotiable Iconic Motifs** from `DESIGN.md` / research (physical edges like torn paper, narrative contrasts, character/object pairings, canonical emblems, countable loops) and save a concise English `.millar/visual-philosophy.md`:
+- **Movement Name (1-2 words)** + **3-5 concise paragraphs** locking ONE unified physical surface world across every plate (so dark anchor, light ground, signature material edge, and accent finish repeat harmoniously across the whole series!).
+- **Per-Asset Concept Card:** For each plate, lock:
+  - *1-Second Emotional & Brand Story:* Exact spatial choreography (Left third / Center-right / Far edge) + BOTH halves of any visual contrast + which Iconic Brand Motifs appear.
+  - *Path Selection:* `Path A` (Pure Photo), `Path H` (Hybrid Photo Stage + 2K SVG Composite), or `Path B` (503/Code-Native Monograph).
+  - *Unified Polarity & Target Resolution:* Flagship plates ship at **`2048px` wide** (`2048x1152` for `16:9`, `2048x1536` for `4:3`).
 
-**Completion criterion:** English Visual Philosophy Manifesto, polarity cadence, medium selection, and per-asset 1-second concept locked from researched Brand DNA.
-
-### Pass 2: Brand Guardian (Concise 80/20 English Style Prefix & Asset Map)
+### Pass 2: Brand Guardian (Concise `65/35` English Prompts & Provenance Plan)
 
 Read the matching specialist playbook(s) BEFORE drafting prompts:
-- **Real People, Portraits, Classrooms, Documentary Scenes (Color or B&W):** Read [references/human-editorial-photography.md](references/human-editorial-photography.md).
-- **Still-Life, Architecture, Brand Series & HEX-to-Material Translation:** Read [references/image-art-direction.md](references/image-art-direction.md) and [references/multi-page-asset-map.md](references/multi-page-asset-map.md).
+- **Real People, Classrooms, Portraits & Warm Candid Emotion:** Read [references/human-editorial-photography.md](references/human-editorial-photography.md).
+- **Subject-First `65/35` Prompting, Material Anchors & Series Cohesion:** Read [references/image-art-direction.md](references/image-art-direction.md) and [references/multi-page-asset-map.md](references/multi-page-asset-map.md).
+- **Diagrams, Countable Loops (`1..9`), Brand Emblems & Split States (`Path H`):** Read [references/hybrid-plate-compositing.md](references/hybrid-plate-compositing.md).
 
 Lock:
-- **80% Fixed / 20% Variable English Master Style Prefix:** Translate researched brand hexes into physical materials, film science, lighting direction, and tactile finishes.
-- **Concise Non-Over-Specified Prompts (`Impeccable` `visualize.md` rule):** Keep each prompt **150-250 words in English**, stating only what the model cannot infer (real subject truth, camera/lens, lighting direction, material palette, framing negative space) so the model preserves organic visual vitality instead of stiffening into a template.
-- **Prompt Provenance Sidecar:** Record `<image-filename>.prompt.json` (or `.millar/asset-manifest.json`) storing the exact English prompt, aspect ratio, anchor reference, and brand research source for every shipping raster.
+- **Concise `85-145` Word English Prompts (`65-75%` Subject/Motifs/Spatial Story + `25-35%` Shared Film/Light/Material Tail):** Pair researched `#HEX` color anchors directly with tactile real-world material words so the generator locks exact color temperature without boilerplate dilution.
+- **Dual Provenance:** Embed standard PNG `tEXt` metadata directly into every shipping PNG AND emit `<filename>.prompt.json` via `node <skill-dir>/scripts/embed-provenance.mjs <plate.png> --prompt="..." --brand="..." --method="..." --sidecar`.
 
-**Completion criterion:** Concise English Master Style Prefix, per-route aspect ratios, and provenance plan locked.
+### Pass 3: Master Illustrator (Triple-Path Execution at 2K Master Resolution)
 
-### Pass 3: Master Illustrator (Dual-Path Execution: AI Image Gen OR 4-Layer Procedural Craft)
+Execute using the matching path locked in Pass 1:
+- **Path A (Pure Editorial Photography, Image Generator Online):**
+  - Generate the **Anchor Plate** first using the crisp `85-145` word prompt, inspect it via vision against every Brand Motif & emotional requirement, upscale/export to a crisp `2048px` Lanczos PNG master, and pass the Anchor Plate's visual DNA (and reference input when supported) to secondary photographic plates so lighting, color temperature, and physical surfaces stay locked across the roll.
+- **Path H (Hybrid Photo Material Stage + 2K Precision Playwright SVG Composite, Image Generator Online + Countable/Semantic Elements):**
+  - **MANDATORY:** Read [references/hybrid-plate-compositing.md](references/hybrid-plate-compositing.md)!
+  - Step 1: Generate ONLY the pure photorealistic studio surface/props/torn-edge stage (strictly ZERO text, ZERO numbers, ZERO logos).
+  - Step 2: Inspect Stage 1 via vision, measure exact pixel coordinates of the physical seam/zones, and composite razor-sharp `2048x1152` Playwright Chromium SVG graphics (satin metallic gradients, directional light-matched `feDropShadow`, canonical brand SVG emblem, mathematically exact numbered loop) cleanly masked/faded at the photographed seam.
+- **Path B (AI Image Generator Returns `503`/Unavailable, Offline, OR Pure Code-Native Plate Requested):**
+  - **MANDATORY:** Read [references/procedural-gallery-craft.md](references/procedural-gallery-craft.md)!
+  - **AUTOMATIC BANS:** Zero flat geometric clip-art humans/houses, zero **faux-3D perspective Canvas rooms or tabletop mugs/vases**, zero PowerPoint boxes, zero hard-edged unblurred light triangles. Pivot honestly via the **Honest Medium Pivot Law** (orthographic elevations, intaglio/stipple botanical monographs, 24-36 strand harmonic guilloche, halftone cartography) while preserving the Path A English photo prompt inside `.prompt.json`.
 
-Execute via the strongest capability available right now:
+### Pass 4: Harsh Art Critic, Subject-Fidelity Veto & Zero-Addition Pass 2
 
-- **Path A (AI Image Generator Available & Healthy):** Antigravity `image-generator`, Codex/OpenAI image tool, Imagen/Flux MCP.
-  - Generate the **Anchor Asset** first with the concise English prompt, inspect it via vision (checking subject truth, natural skin/hands, brand lighting, zero garbled text), then generate every secondary-page asset using the exact locked 80% English prefix (passing the Anchor Asset as style reference when supported) and write each `.prompt.json` sidecar.
-- **Path B (AI Image Generator Returns `503`/Unavailable, Offline, OR Code-Native Editorial Plate Requested):**
-  - **MANDATORY:** Read [references/procedural-gallery-craft.md](references/procedural-gallery-craft.md) BEFORE writing a single line of SVG, Canvas, or Python code!
-  - **AUTOMATIC FAILURE BANS (NEVER DRAW THESE):**
-    - Flat geometric clip-art humans (circle head + trapezoid torso + stick limbs) or boxy clip-art houses.
-    - **Faux-3D perspective Canvas rooms, bookshelves, or fake photorealistic 3D tabletop mugs/vases/books** (when AI image gen returns `503` on photo/human/product briefs, follow the **Honest Medium Pivot Law** in `procedural-gallery-craft.md`: pivot cleanly to orthographic architectural elevations, intaglio hatching, stipple woodblock monographs, or parametric optical plates while preserving the Path A English photo prompt inside `.prompt.json`!).
-    - PowerPoint workflow boxes, numbered pill chains, or circle-plus-line-icon slide diagrams.
-    - Flat vector fills under thin outlines, hard-edged unblurred light polygons, or sparse `< 40` primitive SVGs lacking grain and depth.
-  - **REQUIRED 4-LAYER PROCEDURAL STACK (`2x` HiDPI `>= 1600px` wide PNG/PDF/SVG):**
-    1. *Layer 1 (Material Ground):* Procedural archival paper grain or textured dark surface noise + calibrated vignette using the **researched brand palette**.
-    2. *Layer 2 (Volumetric Chiaroscuro Light & 3 Depth Planes):* Directional window beams on light grounds OR warm/calibrated rim-light cones + luminous dust motes on dark grounds, establishing clear foreground/midground/background depth.
-    3. *Layer 3 (High-Density Master Craft):* Multi-strand harmonic guilloche curves (`18-32` strands), halftone/stipple cartography, `0.5px-1px` architectural elevation linework, illuminated thresholds/windows, or rim-lit atmospheric silhouettes.
-    4. *Layer 4 (Integrated Museum Typography):* `90%` visual form / `10%` surgical text using explicitly loaded local/web TTF/WOFF2 font files (full UTF-8 locale diacritics verified; `>= 6%` margins; zero text-stroke collisions).
-- **Path C (External Generator Requested):** Emit the complete **English** Master Prompt Packet (80% prefix + per-page 20% subjects + `--ar` + anchor ref instructions + subtle CSS grading).
+**Never ship Pass 1 blindly.** Open EVERY rendered `2048px` PNG directly via vision (AND inspect ALL plates of the series side by side!) and enforce these 5 binding vetoes:
 
-**Completion criterion:** Every visual asset rendered at HiDPI (`>= 1600px` wide for flagship/editorial plates) with provenance metadata recorded.
-
-### Pass 4: Harsh Art Critic & `canvas-design` Zero-Addition Second Pass
-
-**Never ship Pass 1 blindly.** Open EVERY rendered PNG/SVG/screenshot directly via vision and score honestly (1-10) on five strict museum criteria:
-
-1. **Zero Clip-Art / Zero Wax-Skin / Zero PowerPoint:** Does ANY figure, hand, house, or diagram look like AI plastic skin, Western stock cliché, flat clip-art, or a corporate slide? (If YES -> **REJECT & REGENERATE/REDRAW**!)
-2. **Depth, Light & Materiality:** Is the lighting direction believable with genuine depth planes and tactile paper/film/surface grain (on BOTH light and dark polarities)?
-3. **1-Second Story + Close-Up Mastery:** Does the image communicate its human/domain meaning in 1 second AND reward close inspection with intricate craft?
-4. **Researched Brand Polarity & Accent Discipline:** Does the series faithfully match the researched brand's light/dark ratio and accent budget ceiling?
-5. **Flawless Technical Craft:** Zero overlapping text, zero clipped diacritics (e.g., Vietnamese `ệ, ư, ỗ, ắ, ồ`), generous `>= 6%` margins, zero broken paths or garbled hands/letters.
-
-**`canvas-design` Zero-Addition Refinement Law (Mandatory Pass 2):**
-Assume Pass 1 is not museum-grade yet. Look closely at the rendered image. **If you feel tempted to add another shape, icon, badge, or label, STOP.** Do NOT pile more elements onto the canvas. Instead, return to the code or prompt and ONLY sharpen what already exists: refine stroke delicacy, hatching density, light falloff, shadow softness, kerning, alignment, margin breathing room, and tonal hierarchy until **every asset clears `>= 9.0 / 10`**.
-
-**Completion criterion:** Every rendered image visually inspected after Pass 2 with zero defects, provenance saved, verified `>= 9.0/10` craft, and integrated into HTML/React with explicit `width`/`height` and meaningful `alt` text.
+1. **Brand Motif & Emotional Fidelity Veto:** Does every plate visibly deliver the brand's actual iconic motifs and emotional narrative from `DESIGN.md` / brief (no empty desks replacing shadowed learners, no vague ceramic orbs dodging an explicit AI-hand motif, no stern/tired faces where warm encouragement was needed)? If NO -> **REJECT & REGENERATE!**
+2. **Countable & Semantic Precision Veto (Instant Path H Trigger):** Inspect every number (`1..9`), arrow, brand logo stroke, and label pixel-by-pixel. If diffusion miscounted, duplicated, warped, or blurred ANY semantic element -> **REJECT pure diffusion and rebuild immediately via `Path H`!**
+3. **Series Material Cohesion Veto:** Look at ALL plates together (`plate-01`, `plate-02`, `plate-03`...). Do they belong to ONE unmistakable physical universe (matching dark ground, warm light ground, shared material edges/accent finish, consistent 2K crispness)? Never ship a flat pale Canvas schematic next to rich 35mm photographic plates when `Path H` is available!
+4. **Zero Clip-Art / Zero Wax-Skin / Zero Faux-3D:** Real natural skin texture, exact 5 natural fingers, believable light physics, zero cold neon/cyberpunk bleed unless researched.
+5. **Zero-Addition Pass 2 Refinement + Embedded Provenance:** Fix label clearances (`>= 18px`), seam fades, shadow softness, kerning, and tonal hierarchy WITHOUT piling on new clutter, then run `scripts/embed-provenance.mjs --sidecar` so both PNG `tEXt` chunks and `.prompt.json` are verified on every shipping plate!

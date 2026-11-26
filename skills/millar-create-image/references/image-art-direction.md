@@ -1,79 +1,96 @@
-# Image Art Direction & Style-Locked English Prompt Engineering
+# Image Art Direction & Subject-First English Prompt Engineering (v0.4)
 
-Always author image-generation prompts in **crisp, idiomatic English**, regardless of the user's conversation language. Never hardcode another brand's colors: derive every palette and material value dynamically from `.millar/research-dossier.md`, `.millar/style-dna.md`, local `DESIGN.md`, or live Brand MCP tokens.
+Always author image-generation prompts in **crisp, idiomatic English**, regardless of the user's conversation language. Never hardcode another brand's colors: derive every palette, material, and **Iconic Brand Motif** dynamically from `.millar/research-dossier.md`, `.millar/style-dna.md`, local `DESIGN.md`, or live Brand MCP tokens.
 
-## 1. The Concise 5-Block Master Prompt Architecture (80% Fixed / 20% Variable)
+---
 
-Keep Blocks 1, 3, 4, and 5 identical across every page of a website; change only Block 2 (`[Subject & Composition]`) per route. Keep total prompt length **150-250 words** (`Impeccable` `visualize.md` anti-over-specification principle): specify what the model cannot infer without micromanaging every pixel.
+## 1. The `65/35` Subject-First Prompt Architecture (`85-145` Words Total)
 
-```text
-[1. Core Medium, Camera/Lens or Craft Technique]
-+ [2. Concrete Subject, Action, Scale & Negative-Space Framing (VARIABLE 20%)]
-+ [3. Lighting Paradigm, Direction & Atmospheric Depth]
-+ [4. Researched Brand Color Language & Physical Materiality]
-+ [5. Framing Discipline & Exclusion Hygiene (Zero Text / Zero Stock Tropes)]
-```
-
-### Generic Pattern Example (Replace `<placeholders>` From Brand Research)
+Modern image models (`Gemini Image`, `Imagen`, `Flux`) divide attention across every word you write. Old `80% boilerplate / 20% subject` prompts (`230+` words) starve the focal story and yield stiff, generic rooms. Flip the ratio:
 
 ```text
-Editorial architectural photography and tactile still-life on 35mm medium-format 50mm lens,
-natural shallow depth of field, authentic subtle film grain,
-[VARIABLE 20%: specific subject, real human or physical artifact, explicit quiet negative space for UI headline],
-soft directional north-window daylight entering from upper-left casting long gentle shadows across three depth planes,
-color palette translated directly from researched brand materials (<primary-ground-material>, <secondary-surface-material>, <deep-anchor-material>, and <pinpoint-focal-accent-material> kept strictly within brand accent ratio),
-quiet museum stillness, generous breathing room, natural unretouched textures,
-no watermarks, no overlaid UI text, no synthetic neon glow, no plastic 3D gloss, no generic stock poses.
+[65-75% CONCRETE SUBJECT, SPATIAL CHOREOGRAPHY & ICONIC BRAND MOTIFS]
+  1. Exact frame geometry (Left third -> Center-right -> Far edge) and lens/angle.
+  2. Visible narrative contrast (BOTH State A and State B in frame, never an empty backdrop).
+  3. Elevated Iconic Brand Motifs rendered in tactile physical materials anchored to researched #HEX tones.
+
++ [25-35% COMPACT LOCKED WORLD TAIL]
+  4. Shared lighting direction, optical grain/film finish, and physical surface bridge linking the series.
+  5. Max 4-6 surgical exclusions (zero text, zero UI cards, zero cold neon, zero wax skin).
 ```
 
-### Multi-Page Scale Rhythm Using the Exact Same Locked 80% Prefix
+### Why `85-145` Words Beats `240` Words
+- **Keep What Only You Know:** Exact spatial layout, who is in shadow vs. light, exact brand motif (e.g., torn cotton-paper margin, matte ivory ceramic & brushed-bronze companion hand), genuine emotional gesture, and researched `#HEX` color anchors paired with physical materials.
+- **Cut Repetitive Filler:** Never list 12 wall/desk/fabric patina adjectives or 15 redundant negative bans; excessive background micro-details pull diffusion attention away from the emotional focal center!
 
-- **Flagship Hero (`16:9`):** `[LOCKED 80% PREFIX] + Wide establishing subject placed on the right 55% of frame; calm low-frequency architectural ground on the left 45% reserving uncluttered space for display typography.`
-- **Features / Capability Plates (`4:3`):** `[LOCKED 80% PREFIX] + Close architectural or craft detail showing the real mechanism in action, asymmetric composition with identical lighting angle and tonal depth.`
-- **Story / About (`3:2`):** `[LOCKED 80% PREFIX] + Human-scale real environment photographed candidly in the same afternoon light (consult human-editorial-photography.md whenever people appear).`
-- **Contrasting Counter-Weight Band (`16:9`):** `[LOCKED 80% PREFIX shifted to the researched brand's dark/contrasting polarity] + Tactile low-key close-up with grazing rim light and calm negative space suitable for crisp high-contrast typography.`
+### Generic `65/35` Pattern Template (Fill Dynamically From Brand Research)
 
-## 2. Dynamic HEX-to-Physical-Material Translation Method
+```text
+A museum-grade 16:9 <editorial photograph / overhead medium-format studio photograph> (<lens>, <f-stop>) capturing <1-second emotional/brand transformation>.
+Left third: <State A in researched dark/muted polarity (#HEX) with concrete human/environmental presence>.
+Center-right: <single directional warm/calibrated light (#HEX to #HEX) illuminating State B focal subject with genuine natural expression and elevated Iconic Brand Motif>.
+Far edge / tactile frame anchor: <researched signature physical edge or surface material bridging the series>.
+Natural 35mm/medium-format film grain, authentic tactile textures, zero text, zero UI chrome, zero <unwanted clichés>.
+```
 
-Image generators render **physical materials** far more faithfully than raw hex strings. During Pass 2, translate the **researched brand's own tokens** into tactile real-world materials:
+---
 
-| Brand Token Role (From Research / MCP / DESIGN.md) | How to Translate Into English Image Prompt Language |
+## 2. Brand Motif Elevation Law (Never Substitute Iconic Motifs!)
+
+During Pass 1, list EVERY signature motif discovered in `DESIGN.md` / brand deck / live site. When prompting, **elevate** each motif into high-craft physical reality instead of dodging it:
+
+| Brand Motif Discovered in Research | Amateur / Timid Substitution (REJECT!) | Millar v0.4 Elevated Craft Execution (SHIP!) |
+|---|---|---|
+| **Shadowed unseen crowd -> illuminated focal subject** | Empty desks in shadow + 1 person in daylight (loses narrative tension) | Visible desaturated shallow-focus figures in deep shadow on left contrasting warm directional spotlight bringing focal subjects into crisp natural color on right |
+| **Human hand + AI/robotic hand collaboration** | Anonymous smooth ceramic egg/sphere on a napkin (dodges the motif!) | Warm matte-ivory porcelain-ceramic & satin brushed-bronze articulated hand reaching gently to meet a real human hand over a handmade sketchbook & brass pen (zero cold chrome/cyan!) |
+| **Signature physical border/seam (e.g., torn paper, wax seal, stitched folio)** | Dropping the signature edge completely in photo plates | Integrating a subtle real hand-torn cotton-paper margin or deckle seam naturally along the edge or split plane across multiple plates to unify the series |
+| **Fragmented chaos -> exact numbered loop (`1..9`) + brand emblem** | Pure AI diffusion (miscounts `1,2,4,6,6`) OR flat bare Canvas 2D (breaks photo cohesion) | **`Path H` Hybrid:** Photorealistic tactile studio stage (espresso board, tilted physical slips, real torn paper seam) + 2K Playwright precision SVG overlay |
+
+---
+
+## 3. Dynamic HEX-to-Physical-Material Anchoring
+
+Pair researched hex codes directly with real physical materials so image models lock BOTH hue accuracy AND tactile realism:
+
+| Brand Token Role (From Research / MCP / DESIGN.md) | How to Anchor in English Image Prompts |
 |---|---|
-| **Light Primary Ground** | Match the researched hue temperature: unbleached cotton archival paper, sunlit chalk plaster, cool gallery gypsum, or pale raw linen |
-| **Alternating Secondary Surface** | Pale travertine limestone, brushed birch timber, raw oat clay, misted slate stone, or warm vellum |
-| **Contrasting Dark Stage** | Roasted walnut lacquer, matte obsidian charcoal, anodized dark aluminum, smoked architectural glass, or deep indigo slate |
-| **Primary Structural Ink / Action** | Oiled hardwood, burnished bronze, matte graphite iron, deep botanical pigment, or cobalt enamel |
-| **High-Tension Focal Accent** | Small pinpoint physical material matching the brand's researched accent ceiling (e.g., matte carmine wax mark, vermilion thread, signal enamel pin, amber filament) |
+| **Light Primary Ground** | `heavyweight unbleached cotton paper (<#hex>)`, `warm archival rag paper`, `sunlit chalk plaster`, or `pale raw linen` |
+| **Alternating Secondary Surface** | `pale travertine stone (<#hex>)`, `oatmeal woven linen`, `deckle-edged cream notebook`, or `brushed birch` |
+| **Contrasting Dark Stage** | `deep matte espresso archival board (<#hex>)`, `dark roasted walnut table`, `matte obsidian stone`, or `deep indigo slate` |
+| **Primary Structural Accent** | `satin brushed bronze (<#hex> to <#hex>)`, `burnished brass fountain pen`, `anodized graphite`, or `cobalt enamel` |
+| **High-Tension Focal Accent** | `matte editorial crimson (<#hex>)` strictly constrained to tension/fragmentation marks within the researched accent ceiling |
 
-*Brand-First Rule:* When building for Hahlex specifically, query Millar MCP (`get_design_tokens`, `get_design_guidelines`) or read the repo's `DESIGN.md` to obtain the exact verified tokens and accent budget before filling this table. Never hardcode Hahlex colors into non-Hahlex projects.
+---
 
-## 3. Multi-Image Series Polarity Rule (Beat 4/4 Monochrome Dark Bias)
+## 4. Unified Physical World Across Multi-Plate Series (`Series Cohesion >= 9.5/10`)
 
-When producing a multi-artwork series (for example, 4 editorial plates or hero + secondary visuals):
-- **Respect the Researched Brand's True Polarity:** Never collapse an entire series onto dark backgrounds when the researched brand's primary identity lives on light surfaces.
-- **Intentional Cadence:**
-  - *Light-Primary Brand (e.g., archival paper / editorial light systems):* Use `3 Light Ground + 1 Contrasting Dark Climax` OR `2 Light + 2 Dark` alternating rhythm so the set breathes with daylight and evening depth.
-  - *Dark-Primary Brand:* Vary depth across matte dark architectural grounds, illuminated apertures, and high-key detail plates so scenes never blur into black-on-black monotony.
-- **Light Surfaces Still Need Chiaroscuro Depth:** Create rich atmosphere on light grounds via directional sunlit window shadow bands, subtle radial tonal falloff, tactile paper/film grain, and 3-plane ink/tonal hierarchy (crisp foreground, muted midground, whisper background).
+A multi-plate set reads as one iconic campaign ONLY when every plate shares the same physical world:
+- **Carry at Least Two Shared Physical Anchors Across Every Plate:** For example, if the brand pairs *deep espresso wood/board*, *warm cream cotton paper*, *hand-torn deckle edge*, and *satin brushed bronze*, carry that physical materiality consistently across **Plate 01 (Photo)**, **Plate 02 (`Path H` Hybrid Photo + Vector)**, and **Plate 03 (Photo)**; never switch Plate 02 into a bare flat line drawing or drop the dark anchor completely on Plate 03!
+- **Honor Researched Polarity Rhythm Without Losing Cohesion:** Alternate light/dark balance per `DESIGN.md` while keeping the **dark anchor** (e.g., espresso desk surface or left espresso split panel) and **light paper** (e.g., open cream sketchbook or torn right paper edge) echoing across plates.
+- **2K Native Master Standard:** Export flagship 16:9 plates at **`2048x1152`** (via Lanczos resample or native 2K Playwright Chromium capture) so photographic and hybrid plates share identical pixel sharpness.
 
-## 4. Prompt Provenance Sidecars (`Impeccable` Continuity Discipline)
+---
 
-Save a lightweight `<asset-filename>.prompt.json` (or centralized `.millar/asset-manifest.json` entry) for every generated raster:
+## 5. Dual Provenance: Embedded PNG `tEXt` + `.prompt.json` Sidecar
 
-```json
-{
-  "file": "public/images/hero-stage.png",
-  "brandSource": ".millar/style-dna.md (researched from DESIGN.md / MCP)",
-  "aspectRatio": "16:9",
-  "polarity": "light-ground",
-  "anchorRef": "self",
-  "promptEn": "<exact English prompt sent to the generator>"
-}
+Embed provenance directly into every shipping PNG AND write a human-readable sidecar using the bundled zero-dependency Node script:
+
+```bash
+node <skill-dir>/scripts/embed-provenance.mjs path/to/plate-01.png \
+  --prompt="<exact English prompt>" \
+  --brand="DESIGN.md (Researched Brand DNA)" \
+  --method="path-a-editorial-photography" \
+  --aspect="16:9" \
+  --sidecar
+
+# Verify embedded chunks anytime:
+node <skill-dir>/scripts/embed-provenance.mjs --read path/to/plate-01.png
 ```
 
-Any later session, secondary route, or fix batch reads this provenance file so new assets match the exact film stock, lighting angle, and material grammar.
+---
 
-## 5. Routing to Specialist Craft Playbooks
+## 6. Routing to Specialist Craft Playbooks
 
-- **Real People / Portraits / Classrooms / Documentary Color & B&W:** Read [human-editorial-photography.md](human-editorial-photography.md) before drafting prompts.
-- **Code-Native Plates / 503 AI Image Fallback / Engraving & Parametric Art:** Read [procedural-gallery-craft.md](procedural-gallery-craft.md) before writing a single line of SVG, Canvas, or Python code.
+- **Real People / Classrooms / Warm Documentary Emotion:** Read [human-editorial-photography.md](human-editorial-photography.md).
+- **Hybrid Tactile Photo Stage + 2K Precision Vector Diagrams (`Path H`):** Read [hybrid-plate-compositing.md](hybrid-plate-compositing.md).
+- **503/Offline Fallback OR Pure Code-Native Monograph Plates (`Path B`):** Read [procedural-gallery-craft.md](procedural-gallery-craft.md).

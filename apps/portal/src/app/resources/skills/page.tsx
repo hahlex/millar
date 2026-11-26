@@ -53,15 +53,17 @@ const SKILLS: SkillDocItem[] = [
   {
     id: "millar-create-image",
     name: "millar-create-image",
-    headline: "English art direction, human photography, and 4-layer procedural craft",
+    headline: "Subject-First art direction, Brand Motif Elevation, and Path H Hybrid 2K plates",
     uri: "millar://skills/millar-create-image",
     references: [
-      { file: "image-art-direction.md", purpose: "80/20 English prefix, polarity and .prompt.json provenance" },
-      { file: "human-editorial-photography.md", purpose: "Anti-wax-skin documentary photography and film continuity" },
+      { file: "image-art-direction.md", purpose: "65/35 Subject-First prompts (85-145w), Brand Motif Elevation and 2K series cohesion" },
+      { file: "human-editorial-photography.md", purpose: "Warm absorbed human emotion, spotlight contrast and film continuity" },
+      { file: "hybrid-plate-compositing.md", purpose: "Path H: tactile photo material stage + 2K Playwright precision SVG composite" },
       { file: "procedural-gallery-craft.md", purpose: "503 Honest Medium Pivot, 4-layer craft and Zero-Addition Pass 2" },
-      { file: "multi-page-asset-map.md", purpose: "Multi-page scale and aspect-ratio blueprint" },
+      { file: "multi-page-asset-map.md", purpose: "Multi-page scale and dedicated single-subject catalog plates" },
+      { file: "scripts/embed-provenance.mjs", purpose: "Zero-dependency PNG tEXt chunk & .prompt.json provenance CLI" },
     ],
-    promptExample: "Run millar-create-image from .millar/style-dna.md with concise English prompts and Zero-Addition Pass 2 polish.",
+    promptExample: "Run millar-create-image v0.4: elevate brand motifs, use 85-145w Subject-First prompts, Path H for diagrams, and embed PNG tEXt provenance.",
   },
   {
     id: "millar-animation",

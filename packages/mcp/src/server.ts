@@ -1244,9 +1244,9 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
   server.registerPrompt(
     "millar-create-image",
     {
-      title: "Millar Gallery-Grade Image & Procedural Art Direction",
+      title: "Millar Gallery-Grade Image, Path H Hybrid & Procedural Art Direction",
       description:
-        "Activates millar-create-image v0.3 (English-only prompts, Human Editorial Photography, Honest Medium Pivot Law on 503/offline, Zero-Addition Pass 2 polish).",
+        "Activates millar-create-image v0.4 (Subject-First 65/35 English prompts 85-145 words, Brand Motif Elevation, Path H Hybrid Tactile Photo + 2K Precision SVG, PNG tEXt provenance, and 503 Honest Medium Pivot).",
       argsSchema: {
         subject: z.string().describe("Page, section, or visual asset series to produce."),
         styleContext: z.string().optional().describe("Optional path to .millar/style-dna.md or existing hero reference image."),
@@ -1261,9 +1261,9 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           content: {
             type: "text",
             text: [
-              `Run millar-create-image v0.3 for: "${subject}".`,
+              `Run millar-create-image v0.4 for: "${subject}".`,
               styleContext ? `Style anchor context: ${styleContext}` : "",
-              "Author ALL image prompts in concise English (150-250 words), research brand palette/polarity first (never hardcode hexes), load human-editorial-photography.md for real people or procedural-gallery-craft.md (Honest Medium Pivot Law, zero faux-3D Canvas rooms) on 503/code-native plates, save .prompt.json provenance, and run Zero-Addition Pass 2 polish until >= 9.2/10.",
+              "Extract Iconic Brand Motifs from DESIGN.md/research first (never dodge or substitute explicit motifs), write crisp Subject-First 85-145 word English prompts (65% spatial choreography & motifs / 35% shared light & film tail), use Path H (Hybrid Photo Stage + 2K Playwright SVG Composite) for any plate with countable loops/emblems, embed PNG tEXt + .prompt.json provenance via scripts/embed-provenance.mjs, and inspect ALL plates side by side in Pass 4.",
               localeLine(lang),
             ]
               .filter(Boolean)

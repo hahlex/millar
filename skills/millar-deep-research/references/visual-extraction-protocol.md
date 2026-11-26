@@ -14,6 +14,7 @@ Inspect every supplied image, rendered page, brand guideline, or token file dire
 6. **Surface Grain & Finish:** Fine 35mm photographic grain, subtle archival cotton-paper tooth, matte ceramic/stone texture, or clean high-DPI vector precision?
 7. **Detail Density:** Quiet gallery stillness vs. intricate engraving/cartographic precision vs. dense operational data clarity?
 8. **Cultural & Environmental Truth:** Real-world architecture, furniture, clothing, signage language, and regional daylight belonging authentically to the brand's audience (avoiding generic stock-photo clichés).
+9. **Iconic Brand Motifs & Signature Visual Mechanics (NON-NEGOTIABLE):** Extract every explicit visual motif from `DESIGN.md`, brand decks, or live assets (e.g., hand-torn cotton paper seams, unseen-to-seen spotlight contrasts, human-and-warm-AI hand pairings, tilted physical collage slips, canonical SVG emblems, exact countable process loops like `1..9`). Record them as binding **Motif Elevation Requirements** so downstream art direction elevates them into tactile museum craft instead of dodging or replacing them with generic placeholders.
 
 ## 2. Existing Animation & Interaction Extraction Checklist
 
