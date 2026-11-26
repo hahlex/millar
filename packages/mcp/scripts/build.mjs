@@ -45,4 +45,35 @@ if (fs.existsSync(skillsSrc)) {
   fs.cpSync(skillsSrc, skillsOut, { recursive: true });
 }
 
-console.log("PASS: Bundled @hahlex/millar-mcp dist/stdio.js, dist/http.js, standalone docs, and 7 Millar Skills");
+// Bundle registry source files so get_component / get_section / get_template / get_visual_assets(includeSource: true)
+// work identically when @hahlex/millar-mcp runs standalone via npx outside the monorepo.
+const registryPath = path.join(repoRoot, "packages/tokens/dist/millar-registry.json");
+const sourcesOut = path.join(pkgDir, "dist/sources");
+fs.rmSync(sourcesOut, { recursive: true, force: true });
+let bundledSourceCount = 0;
+if (fs.existsSync(registryPath)) {
+  const reg = JSON.parse(fs.readFileSync(registryPath, "utf8"));
+  const sourcePaths = new Set(
+    [
+      ...(reg.components ?? []),
+      ...(reg.sections ?? []),
+      ...(reg.templates ?? []),
+      ...(reg.visualAssets ?? []),
+    ]
+      .map((item) => item?.sourcePath)
+      .filter((p) => typeof p === "string" && p.length > 0),
+  );
+  for (const relPath of sourcePaths) {
+    const src = path.join(repoRoot, relPath);
+    if (fs.existsSync(src)) {
+      const dst = path.join(sourcesOut, relPath);
+      fs.mkdirSync(path.dirname(dst), { recursive: true });
+      fs.copyFileSync(src, dst);
+      bundledSourceCount++;
+    }
+  }
+}
+
+console.log(
+  `PASS: Bundled @hahlex/millar-mcp dist/stdio.js, dist/http.js, standalone docs, ${bundledSourceCount} source files, and 7 Millar Skills`,
+);

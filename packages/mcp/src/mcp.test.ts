@@ -255,6 +255,19 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
     expect(JSON.stringify(wfPrompt.messages)).toContain("Research any named brand first");
     expect(JSON.stringify(wfPrompt.messages)).toContain("Track L");
 
+    const buildTrackS = await client.getPrompt({
+      name: "millar-build-web",
+      arguments: { scope: "Fix Button focus ring", minimalChange: "true", lang: "en" },
+    });
+    expect(JSON.stringify(buildTrackS.messages)).toContain("Minimal-Change Track S");
+
+    const buildSlice = await client.getPrompt({
+      name: "millar-build-web",
+      arguments: { scope: "Analytics table", minimalChange: "false", lang: "vi" },
+    });
+    expect(JSON.stringify(buildSlice.messages)).toContain("Vertical-Slice Build");
+    expect(JSON.stringify(buildSlice.messages)).toContain("Vietnamese");
+
     const procRef = await client.readResource({
       uri: "millar://skills/millar-create-image/references/procedural-gallery-craft.md",
     });

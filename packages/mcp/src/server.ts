@@ -36,9 +36,19 @@ function readRepoDoc(rootDir: string, relPath: string, fallback: string): string
 
 function readSourceSnippet(rootDir: string, sourcePath?: string): string | undefined {
   if (!sourcePath) return undefined;
-  const full = path.join(rootDir, sourcePath);
-  if (!fs.existsSync(full)) return undefined;
-  return fs.readFileSync(full, "utf8");
+  const safeRel = path.normalize(sourcePath).replace(/^([/\\])+/, "");
+  if (safeRel.startsWith("..") || path.isAbsolute(safeRel)) return undefined;
+  const candidates = [
+    path.join(rootDir, safeRel),
+    path.join(import.meta.dirname, "sources", safeRel),
+    path.resolve(import.meta.dirname, "../dist/sources", safeRel),
+  ];
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      return fs.readFileSync(candidate, "utf8");
+    }
+  }
+  return undefined;
 }
 
 function toolJsonResult(payload: Record<string, unknown>, resourceLinks: Array<{ uri: string; name: string; mimeType?: string }> = []) {
@@ -462,7 +472,8 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     }),
     {
       title: "Millar Agent Skill Definition (SKILL.md)",
-      description: "Full SKILL.md playbook for millar-design, millar-deep-research, millar-create-image, or millar-animation.",
+      description:
+        "Full SKILL.md playbook for millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, or millar-verify-web.",
       mimeType: "text/markdown",
     },
     async (uri, vars) => {
@@ -1344,7 +1355,10 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
         "Activates millar-build-web v0.3 for Server-First components, deep modules, Operate Mode hardening, 5 real interactive UI states, browser surface theming, CWV & SEO.",
       argsSchema: {
         scope: z.string().describe("Pages, components, or vertical slices to implement."),
-        minimalChange: z.boolean().optional().describe("Set true for Track S surgical fixes with zero unrelated refactors."),
+        minimalChange: z
+          .enum(["true", "false"])
+          .optional()
+          .describe("Set 'true' for Track S surgical fixes with zero unrelated refactors (MCP prompt arguments are strings)."),
         lang: langArg,
       },
     },
@@ -1357,7 +1371,9 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
             type: "text",
             text: [
               `Run millar-build-web v0.3 for: "${scope}".`,
-              minimalChange ? "Mode: Minimal-Change Track S (strictly scoped diff)." : "Mode: Vertical-Slice Build (deep modules, Server-First leaves, Operate Mode hardening, 5 UI states, browser surface theming, CWV/SEO).",
+              minimalChange === "true"
+                ? "Mode: Minimal-Change Track S (strictly scoped diff)."
+                : "Mode: Vertical-Slice Build (deep modules, Server-First leaves, Operate Mode hardening, 5 UI states, browser surface theming, CWV/SEO).",
               "Load references via get_skill(name='millar-build-web', includeAllReferences=true) and ground tokens dynamically in .millar/style-dna.md or live MCP.",
               localeLine(lang),
             ]
