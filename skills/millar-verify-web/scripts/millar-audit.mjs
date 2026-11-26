@@ -1,14 +1,20 @@
 #!/usr/bin/env node
 /**
- * millar-audit.mjs: Standalone Zero-MCP Mechanical Web & Design Auditor
+ * millar-audit.mjs (v0.3.0): Standalone Zero-MCP Mechanical Web & Design Auditor
  *
  * Bundled inside skills/millar-verify-web/scripts/ so users installing Millar Skills
- * via `npx skills add https://github.com/hahlex/millar` retain deterministic mechanical
- * verification (WCAG contrast, AI-slop craft floor, em-dash, reduced-motion, CLS/a11y,
- * product gradient policy, and sparse clip-art SVG detection) even WITHOUT Millar MCP.
+ * via `npx millar install` retain deterministic mechanical verification even WITHOUT Millar MCP:
+ *   - WCAG 2.1 text contrast (>= 4.5:1) across light, dark, and stage CSS tokens + telemetry count
+ *   - WCAG SC 1.4.11 UI control border contrast (>= 3.0:1)
+ *   - AI-slop Craft Floor checks (gradient text, eyebrow kickers, 1-sided rounded-box bars, hard shadows)
+ *   - Inline <style> & stylesheet prefers-reduced-motion check + [hidden] CSS override guard
+ *   - Accessibility & CWV checks (img alt/width/height, undersized text, static opacity:0 traps)
+ *   - Product-register CSS gradient ban (--register=product) & U+2014 em-dash check (--strict-em-dash)
+ *   - Sparse inline <svg> clip-art detector
+ *   - Optional live-browser check (--url=http://...) across 1440/768/375 viewports
  *
  * Usage:
- *   node millar-audit.mjs <target-path> [--register=shared|marketing|product] [--strict-em-dash] [--json] [--url=http://...]
+ *   node millar-audit.mjs <target-path> [--register=shared|marketing|product] [--strict-em-dash] [--include-internal] [--json] [--url=http://...]
  *
  * Zero external npm dependencies required (Node.js >= 18).
  */
@@ -17,7 +23,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 
-const IGNORE_DIRS = new Set([
+const BASE_IGNORE_DIRS = new Set([
   ".git",
   "node_modules",
   ".next",
@@ -41,12 +47,14 @@ function parseArgs(argv) {
     target: ".",
     register: "shared",
     strictEmDash: false,
+    includeInternal: false,
     json: false,
     url: null,
   };
   for (const arg of argv) {
     if (arg.startsWith("--register=")) opts.register = arg.slice("--register=".length);
     else if (arg === "--strict-em-dash") opts.strictEmDash = true;
+    else if (arg === "--include-internal") opts.includeInternal = true;
     else if (arg === "--json") opts.json = true;
     else if (arg.startsWith("--url=")) opts.url = arg.slice("--url=".length);
     else if (!arg.startsWith("--")) opts.target = arg;
@@ -54,7 +62,7 @@ function parseArgs(argv) {
   return opts;
 }
 
-function collectFiles(targetPath) {
+function collectFiles(targetPath, includeInternal) {
   const abs = path.resolve(process.cwd(), targetPath);
   if (!fs.existsSync(abs)) {
     throw new Error(`Target path does not exist: ${abs}`);
@@ -66,7 +74,8 @@ function collectFiles(targetPath) {
   const files = [];
   function walk(dir) {
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-      if (IGNORE_DIRS.has(entry.name)) continue;
+      if (BASE_IGNORE_DIRS.has(entry.name)) continue;
+      if (!includeInternal && entry.name === ".millar") continue;
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) walk(full);
       else files.push(full);
@@ -107,42 +116,88 @@ function contrastRatio(hexA, hexB) {
 }
 
 /**
- * Audit CSS custom property background/foreground pairs declared in stylesheets.
+ * Audit CSS custom property text (WCAG AA 4.5:1) and UI border (SC 1.4.11 3.0:1) pairs.
+ * Returns number of pairs checked so callers never get a silent zero-pair pass.
  * @param {string} rel
  * @param {string} content
  * @param {Finding[]} findings
+ * @returns {number}
  */
 function auditCssContrast(rel, content, findings) {
-  const blocks = [...content.matchAll(/(?::root|\[data-theme=["']?(?:light|dark)["']?\])\s*\{([\s\S]*?)\}/g)];
+  let checked = 0;
+  const blocks = [...content.matchAll(/(?::root|html|\[data-theme=["']?(?:light|dark)["']?\]|\.dark|\.light)\s*\{([\s\S]*?)\}/g)];
+
+  const textPairs = [
+    ["--bg-app", "--fg-default", 4.5],
+    ["--bg-surface", "--fg-default", 4.5],
+    ["--bg-app", "--fg-muted", 4.5],
+    ["--bg-surface", "--fg-muted", 4.5],
+    ["--bg-primary", "--fg-primary", 4.5],
+    ["--bg-canvas", "--ink-primary", 4.5],
+    ["--bg-canvas", "--ink-muted", 4.5],
+    ["--bg-stage", "--fg-on-stage", 4.5],
+    ["--bg-stage", "--fg-stage-muted", 4.5],
+    ["--bg-stage-dark", "--fg-on-stage-dark", 4.5],
+    ["--bg-dark", "--fg-on-dark", 4.5],
+    ["--accent-primary", "--fg-on-accent", 4.5],
+    ["--accent", "--fg-on-accent", 4.5],
+    ["--hx-cream-50", "--hx-ink-900", 4.5],
+    ["--hx-cream-50", "--hx-ink-700", 4.5],
+    ["--hx-espresso-800", "--hx-paper", 4.5],
+    ["--hx-espresso-800", "--hx-paper-muted", 4.5],
+  ];
+
+  const uiBorderPairs = [
+    ["--bg-surface", "--border-control", 3.0],
+    ["--bg-app", "--border-control", 3.0],
+    ["--bg-surface", "--border-input", 3.0],
+    ["--bg-surface", "--border-strong", 3.0],
+    ["--bg-app", "--border-strong", 3.0],
+  ];
+
   for (const block of blocks) {
     const body = block[1] ?? "";
     const vars = new Map();
     for (const m of body.matchAll(/(--[a-zA-Z0-9_-]+)\s*:\s*(#[0-9a-fA-F]{3,6})\b/g)) {
       vars.set(m[1], m[2]);
     }
-    const bgPairs = [
-      ["--bg-app", "--fg-default", 4.5],
-      ["--bg-surface", "--fg-default", 4.5],
-      ["--bg-app", "--fg-muted", 4.5],
-      ["--bg-surface", "--fg-muted", 4.5],
-      ["--bg-primary", "--fg-primary", 4.5],
-      ["--accent-primary", "--fg-on-accent", 4.5],
-    ];
-    for (const [bgKey, fgKey, minRatio] of bgPairs) {
+    if (vars.size === 0) continue;
+
+    for (const [bgKey, fgKey, minRatio] of textPairs) {
       const bg = vars.get(bgKey);
       const fg = vars.get(fgKey);
       if (!bg || !fg) continue;
       const ratio = contrastRatio(bg, fg);
-      if (ratio !== null && ratio < minRatio) {
+      if (ratio === null) continue;
+      checked += 1;
+      if (ratio < minRatio) {
         findings.push({
           severity: "error",
           rule: "wcag/contrast-pair",
           file: rel,
-          message: `Token pair ${fgKey} (${fg}) on ${bgKey} (${bg}) has contrast ${ratio.toFixed(2)}:1 (requires >= ${minRatio}:1 WCAG AA).`,
+          message: `Text token pair ${fgKey} (${fg}) on ${bgKey} (${bg}) has contrast ${ratio.toFixed(2)}:1 (requires >= ${minRatio}:1 WCAG AA).`,
+        });
+      }
+    }
+
+    for (const [bgKey, borderKey, minRatio] of uiBorderPairs) {
+      const bg = vars.get(bgKey);
+      const border = vars.get(borderKey);
+      if (!bg || !border) continue;
+      const ratio = contrastRatio(bg, border);
+      if (ratio === null) continue;
+      checked += 1;
+      if (ratio < minRatio) {
+        findings.push({
+          severity: "warn",
+          rule: "wcag/ui-border-contrast",
+          file: rel,
+          message: `UI control border ${borderKey} (${border}) on ${bgKey} (${bg}) has contrast ${ratio.toFixed(2)}:1 (WCAG SC 1.4.11 requires >= ${minRatio}:1 for interactive control boundaries).`,
         });
       }
     }
   }
+  return checked;
 }
 
 /**
@@ -156,7 +211,6 @@ function auditInlineSvgs(rel, content, findings) {
   for (const match of svgs) {
     const attrs = match[1] ?? "";
     const inner = match[2] ?? "";
-    // Skip small UI icons (<= 64px)
     const widthMatch = attrs.match(/\bwidth\s*=\s*["']?(\d+)/i);
     const viewBoxMatch = attrs.match(/viewBox\s*=\s*["']?\s*[\d.-]+\s+[\d.-]+\s+([\d.]+)\s+([\d.]+)/i);
     const width = widthMatch ? Number(widthMatch[1]) : viewBoxMatch ? Number(viewBoxMatch[1]) : 0;
@@ -169,7 +223,7 @@ function auditInlineSvgs(rel, content, findings) {
         severity: "warn",
         rule: "craft/sparse-svg-clipart",
         file: rel,
-        message: `Large inline <svg> (${width}px) has only ${primitiveCount} primitives and zero <defs>/lighting/grain filters. Check against flat clip-art ban (millar-create-image procedural-gallery-craft.md).`,
+        message: `Large inline <svg> (${width}px) has only ${primitiveCount} primitives and zero <defs>/lighting/grain filters. Check against flat clip-art ban (procedural-gallery-craft.md).`,
       });
     }
   }
@@ -180,14 +234,16 @@ function auditInlineSvgs(rel, content, findings) {
  * @param {string} absFile
  * @param {ReturnType<typeof parseArgs>} opts
  * @param {Finding[]} findings
+ * @returns {{ contrastPairsChecked: number }}
  */
 function auditFile(absFile, opts, findings) {
   const ext = path.extname(absFile).toLowerCase();
-  if (!CODE_EXTS.has(ext) && !COPY_EXTS.has(ext)) return;
+  if (!CODE_EXTS.has(ext) && !COPY_EXTS.has(ext)) return { contrastPairsChecked: 0 };
 
   const rel = path.relative(process.cwd(), absFile).replaceAll("\\", "/");
   const content = fs.readFileSync(absFile, "utf8");
   const lines = content.split(/\r?\n/);
+  let contrastPairsChecked = 0;
 
   const isCode = CODE_EXTS.has(ext);
   const isMarkup = [".html", ".htm", ".tsx", ".jsx", ".vue", ".svelte", ".astro"].includes(ext);
@@ -207,11 +263,11 @@ function auditFile(absFile, opts, findings) {
     });
   }
 
-  if (!isCode) return;
+  if (!isCode) return { contrastPairsChecked };
 
-  // 2. Style & Craft-Floor checks
+  // 2. Style & Craft-Floor checks (external CSS AND inline <style> inside HTML!)
   if (isStyle) {
-    auditCssContrast(rel, content, findings);
+    contrastPairsChecked += auditCssContrast(rel, content, findings);
 
     lines.forEach((line, idx) => {
       const lineNo = idx + 1;
@@ -267,21 +323,42 @@ function auditFile(absFile, opts, findings) {
       }
     });
 
+    const isStylesheetOrEmbedded = ext === ".css" || ext === ".scss" || ((ext === ".html" || ext === ".htm") && /<style\b/i.test(content));
     const hasMotion = /@keyframes\b|animation\s*:|transition\s*:/i.test(content);
     const hasReducedMotion = /prefers-reduced-motion\s*:\s*reduce/i.test(content);
-    if ((ext === ".css" || ext === ".scss") && hasMotion && !hasReducedMotion) {
+    if (isStylesheetOrEmbedded && hasMotion && !hasReducedMotion) {
       findings.push({
         severity: "warn",
         rule: "motion/missing-reduced-motion",
         file: rel,
-        message: "Stylesheet defines animations/transitions without a @media (prefers-reduced-motion: reduce) fallback.",
+        message: "Styles define animations/transitions without a @media (prefers-reduced-motion: reduce) fallback.",
       });
     }
   }
 
-  // 3. Markup accessibility, CLS & clip-art checks
+  // 3. Markup accessibility, Craft Floor, [hidden] guard, CLS & clip-art checks
   if (isMarkup) {
     auditInlineSvgs(rel, content, findings);
+
+    // Eyebrow kicker above heading tell
+    if (/<(?:div|p|span)\b[^>]*class=["'][^"']*\b(?:eyebrow|hero-eyebrow|section-kicker|kicker|heading-kicker)\b[^"']*["'][^>]*>[\s\S]{0,120}<\/(?:div|p|span)>\s*<h[12]\b/i.test(content)) {
+      findings.push({
+        severity: "warn",
+        rule: "craft/eyebrow-kicker",
+        file: rel,
+        message: "Eyebrow/kicker label detected immediately above <h1>/<h2> (Craft Floor rule: delete decorative eyebrow labels and let the heading carry its own weight).",
+      });
+    }
+
+    // [hidden] attribute overridden by display:flex/grid without reset
+    if ((ext === ".html" || ext === ".htm") && /\bhidden(?:\s|>|=)/i.test(content) && /display\s*:\s*(?:flex|inline-flex|grid)\b/i.test(content) && !/\[hidden\]\s*\{[^}]*display\s*:\s*none\s*!important/i.test(content)) {
+      findings.push({
+        severity: "warn",
+        rule: "css/hidden-override-guard",
+        file: rel,
+        message: "HTML uses `hidden` attribute alongside display:flex/grid without `[hidden] { display: none !important; }` reset (risks broken mutually exclusive UI states).",
+      });
+    }
 
     for (const imgMatch of content.matchAll(/<img\b([^>]*)>/gi)) {
       const attrs = imgMatch[1] ?? "";
@@ -312,42 +389,66 @@ function auditFile(absFile, opts, findings) {
       });
     }
   }
+
+  return { contrastPairsChecked };
 }
 
 /**
- * Optional live-browser check when --url is supplied and Playwright is installed.
+ * Resolve playwright / @playwright/test from MILLAR_PLAYWRIGHT_PATH, cwd, or script ancestor workspaces.
+ */
+async function resolvePlaywright() {
+  const roots = [
+    process.env.MILLAR_PLAYWRIGHT_PATH,
+    path.join(process.cwd(), "package.json"),
+    path.resolve(import.meta.dirname, "../../../package.json"),
+    path.resolve(import.meta.dirname, "../../../../package.json"),
+  ].filter(Boolean);
+
+  for (const base of roots) {
+    try {
+      const req = createRequire(base);
+      for (const modName of ["playwright", "@playwright/test"]) {
+        try {
+          const mod = req(modName);
+          if (mod?.chromium) return mod;
+        } catch {
+          // continue
+        }
+      }
+    } catch {
+      // continue
+    }
+  }
+  for (const modName of ["playwright", "@playwright/test"]) {
+    try {
+      const mod = await import(modName);
+      if (mod?.chromium) return mod;
+    } catch {
+      // continue
+    }
+  }
+  return null;
+}
+
+/**
+ * Optional live-browser check when --url is supplied and Playwright is resolvable.
  * @param {string} url
  * @param {Finding[]} findings
  */
 async function auditLiveUrl(url, findings) {
-  let playwright = null;
-  const cwdRequire = createRequire(path.join(process.cwd(), "package.json"));
-  for (const modName of ["playwright", "@playwright/test"]) {
-    try {
-      playwright = cwdRequire(modName);
-      if (playwright?.chromium) break;
-    } catch {
-      try {
-        playwright = await import(modName);
-        if (playwright?.chromium) break;
-      } catch {
-        playwright = null;
-      }
-    }
-  }
+  const playwright = await resolvePlaywright();
   if (!playwright?.chromium) {
     findings.push({
       severity: "warn",
       rule: "browser/playwright-unavailable",
       file: url,
-      message: "Skipped live URL check because neither 'playwright' nor '@playwright/test' is installed in the current workspace.",
+      message: "Skipped live URL check because neither 'playwright' nor '@playwright/test' could be resolved (set MILLAR_PLAYWRIGHT_PATH or install @playwright/test).",
     });
     return;
   }
 
   let browser = null;
-  const launchAttempts = [{}, { channel: "chrome" }, { channel: "msedge" }];
-  for (const launchOpts of launchAttempts) {
+  for (const launchOpts of [{}, { channel: "chrome" }, { channel: "msedge" }]) {
     try {
       browser = await playwright.chromium.launch(launchOpts);
       break;
@@ -360,12 +461,14 @@ async function auditLiveUrl(url, findings) {
       severity: "warn",
       rule: "browser/launch-unavailable",
       file: url,
-      message: "Skipped live URL check because no Chromium/Chrome/Edge binary could be launched (run `npx playwright install chromium` or install Chrome/Edge).",
+      message: "Skipped live URL check because no Chromium/Chrome/Edge binary could be launched.",
     });
     return;
   }
+
   try {
-    const page = await browser.newPage();
+    const context = await browser.newContext();
+    const page = await context.newPage();
     const consoleErrors = [];
     const httpErrors = [];
     page.on("pageerror", (err) => consoleErrors.push(err.message));
@@ -389,7 +492,26 @@ async function auditLiveUrl(url, findings) {
         const mains = document.querySelectorAll("main");
         const footers = document.querySelectorAll("footer");
         const footerInsideMain = Boolean(mains[0] && footers[0] && mains[0].contains(footers[0]));
-        return { overflow, mainCount: mains.length, footerCount: footers.length, footerInsideMain };
+        /** @type {Record<string, number>} */
+        const vtCounts = {};
+        for (const el of document.querySelectorAll("*")) {
+          const style = window.getComputedStyle(el);
+          if (style.display === "none" || style.visibility === "hidden") continue;
+          const vtn = style.viewTransitionName;
+          if (vtn && vtn !== "none") {
+            vtCounts[vtn] = (vtCounts[vtn] || 0) + 1;
+          }
+        }
+        const duplicateViewTransitionNames = Object.entries(vtCounts)
+          .filter(([, count]) => count > 1)
+          .map(([name, count]) => `${name} (${count}x)`);
+        return {
+          overflow,
+          mainCount: mains.length,
+          footerCount: footers.length,
+          footerInsideMain,
+          duplicateViewTransitionNames,
+        };
       });
 
       if (metrics.overflow) {
@@ -417,6 +539,14 @@ async function auditLiveUrl(url, findings) {
             message: "Top-level <footer> must sit outside <main>.",
           });
         }
+        if (metrics.duplicateViewTransitionNames.length > 0) {
+          findings.push({
+            severity: "error",
+            rule: "motion/duplicate-view-transition-name",
+            file: url,
+            message: `Duplicate visible view-transition-name values silently abort MPA/SPA transitions: ${metrics.duplicateViewTransitionNames.join(", ")}.`,
+          });
+        }
       }
     }
 
@@ -433,12 +563,14 @@ async function auditLiveUrl(url, findings) {
 
 async function main() {
   const opts = parseArgs(process.argv.slice(2));
-  const files = collectFiles(opts.target);
+  const files = collectFiles(opts.target, opts.includeInternal);
   /** @type {Finding[]} */
   const findings = [];
+  let totalContrastPairsChecked = 0;
 
   for (const file of files) {
-    auditFile(file, opts, findings);
+    const res = auditFile(file, opts, findings);
+    totalContrastPairsChecked += res.contrastPairsChecked;
   }
   if (opts.url) {
     await auditLiveUrl(opts.url, findings);
@@ -452,9 +584,10 @@ async function main() {
       JSON.stringify(
         {
           tool: "millar-audit",
-          version: "0.2.0",
+          version: "0.3.0",
           register: opts.register,
           scannedFiles: files.length,
+          contrastPairsChecked: totalContrastPairsChecked,
           passed: errors.length === 0,
           errorCount: errors.length,
           warningCount: warnings.length,
@@ -467,7 +600,7 @@ async function main() {
   } else {
     const status = errors.length === 0 ? "PASS" : "FAIL";
     console.log(
-      `${status}: millar-audit scanned ${files.length} file(s) [register=${opts.register}] -> ${errors.length} error(s), ${warnings.length} warning(s).`,
+      `${status}: millar-audit v0.3 scanned ${files.length} file(s) [register=${opts.register}, contrastPairs=${totalContrastPairsChecked}] -> ${errors.length} error(s), ${warnings.length} warning(s).`,
     );
     for (const f of findings) {
       const loc = f.line ? `${f.file}:${f.line}` : f.file;

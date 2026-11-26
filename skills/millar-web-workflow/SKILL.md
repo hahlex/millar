@@ -1,11 +1,11 @@
 ---
 name: millar-web-workflow
-description: "Master end-to-end web engineering conductor and creative workflow router (v0.2.0) uniting the 7 Millar skills with Matt Pocock engineering discipline, Agency Agents studio roles, Anthropic canvas-design craft, and Impeccable anti-slop rigor. Always researches any named brand first (zero hardcoded palettes), authors all prompts in English, routes Track S/M/L cleanly, and gates completion on Zero-MCP mechanical auditing plus fresh-context independent review."
-version: 0.2.0-draft.1
+description: "Master end-to-end web engineering conductor and creative workflow router (v0.3.0) uniting the 7 Millar skills with Matt Pocock engineering discipline, Agency Agents studio roles, Anthropic canvas-design craft, and Impeccable anti-slop rigor. Always researches any named brand first (zero hardcoded palettes), authors all prompts in English, routes Track S/M/L cleanly, and gates completion on Zero-MCP mechanical auditing plus fresh-context independent review."
+version: 0.3.0-draft.1
 license: MIT
 ---
 
-# Millar Web Workflow v0.2: End-to-End 5-Role Creative & Engineering Conductor
+# Millar Web Workflow v0.3: End-to-End 5-Role Creative & Engineering Conductor
 
 Orchestrate every web build as one continuous, gated pipeline from user intent and **Brand-First Research** through **Dual-Soul Creative Art Direction** (`canvas-design` engraving discipline + `Impeccable` craft-floor & storytelling rigor), clean Server-First frontend engineering, and zero-mercy independent verification. Choose the lightest track that fits the job so small edits stay surgical while multi-page sites achieve unforgettable `>= 9.0/10` craft with zero bureaucratic bloat.
 

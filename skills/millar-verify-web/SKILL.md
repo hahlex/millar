@@ -1,11 +1,11 @@
 ---
 name: millar-verify-web
-description: "Five-layer real-browser QA, standalone Zero-MCP mechanical auditor (scripts/millar-audit.mjs), fresh-context independent finish-reviewer protocol, accessibility, anti-clip-art/anti-wax-skin visual audit, and two-axis code review gate (v0.2.0). Works anywhere via npx skills add even without Millar MCP connected. Use BEFORE claiming any website, artwork series, or UI change is complete."
-version: 0.2.0-draft.1
+description: "Five-layer real-browser QA, standalone Zero-MCP mechanical auditor (scripts/millar-audit.mjs v0.3), fresh-context independent finish-reviewer protocol, WCAG SC 1.4.11 border & a11y enforcement, anti-clip-art/anti-faux-3D/anti-wax-skin visual audit, and two-axis code review gate (v0.3.0). Works anywhere via npx millar install even without Millar MCP connected. Use BEFORE claiming any website, artwork series, or UI change is complete."
+version: 0.3.0-draft.1
 license: MIT
 ---
 
-# Millar Verify Web v0.2: 5-Layer QA, Zero-MCP Mechanical Auditor & Independent Finish Review
+# Millar Verify Web v0.3: 5-Layer QA, Zero-MCP Mechanical Auditor & Independent Finish Review
 
 Never claim a website, artwork series, or UI change is done based on `npm run build` alone, and never rely solely on self-praise from the same conversation that wrote the code. Combine **deterministic Zero-MCP mechanical checks** (`scripts/millar-audit.mjs`), real-browser Playwright & `axe-core` verification, and a **Fresh-Context Independent Finish Reviewer** (`Impeccable` zero-bias discipline).
 

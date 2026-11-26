@@ -14,6 +14,11 @@ Prevent secondary pages from falling into bare "industrial wireframe" mode by pl
 | **Blog / Docs (`/docs`)** | Reading Companion | Minimalist geometric chapter header plate (`4:1` or `16:9`) + inline clean diagrams | `16:9` | Restrained `Read` mode: imagery illuminates architecture rather than distracting from prose |
 | **Product App (`/app`)** | Empty States & Onboarding | Crisp 1.5px icon mark or single restrained vector spot plate (`max 160px`), zero CSS gradients | `1:1` | Calm `Operate` mode: crisp solid surfaces, clear recovery action |
 
+## Dedicated Single-Subject Catalog Plate Rule (Track M Anti-Crop Guard)
+
+- **NEVER crop a multi-object hero or collection composite image into individual product/SKU/feature cards.** Cropping leaves sliced neighboring objects on card edges and shows wrong silhouettes in Quick-View drawers.
+- Every distinct catalog item, SKU, or capability card that displays a visual MUST receive its own **dedicated single-subject plate** sharing the exact series lighting, margin, and background polarity.
+
 ## Visual Quality Self-Check Before Committing Any Image
 
 1. Put Hero image and Secondary-page images side by side: do they look like they belong to the same exhibition/publication?

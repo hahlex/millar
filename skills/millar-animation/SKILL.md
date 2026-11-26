@@ -1,7 +1,7 @@
 ---
 name: millar-animation
 description: "Motion research, choreography, and engineering skill for websites and product UI. Use when researching reference animations matching user intent, syncing secondary pages to existing hero animations, implementing purposeful micro-interactions, interruptible spring physics, CSS View Transitions, scroll-driven choreography, or Millar Productive/Expressive motion presets with static-first prefers-reduced-motion safety."
-version: 0.2.0-draft.1
+version: 0.3.0-draft.1
 license: MIT
 ---
 

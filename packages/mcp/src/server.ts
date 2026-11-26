@@ -1159,7 +1159,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Design Director & Cross-Page Continuity",
       description:
-        "Activates millar-design v0.2 (5-role studio, Brand-First Research, Impeccable craft floor, 12-axis .millar/style-dna.md) to keep secondary pages visually cohesive.",
+        "Activates millar-design v0.3 (5-role studio, Brand-First Research, Impeccable craft floor, 12-axis .millar/style-dna.md) to keep secondary pages visually cohesive.",
       argsSchema: {
         brief: z.string().describe("Website, app, or multi-page redesign brief."),
         existingAssets: z
@@ -1184,9 +1184,9 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           content: {
             type: "text",
             text: [
-              `Execute millar-design v0.2 for: "${brief}".`,
+              `Execute millar-design v0.3 for: "${brief}".`,
               existingAssets ? `User-supplied hero assets to extract & sync across ALL routes: ${existingAssets}` : "",
-              "Research any named brand first (local DESIGN.md, live MCP tokens, or web research; never hardcode another brand's palette), lock .millar/style-dna.md, produce >= 9.0/10 visuals, and verify every secondary route >= 4/5 continuity.",
+              "Research any named brand first (local DESIGN.md, live MCP tokens, or web research; never hardcode another brand's palette), lock 12-axis .millar/style-dna.md, produce >= 9.2/10 visuals, and verify every secondary route >= 4/5 continuity.",
               localeLine(lang),
             ]
               .filter(Boolean)
@@ -1202,7 +1202,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Brand-First Research & Visual DNA Extraction",
       description:
-        "Activates millar-deep-research v0.2 to research any named brand, extract Visual/Motion DNA from supplied assets, and emit an English .millar/research-dossier.md.",
+        "Activates millar-deep-research v0.3 to research any named brand, extract Visual/Motion DNA from supplied assets, and emit an English .millar/research-dossier.md.",
       argsSchema: {
         topic: z.string().describe("Brand, product, visual style, or multi-page aesthetic brief to research."),
         existingAssets: z.string().optional().describe("Optional supplied images, animations, or reference URLs to inspect."),
@@ -1217,7 +1217,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           content: {
             type: "text",
             text: [
-              `Run millar-deep-research v0.2 for: "${topic}".`,
+              `Run millar-deep-research v0.3 for: "${topic}".`,
               existingAssets ? `Inspect and extract Visual & Motion DNA from: ${existingAssets}` : "",
               "Research any named brand from primary sources (local DESIGN.md, live MCP tokens, or official web references) before picking any palette or motif, then save .millar/research-dossier.md in English.",
               localeLine(lang),
@@ -1235,7 +1235,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Gallery-Grade Image & Procedural Art Direction",
       description:
-        "Activates millar-create-image v0.2 (English-only prompts, Human Editorial Photography, 4-Layer Procedural Craft on 503/offline, Zero-Addition Pass 2 polish).",
+        "Activates millar-create-image v0.3 (English-only prompts, Human Editorial Photography, Honest Medium Pivot Law on 503/offline, Zero-Addition Pass 2 polish).",
       argsSchema: {
         subject: z.string().describe("Page, section, or visual asset series to produce."),
         styleContext: z.string().optional().describe("Optional path to .millar/style-dna.md or existing hero reference image."),
@@ -1250,9 +1250,9 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           content: {
             type: "text",
             text: [
-              `Run millar-create-image v0.2 for: "${subject}".`,
+              `Run millar-create-image v0.3 for: "${subject}".`,
               styleContext ? `Style anchor context: ${styleContext}` : "",
-              "Author ALL image prompts in concise English (150-250 words), research brand palette/polarity first (never hardcode hexes), load human-editorial-photography.md for real people or procedural-gallery-craft.md on 503/code-native plates, save .prompt.json provenance, and run Zero-Addition Pass 2 polish until >= 9.0/10.",
+              "Author ALL image prompts in concise English (150-250 words), research brand palette/polarity first (never hardcode hexes), load human-editorial-photography.md for real people or procedural-gallery-craft.md (Honest Medium Pivot Law, zero faux-3D Canvas rooms) on 503/code-native plates, save .prompt.json provenance, and run Zero-Addition Pass 2 polish until >= 9.2/10.",
               localeLine(lang),
             ]
               .filter(Boolean)
@@ -1268,7 +1268,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Motion Research & Cross-Page Choreography",
       description:
-        "Activates millar-animation v0.2 to lock a 4-line Motion Thesis and ship compositor-safe, static-first, reduced-motion-compliant choreography.",
+        "Activates millar-animation v0.3 to lock a 4-line Motion Thesis and ship compositor-safe, static-first, reduced-motion-compliant choreography.",
       argsSchema: {
         target: z.string().describe("Component, page, or multi-page flow to choreograph."),
         motionFeel: z.string().optional().describe("Optional motion feel or existing hero animation reference to match."),
@@ -1283,7 +1283,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           content: {
             type: "text",
             text: [
-              `Run millar-animation v0.2 for: "${target}".`,
+              `Run millar-animation v0.3 for: "${target}".`,
               motionFeel ? `Target motion feel / reference: ${motionFeel}` : "",
               "Query get_motion_presets() if applicable, lock a 4-line Motion Thesis, ship GPU compositor animations with static-first visibility and prefers-reduced-motion in the same edit, and verify both modes.",
               localeLine(lang),
@@ -1301,7 +1301,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar End-to-End Web Engineering & Creative Workflow",
       description:
-        "Activates millar-web-workflow v0.2 to run Brand-First Research, classify Track S/M/L, run Creative Divergence, orchestrate all 7 skills, and gate on independent verification.",
+        "Activates millar-web-workflow v0.3 to run Brand-First Research, classify Track S/M/L, run Creative Divergence, orchestrate all 7 skills, and gate on independent verification.",
       argsSchema: {
         request: z.string().describe("Website, multi-page app, redesign, or UI feature request."),
         track: z.enum(["auto", "S", "M", "L"]).optional().describe("Optional explicit Track override (defaults to auto)."),
@@ -1323,9 +1323,9 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           content: {
             type: "text",
             text: [
-              `Execute millar-web-workflow v0.2 for: "${request}".`,
+              `Execute millar-web-workflow v0.3 for: "${request}".`,
               track && track !== "auto" ? `Track override: Track ${track}.` : "Classify Track S, M, or L before editing any code.",
-              "Research any named brand first (never hardcode another brand's tokens), run Creative Divergence on Track M/L, author all prompts in English, and gate completion on millar-verify-web (millar-audit.mjs + Fresh-Context Independent Finish Reviewer).",
+              "Research any named brand first (never hardcode another brand's tokens), run Creative Divergence on Track M/L, author all prompts in English, and gate completion on millar-verify-web (millar-audit.mjs v0.3 + Fresh-Context Independent Finish Reviewer).",
               localeLine(lang),
             ]
               .filter(Boolean)
@@ -1341,7 +1341,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Frontend Architecture & Production Web Build",
       description:
-        "Activates millar-build-web v0.2 for Server-First components, deep modules, 5 real interactive UI states, browser surface theming, CWV & SEO.",
+        "Activates millar-build-web v0.3 for Server-First components, deep modules, Operate Mode hardening, 5 real interactive UI states, browser surface theming, CWV & SEO.",
       argsSchema: {
         scope: z.string().describe("Pages, components, or vertical slices to implement."),
         minimalChange: z.boolean().optional().describe("Set true for Track S surgical fixes with zero unrelated refactors."),
@@ -1356,8 +1356,8 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           content: {
             type: "text",
             text: [
-              `Run millar-build-web v0.2 for: "${scope}".`,
-              minimalChange ? "Mode: Minimal-Change Track S (strictly scoped diff)." : "Mode: Vertical-Slice Build (deep modules, Server-First leaves, 5 UI states, browser surface theming, CWV/SEO).",
+              `Run millar-build-web v0.3 for: "${scope}".`,
+              minimalChange ? "Mode: Minimal-Change Track S (strictly scoped diff)." : "Mode: Vertical-Slice Build (deep modules, Server-First leaves, Operate Mode hardening, 5 UI states, browser surface theming, CWV/SEO).",
               "Load references via get_skill(name='millar-build-web', includeAllReferences=true) and ground tokens dynamically in .millar/style-dna.md or live MCP.",
               localeLine(lang),
             ]
@@ -1374,7 +1374,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar 5-Layer QA, Zero-MCP Audit & Independent Finish Review",
       description:
-        "Activates millar-verify-web v0.2: standalone scripts/millar-audit.mjs, Playwright E2E, 1440/768/375 Light/Dark visual & anti-clip-art check, axe-core WCAG AA, and fresh-context finish review.",
+        "Activates millar-verify-web v0.3: standalone scripts/millar-audit.mjs v0.3 (SC 1.4.11 borders, view-transition-name, eyebrow-kicker), Playwright E2E, 1440/768/375 Light/Dark visual & anti-faux-3D check, axe-core WCAG AA, and fresh-context finish review.",
       argsSchema: {
         target: z.string().describe("Routes, PR diff, or website build to verify before shipping."),
         lang: langArg,
@@ -1388,8 +1388,8 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
           content: {
             type: "text",
             text: [
-              `Execute millar-verify-web v0.2 5-layer QA gate on: "${target}".`,
-              "Run standalone scripts/millar-audit.mjs (+ validate_design if Millar MCP is active), verify interactive Playwright flows & axe-core WCAG AA, inspect 1440/768/375 Light & Dark visuals against clip-art/wax-skin bans, and delegate final Layer 3B + Layer 5 review to a fresh-context subagent.",
+              `Execute millar-verify-web v0.3 5-layer QA gate on: "${target}".`,
+              "Run standalone scripts/millar-audit.mjs v0.3 (+ validate_design if Millar MCP is active), verify interactive Playwright flows & axe-core WCAG AA, inspect 1440/768/375 Light & Dark full-page visuals against clip-art/faux-3D/wax-skin bans, and delegate final Layer 3B + Layer 5 review to a fresh-context subagent.",
               localeLine(lang),
             ]
               .filter(Boolean)

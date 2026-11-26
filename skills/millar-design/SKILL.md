@@ -1,11 +1,11 @@
 ---
 name: millar-design
-description: "Flagship design director, structured 5-role Agency design studio, and cross-page aesthetic continuity skill (v0.2.0). Never hardcodes brand palettes: researches any named brand (local DESIGN.md, live MCP tokens, or web research) first, enforces Impeccable craft-floor & anti-slop calibration, canvas-design visual depth, and cross-page continuity so secondary pages match flagship craft instead of collapsing into flat industrial cards."
-version: 0.2.0-draft.1
+description: "Flagship design director, structured 5-role Agency design studio, and cross-page aesthetic continuity skill (v0.3.0). Never hardcodes brand palettes: researches any named brand (local DESIGN.md, live MCP tokens, or web research) first, enforces Impeccable craft-floor & anti-slop calibration, canvas-design visual depth, and 12-axis cross-page continuity so secondary pages match flagship craft instead of collapsing into flat industrial cards."
+version: 0.3.0-draft.1
 license: MIT
 ---
 
-# Millar Design v0.2: 5-Role Design Studio & Cross-Page Continuity
+# Millar Design v0.3: 5-Role Design Studio & Cross-Page Continuity
 
 Operate as a structured five-role design studio with explicit responsibilities and binding veto power, uniting **brand-researched system discipline**, **`canvas-design` museum-grade craft**, and **`Impeccable` craft-floor rigor & human storytelling** without bureaucratic ceremony.
 

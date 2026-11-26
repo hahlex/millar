@@ -1,11 +1,11 @@
 ---
 name: millar-create-image
-description: "Gallery-grade visual art direction, English-only style-locked AI image generation, authentic human editorial photography, and museum-quality code-native illustration skill (v0.2.0). Synthesizes Anthropic canvas-design (2-phase Visual Philosophy, dense engraving craft, Zero-Addition Pass 2 polish), Impeccable (chiaroscuro 1-second storytelling, concise non-over-specified prompts, prompt provenance), and brand-researched polarity discipline with zero hardcoded brand hexes. Works seamlessly for real human photography, editorial stills, AND 503/offline 4-layer procedural art."
-version: 0.2.0-draft.1
+description: "Gallery-grade visual art direction, English-only style-locked AI image generation, authentic human editorial photography, and museum-quality code-native illustration skill (v0.3.0). Synthesizes Anthropic canvas-design (2-phase Visual Philosophy, dense engraving craft, Zero-Addition Pass 2 polish), Impeccable (chiaroscuro 1-second storytelling, concise non-over-specified prompts, prompt provenance), and the Honest Medium Pivot Law on 503/offline fallback with zero hardcoded brand hexes."
+version: 0.3.0-draft.1
 license: MIT
 ---
 
-# Millar Create Image v0.2: Gallery-Grade Art Direction & Dual-Soul Visual Craft
+# Millar Create Image v0.3: Gallery-Grade Art Direction & Dual-Soul Visual Craft
 
 Produce museum-grade, emotionally resonant visual series across real human editorial photography, still-life/architectural imagery, and code-native procedural illustrations. Never produce AI wax-skin stock clichés, flat geometric clip-art humans/houses, or PowerPoint process slides, even when AI image APIs return `503` or run offline.
 
@@ -55,8 +55,9 @@ Execute via the strongest capability available right now:
   - **MANDATORY:** Read [references/procedural-gallery-craft.md](references/procedural-gallery-craft.md) BEFORE writing a single line of SVG, Canvas, or Python code!
   - **AUTOMATIC FAILURE BANS (NEVER DRAW THESE):**
     - Flat geometric clip-art humans (circle head + trapezoid torso + stick limbs) or boxy clip-art houses.
+    - **Faux-3D perspective Canvas rooms, bookshelves, or fake photorealistic 3D tabletop mugs/vases/books** (when AI image gen returns `503` on photo/human/product briefs, follow the **Honest Medium Pivot Law** in `procedural-gallery-craft.md`: pivot cleanly to orthographic architectural elevations, intaglio hatching, stipple woodblock monographs, or parametric optical plates while preserving the Path A English photo prompt inside `.prompt.json`!).
     - PowerPoint workflow boxes, numbered pill chains, or circle-plus-line-icon slide diagrams.
-    - Flat vector fills under thin outlines (always draw print/engraved subjects with strokes, hatching, and translucent tonal washes) or sparse `< 40` primitive SVGs lacking grain and depth.
+    - Flat vector fills under thin outlines, hard-edged unblurred light polygons, or sparse `< 40` primitive SVGs lacking grain and depth.
   - **REQUIRED 4-LAYER PROCEDURAL STACK (`2x` HiDPI `>= 1600px` wide PNG/PDF/SVG):**
     1. *Layer 1 (Material Ground):* Procedural archival paper grain or textured dark surface noise + calibrated vignette using the **researched brand palette**.
     2. *Layer 2 (Volumetric Chiaroscuro Light & 3 Depth Planes):* Directional window beams on light grounds OR warm/calibrated rim-light cones + luminous dust motes on dark grounds, establishing clear foreground/midground/background depth.

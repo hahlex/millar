@@ -58,7 +58,7 @@ const SKILLS: SkillDocItem[] = [
     references: [
       { file: "image-art-direction.md", purpose: "80/20 English prefix, polarity and .prompt.json provenance" },
       { file: "human-editorial-photography.md", purpose: "Anti-wax-skin documentary photography and film continuity" },
-      { file: "procedural-gallery-craft.md", purpose: "503/code-native 4-layer craft and Zero-Addition Pass 2" },
+      { file: "procedural-gallery-craft.md", purpose: "503 Honest Medium Pivot, 4-layer craft and Zero-Addition Pass 2" },
       { file: "multi-page-asset-map.md", purpose: "Multi-page scale and aspect-ratio blueprint" },
     ],
     promptExample: "Run millar-create-image from .millar/style-dna.md with concise English prompts and Zero-Addition Pass 2 polish.",
@@ -93,7 +93,7 @@ const SKILLS: SkillDocItem[] = [
     references: [
       { file: "five-layer-qa-gate.md", purpose: "Playwright, axe-core, Layer 3B and reviewer packet" },
       { file: "two-axis-review-rubric.md", purpose: "Spec vs Standards review rubric" },
-      { file: "scripts/millar-audit.mjs", purpose: "Standalone Zero-MCP mechanical audit CLI" },
+      { file: "scripts/millar-audit.mjs", purpose: "Standalone Zero-MCP audit CLI (contrast, SC 1.4.11, anti-slop)" },
     ],
     promptExample: "Run millar-verify-web: execute scripts/millar-audit.mjs, verify 1440/768/375 & WCAG AA, and spawn a fresh finish reviewer.",
   },

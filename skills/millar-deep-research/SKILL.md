@@ -1,11 +1,11 @@
 ---
 name: millar-deep-research
-description: "Brand-first research, visual & motion DNA extraction, user-intent decoding, and world-class craft benchmarking skill (v0.2.0). Use BEFORE designing, coding, or prompting images whenever the user names a brand, supplies existing images/animations, shares reference URLs, or describes a target feel. Never hardcode another brand's palette or tropes: research the actual brand, local DESIGN.md/MCP tokens, and audience culture first, and emit crisp English Visual & Motion DNA specifications."
-version: 0.2.0-draft.1
+description: "Brand-first research, visual & motion DNA extraction, user-intent decoding, and world-class craft benchmarking skill (v0.3.0). Use BEFORE designing, coding, or prompting images whenever the user names a brand, supplies existing images/animations, shares reference URLs, or describes a target feel. Never hardcode another brand's palette or tropes: research the actual brand, local DESIGN.md/MCP tokens, and audience culture first, and emit crisp English Visual & Motion DNA specifications."
+version: 0.3.0-draft.1
 license: MIT
 ---
 
-# Millar Deep Research v0.2: Brand-First Research & Visual DNA Extraction
+# Millar Deep Research v0.3: Brand-First Research & Visual DNA Extraction
 
 Turn brand mentions, user-supplied assets, live references, and open briefs into an evidence-backed **Visual Research Dossier** (`.millar/research-dossier.md`). Downstream skills (`millar-design`, `millar-create-image`, `millar-animation`) consume this dossier with zero guesswork, zero hardcoded brand assumptions, and zero cross-page style drift.
 

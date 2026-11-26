@@ -259,12 +259,29 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
       uri: "millar://skills/millar-create-image/references/procedural-gallery-craft.md",
     });
     const procFirst = procRef.contents[0];
-    expect(procFirst && "text" in procFirst ? procFirst.text : "").toContain("Zero-Addition Pass 2");
+    const procText = procFirst && "text" in procFirst ? procFirst.text : "";
+    expect(procText).toContain("Zero-Addition Pass 2");
+    expect(procText).toContain("Honest Medium Pivot Law");
+    expect(procText).toContain("ctx.font");
 
     const humanRef = await client.readResource({
       uri: "millar://skills/millar-create-image/references/human-editorial-photography.md",
     });
     const humanFirst = humanRef.contents[0];
     expect(humanFirst && "text" in humanFirst ? humanFirst.text : "").toContain("AI Wax Skin");
+
+    const qaRef = await client.readResource({
+      uri: "millar://skills/millar-verify-web/references/five-layer-qa-gate.md",
+    });
+    const qaFirst = qaRef.contents[0];
+    const qaText = qaFirst && "text" in qaFirst ? qaFirst.text : "";
+    expect(qaText).toContain("v0.3.0");
+    expect(qaText).toContain("view-transition-name");
+
+    const archRef = await client.readResource({
+      uri: "millar://skills/millar-build-web/references/web-architecture-checklist.md",
+    });
+    const archFirst = archRef.contents[0];
+    expect(archFirst && "text" in archFirst ? archFirst.text : "").toContain("Operate Mode");
   });
 });
