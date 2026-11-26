@@ -52,12 +52,16 @@ const PACKAGES_IN_ORDER = [
 ];
 
 function isAlreadyPublished(pkgName, version) {
-  const npmBin = process.platform === "win32" ? "npm.cmd" : "npm";
-  const check = spawnSync(npmBin, ["view", `${pkgName}@${version}`, "version"], {
-    encoding: "utf8",
-    stdio: "pipe",
-    shell: process.platform === "win32",
-  });
+  const check =
+    process.platform === "win32"
+      ? spawnSync("cmd.exe", ["/c", "npm", "view", `${pkgName}@${version}`, "version"], {
+          encoding: "utf8",
+          stdio: "pipe",
+        })
+      : spawnSync("npm", ["view", `${pkgName}@${version}`, "version"], {
+          encoding: "utf8",
+          stdio: "pipe",
+        });
   return check.status === 0 && check.stdout.trim() === version;
 }
 
