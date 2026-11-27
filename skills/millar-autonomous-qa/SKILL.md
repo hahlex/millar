@@ -1,7 +1,7 @@
 ---
 name: millar-autonomous-qa
-description: "Autonomous end-to-end QA skill executing a continuous 8-stage testing loop (discover, plan, execute, observe, verify, reproduce, report, explore further) across multi-role and multi-tenant sessions, UI/API/stateful/property/negative/concurrency/authorization/resilience/AI modes, non-production safety guards, budget enforcement, multi-channel outcome verification, and self-contained HTML reporting."
-version: 0.1.0-draft.1
+description: "Autonomous end-to-end QA skill executing a continuous 8-stage testing loop (discover, plan, execute, observe, verify, reproduce, report, explore further) with hybrid depth modes (smoke, standard, deep-business), origin-scoped multi-role/multi-tenant browser sessions, frontier-based UI/ARIA/occlusion/i18n exploration, passive HAR-to-OpenAPI synthesis for Schemathesis, 4-axis differential authorization matrices, concurrency/resilience/AI evaluation, multi-channel causal outcome verification, and self-contained interactive HTML reporting."
+version: 0.4.0-draft.1
 license: MIT
 ---
 
@@ -35,38 +35,46 @@ Run once from the installed `millar-autonomous-qa` skill folder before executing
 - **Python runners (`Schemathesis`, `Hypothesis`, `pytest`, `httpx`, `psycopg`, `redis`):** `UV_PROJECT_ENVIRONMENT="$LOCALAPPDATA/millar-autonomous-qa/venv" uv sync` (or `~/.local/share/millar-autonomous-qa/venv` on macOS/Linux)
 - **Optional Docker runners (`k6`, `Toxiproxy`):** ensure Docker daemon is running (`grafana/k6:latest`, `ghcr.io/shopify/toxiproxy:latest`).
 
-## Continuous 8-Stage QA Loop
+## Continuous 8-Stage QA Loop & Hybrid Depth Modes
 
-`scripts/run-qa-loop.mjs` drives the continuous testing loop and records every iteration in `memory/coverage-ledger.json`:
+`scripts/run-qa-loop.mjs` drives the continuous testing loop across three execution depths (`--depth=smoke | standard | deep-business`) and records every iteration plus persistent frontier state in `memory/coverage-ledger.json`:
+
+- **`--depth=smoke`**: Fast CI gate (2 routes/role, non-interactive UI crawl, capped API probes, skips persona workflows).
+- **`--depth=standard`** (default): Full Phase 1+2 autonomous loop (origin-scoped headers, structured authenticated `4xx` capture, ARIA/occlusion/blank-screen/i18n checks, frontier expansion across iterations, passive HAR-to-OpenAPI synthesis feeding Schemathesis, 4-axis differential authorization matrix, k6, Toxiproxy, Promptfoo with multilingual Unicode refusal checks & built-in SSE provider, and multi-channel causal verification).
+- **`--depth=deep-business`**: Everything in `standard` PLUS raises route exploration caps and runs `scripts/runners/workflow-scenarios.mjs` (Spec-Driven Persona Workflow Planner -> `memory/workflow-plan.md` + multi-step causal API/DB/Mailpit/Lifecycle workflow executor).
 
 1. **`discover`**: Run `scripts/discover-surface.mjs` to probe live frontend HTML routes, `/healthz` and `/readyz`, `/openapi.json`, OIDC metadata, optional AI health, and optional static catalogs (`--repo-path`, `viewRegistry.ts`, `route-catalog.generated.ts`).
-2. **`plan`**: Map enabled testing modes (`--modes`) and remaining budget slices to registered runners or baseline probes; skip unapplicable modes cleanly (`skipped_non_applicable`).
-3. **`execute`**: Run planned tools sequentially while checking `memory/run-budget.json` before each step and enforcing per-runner timeouts so a hanging port never stalls the loop.
-4. **`observe`**: Parse Contract 2 JSON outputs, collect traces and artifacts, and atomically update `requestsUsed` and `aiCallsUsed`.
-5. **`verify`**: Run `scripts/verify-outcomes.mjs` to correlate `X-Request-Id` across API responses, Postgres, Redis/RQ, Mailpit, Langfuse, and Docker logs.
-6. **`reproduce`**: Deduplicate findings into `memory/findings-ledger.json` and emit standalone syntax-verified regression scripts (`.mjs`, `.py`, or `.spec.ts`) under `memory/regressions/`.
-7. **`report`**: Persist updated ledgers and optionally generate a self-contained single-file HTML report via `scripts/report-html.mjs`.
-8. **`explore further`**: Evaluate uncovered routes, endpoints, roles, and remaining budget to decide whether to start another iteration or conclude cleanly.
+2. **`plan`**: Map enabled testing modes (`--modes`), depth tier (`--depth`), and remaining budget slices to registered runners (`ui-explorer.mjs`, `cdp-diagnostics.mjs`, `auth-matrix.mjs`, `api-fuzz-stateful.py`, `concurrency-k6.mjs`, `resilience-toxiproxy.mjs`, `ai-eval-promptfoo.mjs`, `workflow-scenarios.mjs`); skip unapplicable modes cleanly (`skipped_non_applicable`).
+3. **`execute`**: Run planned tools sequentially while checking `memory/run-budget.json` before each step, passing per-role frontier exclusion/discovery lists into Playwright, synthesizing `memory/synthesized-openapi.json` passively from observed API traffic when `/openapi.json` is unavailable, and enforcing configurable per-runner timeouts (`--ai-timeout-ms`, default `90000`ms).
+4. **`observe`**: Parse Contract 2 JSON outputs, collect traces and screenshots, separate **Exercised** vs **Discovered/Catalog** coverage honestly, filter Vite/CDN static assets from CDP API metrics, and atomically update `requestsUsed` and `aiCallsUsed`.
+5. **`verify`**: Run `scripts/verify-outcomes.mjs` to correlate `X-Request-Id` across API responses, Postgres (`--expect-pg-min-rows`), Redis/RQ (flagging stuck queues with `rqWorkerCount === 0`), Mailpit (`--expect-mailpit-within-ms` causal polling), Langfuse, and Docker logs.
+6. **`reproduce`**: Deduplicate findings into `memory/findings-ledger.json` and emit standalone syntax-verified regression scripts (`.mjs` or `.py`) under `memory/regressions/` with origin-scoped headers and explicit exit codes (`0` resolved, `1` still reproduces, `2` auth env required, `3` degraded/timeout).
+7. **`report`**: Persist updated ledgers and generate a self-contained single-file HTML report v2 via `scripts/report-html.mjs` (canonically deduplicated artifact paths, clickable links, inline screenshot thumbnails + lightbox, client-side finding filters, honest Exercised vs Discovered KPIs, and clean run audit without internal skill log noise unless `--include-skill-log` is passed).
+8. **`explore further`**: Persist `coverageLedger.frontier` (`visitedRoutesByRole`, `exercisedRoutes`, `discoveredRoutes`, `exercisedEndpoints`) so Iteration 2+ automatically targets unvisited discovered routes instead of repeating Iteration 1.
 
-## Multi-Role and Multi-Tenant Simulation Workflow
+## Multi-Role, Multi-Tenant & 4-Axis Security Workflow
 
 1. Discover available non-production dev accounts and auth flows (OIDC password/token exchange or seeded local accounts configured for the target).
-2. Create isolated browser contexts (`browser.newContext()` with separate `storageState`) or distinct API auth headers per `(role, tenant)` pair (for example `owner`, `admin`, `manager`, `teacher`, `viewer`, `student`, `guardian` across `tenantA` and `tenantB`).
-3. Exercise CRUD (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`) and UI flows per role, then replay cross-tenant and lower-privilege tokens against privileged or foreign-tenant endpoints to verify strict `401`/`403`/`404` enforcement.
+2. Create isolated browser contexts (`browser.newContext()`) with **origin-scoped `context.route()` header injection** (NEVER global `extraHTTPHeaders`, preventing `Authorization` or `X-*` tenant headers from leaking to third-party origins like Google Fonts/CDNs).
+3. Run `scripts/runners/auth-matrix.mjs` across ALL configured roles (zero slice cap, including `guardian` and `custom_*` roles) covering four differential security axes:
+   - **Axis 1 (Cross-Tenant BOLA)**: Replay Tenant A observed entity IDs with Tenant B credentials.
+   - **Axis 2 (Cross-Campus / Sub-Tenant BOLA Read & Write)**: Replay foreign-campus entity IDs and cross-campus write probes under scoped campus roles.
+   - **Axis 3 (Vertical & Custom Role Parity)**: Verify privileged endpoints block all restricted/custom roles and custom role filter keys (`?role=custom_*`) do not trigger `422 PATTERN_MISMATCH`.
+   - **Axis 4 (Semantic Body Leak Diffing)**: Flag HTTP `200` responses containing role-forbidden patterns (`forbiddenResponsePatterns`, e.g. `hr.payroll_`) or foreign entity IDs (`forbiddenEntityIds`).
 
 ## 9 Supported Testing Modes
 
 | Mode | Primary Tool(s) | Focus |
 | --- | --- | --- |
-| `exploratory` | Playwright + Chrome DevTools MCP | Multi-role/tenant UI navigation, console/pageerror/network checks, Core Web Vitals & CDP diagnostics |
-| `stateful` | Schemathesis + Hypothesis | Multi-step `POST -> GET -> PATCH -> DELETE` API lifecycle workflows and entity persistence |
+| `exploratory` | Playwright + Chrome DevTools MCP | Origin-scoped multi-role UI crawl, frontier expansion, structured authenticated `4xx`/`5xx`, ARIA snapshots, safe tab probing, button occlusion, blank-screen, React `flushSync`, i18n/em-dash audit, authenticated CDP Web Vitals (static assets filtered) |
+| `stateful` | Schemathesis + Hypothesis + `workflow-scenarios.mjs` | Multi-step CRUD lifecycles, passive HAR-to-OpenAPI synthesis when `/openapi.json` is `404`, and `--depth=deep-business` spec-driven persona workflows |
 | `property` | Hypothesis + Schemathesis | Invariant verification and minimal shrunk counterexamples across valid domain inputs |
-| `negative` | Schemathesis + Playwright | Boundary, malformed JSON, invalid types, and form validation rejecting bad inputs with 4xx (zero 5xx) |
-| `concurrency` | k6 (Docker) + Postgres checks | Burst load, double-submit/idempotency race detection, p95/p99 latency thresholds |
-| `authorization` | Hypothesis + Playwright | Cross-role privilege escalation and cross-tenant IDOR matrix |
-| `resilience` | Toxiproxy (Docker) + Playwright `page.route()` | Backend TCP faults (latency, reset, timeout) and client HTTP fault degradation/recovery |
-| `ai` | Promptfoo + Langfuse | Groundedness, JSON schema adherence, prompt-injection & PII red-teaming (skipped if AI offline or `maxAiCalls === 0`) |
-| `outcome_verification` | `verify-outcomes.mjs` (`psycopg`, `redis`, Mailpit, Docker, Langfuse) | End-to-end correlation beyond HTTP status codes |
+| `negative` | Schemathesis + Playwright | Boundary, malformed JSON, invalid types, `GET -> PUT` round-trip `4xx` schema drift detection, and form validation |
+| `concurrency` | k6 (Docker) + Postgres checks | Authenticated multi-header bursts, `k6WriteRace` idempotency/duplicate-commit detection, p95 latency thresholds |
+| `authorization` | `auth-matrix.mjs` + Hypothesis + Playwright | 4-Axis Differential Matrix (Cross-Tenant BOLA, Cross-Campus Read/Write, Vertical + ALL Custom Roles, Semantic Body Leak Diffing) |
+| `resilience` | Toxiproxy (Docker) + Playwright `page.route()` | Authenticated business endpoint TCP faults (latency, reset, recovery) and authenticated client `503`/abort degradation |
+| `ai` | Promptfoo + Built-in SSE Provider + Langfuse | Unicode-normalized EN/VI prompt-injection refusal, optional `llm-rubric`, configurable `--ai-timeout-ms` (`90000`ms), built-in `sse-thread-turns` / `http-json` declarative provider |
+| `outcome_verification` | `verify-outcomes.mjs` (`psycopg`, `redis`, Mailpit, Docker, Langfuse) | End-to-end causal verification beyond HTTP `200`, including stuck RQ queue (`rqWorkerCount === 0`), `--expect-mailpit-within-ms`, and `--expect-pg-min-rows` |
 
 ## Triage Rubric: Bug vs Spec Gap vs Runtime Degraded
 

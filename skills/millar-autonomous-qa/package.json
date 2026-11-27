@@ -1,6 +1,6 @@
 {
   "name": "@hahlex/millar-autonomous-qa-runtime",
-  "version": "0.1.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "description": "Runtime QA tooling dependencies for the millar-autonomous-qa Millar skill",

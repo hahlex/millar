@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import {
   ensureDir,
   loadConfigFile,
+  loadPlaywright,
   MEMORY_DIR,
   parseCliArgs,
   parseNonNegativeNumber,
@@ -62,7 +63,7 @@ function emitAndExit(output, outPath, exitCode = 0) {
   process.exit(exitCode);
 }
 
-function sendProxiedHttpGet({ proxyPort, originalHost, reqPath, timeoutMs = 2500 }) {
+function sendProxiedHttpGet({ proxyPort, originalHost, reqPath, extraHeaders = {}, timeoutMs = 2500 }) {
   const started = Date.now();
   return new Promise((resolve) => {
     const req = http.request(
@@ -72,6 +73,7 @@ function sendProxiedHttpGet({ proxyPort, originalHost, reqPath, timeoutMs = 2500
         path: reqPath || "/",
         method: "GET",
         headers: {
+          ...(extraHeaders && typeof extraHeaders === "object" ? extraHeaders : {}),
           Host: originalHost,
           Connection: "close",
         },
@@ -139,7 +141,35 @@ async function waitForToxiproxyAdmin(adminBaseUrl, timeoutMs = 6000) {
   throw new Error(`Toxiproxy admin API did not become ready at ${adminBaseUrl}`);
 }
 
-async function runBrowserFaultCheck(targetUrl, budgetMs = 11000) {
+function resolvePrimaryAuthForResilience(cfg) {
+  const roles = Array.isArray(cfg.roles) ? cfg.roles : Array.isArray(cfg.accounts) ? cfg.accounts : [];
+  for (const r of roles) {
+    if (!r || typeof r !== "object") continue;
+    const tok = r.token || (r.tokenEnv ? process.env[r.tokenEnv] : null);
+    const hdrs = {};
+    if (r.headers && typeof r.headers === "object" && !Array.isArray(r.headers)) {
+      for (const [k, v] of Object.entries(r.headers)) {
+        if (v !== undefined && v !== null) hdrs[String(k)] = String(v);
+      }
+    }
+    if (tok && !Object.keys(hdrs).some((k) => k.toLowerCase() === "authorization")) {
+      hdrs.Authorization = String(tok).startsWith("Bearer ") ? String(tok).trim() : `Bearer ${String(tok).trim()}`;
+    }
+    if (Object.keys(hdrs).length > 0) {
+      return {
+        role: String(r.role || r.name || "authenticated"),
+        headers: hdrs,
+        token: tok ? String(tok).trim() : "",
+        localStorageKey: r.localStorageKey ? String(r.localStorageKey) : "",
+        localStorageEntries: r.localStorageEntries && typeof r.localStorageEntries === "object" ? r.localStorageEntries : {},
+        route: Array.isArray(r.routes) ? r.routes.find((rt) => typeof rt === "string" && rt.startsWith("/") && rt !== "/") || "" : "",
+      };
+    }
+  }
+  return { role: "anonymous", headers: {}, token: "", localStorageKey: "", localStorageEntries: {}, route: "" };
+}
+
+async function runBrowserFaultCheck(targetUrl, budgetMs = 11000, authCtx = null) {
   const deadlineMs = Date.now() + budgetMs;
   const remainingMs = () => Math.max(200, deadlineMs - Date.now());
   let htmlDetected = false;
@@ -174,7 +204,7 @@ async function runBrowserFaultCheck(targetUrl, budgetMs = 11000) {
   let page = null;
   let recoveryPage = null;
   try {
-    const { chromium } = await import("playwright");
+    const { chromium } = await loadPlaywright();
     const launchTimeout = Math.min(5500, remainingMs());
     const launchAttempt = (async () => {
       try {
@@ -198,6 +228,27 @@ async function runBrowserFaultCheck(targetUrl, budgetMs = 11000) {
   try {
     context = await browser.newContext();
     page = await context.newPage();
+    let effectiveTargetUrl = targetUrl;
+    if (authCtx && authCtx.localStorageKey && authCtx.token) {
+      const origin = new URL(targetUrl).origin;
+      await page.goto(origin, { waitUntil: "domcontentloaded", timeout: Math.min(2200, remainingMs()) }).catch(() => {});
+      const entries = {
+        ...Object.fromEntries(
+          Object.entries(authCtx.localStorageEntries || {}).map(([k, v]) => [k, typeof v === "string" ? v : JSON.stringify(v)]),
+        ),
+        [authCtx.localStorageKey]: authCtx.token,
+      };
+      await page
+        .evaluate((ent) => {
+          for (const [k, v] of Object.entries(ent)) {
+            try { window.localStorage.setItem(k, v); } catch {}
+          }
+        }, entries)
+        .catch(() => {});
+      if (authCtx.route) {
+        effectiveTargetUrl = new URL(authCtx.route, origin).toString();
+      }
+    }
     const pageErrors = [];
     const consoleErrors = [];
     let interceptedCount = 0;
@@ -229,7 +280,7 @@ async function runBrowserFaultCheck(targetUrl, budgetMs = 11000) {
       },
     );
 
-    const faultNav = await page.goto(targetUrl, {
+    const faultNav = await page.goto(effectiveTargetUrl, {
       waitUntil: "domcontentloaded",
       timeout: Math.min(3000, remainingMs()),
     });
@@ -264,7 +315,7 @@ async function runBrowserFaultCheck(targetUrl, budgetMs = 11000) {
         consoleErrors.push(txt);
       }
     });
-    const recoveryNav = await recoveryPage.goto(targetUrl, {
+    const recoveryNav = await recoveryPage.goto(effectiveTargetUrl, {
       waitUntil: "domcontentloaded",
       timeout: Math.min(2500, remainingMs()),
     });
@@ -386,25 +437,52 @@ async function main() {
   const tracePath = path.join(traceDir, `resilience-toxiproxy-${uniqueTag}.json`);
   const relTracePath = toStagingRelPath(tracePath);
 
+  const authCtx = resolvePrimaryAuthForResilience(cfg);
   const parsedApi = new URL(apiUrl);
   const originalHost = parsedApi.host;
   const rawHost = parsedApi.hostname.toLowerCase().replace(/^\[|\]$/g, "");
   const dockerHost = rawHost === "127.0.0.1" || rawHost === "localhost" || rawHost === "::1" ? "host.docker.internal" : parsedApi.hostname;
   const upstreamPort = parsedApi.port ? Number.parseInt(parsedApi.port, 10) : parsedApi.protocol === "https:" ? 443 : 80;
   let probePath = parsedApi.pathname && parsedApi.pathname !== "/" ? `${parsedApi.pathname}${parsedApi.search || ""}` : "/";
-  if (probePath === "/" && cfg.resilienceProbePath) {
+  const configuredAuthProbe = cfg.resilienceAuthProbePath ? String(cfg.resilienceAuthProbePath).trim() : "";
+  if (probePath === "/" && configuredAuthProbe && Object.keys(authCtx.headers).length > 0) {
+    probePath = configuredAuthProbe.startsWith("/") ? configuredAuthProbe : `/${configuredAuthProbe}`;
+  } else if (probePath === "/" && cfg.resilienceProbePath) {
     const rawProbe = String(cfg.resilienceProbePath).trim();
     if (rawProbe) {
       probePath = rawProbe.startsWith("/") ? rawProbe : `/${rawProbe}`;
     }
   } else if (probePath === "/") {
-    try {
-      const hz = await fetch(`${parsedApi.origin}/healthz`, { method: "GET", signal: AbortSignal.timeout(1200) });
-      if (hz.ok) probePath = "/healthz";
-    } catch {
-      // keep "/" if unreachable or no /healthz
+    // Prefer an authenticated business endpoint if role credentials exist and it responds 200; fallback to /healthz
+    let pickedAuthBiz = false;
+    if (Object.keys(authCtx.headers).length > 0) {
+      for (const candidate of ["/v1/session", "/v1/education/courses"]) {
+        try {
+          const authTest = await fetch(`${parsedApi.origin}${candidate}`, {
+            method: "GET",
+            headers: authCtx.headers,
+            signal: AbortSignal.timeout(1200),
+          });
+          if (authTest.ok) {
+            probePath = candidate;
+            pickedAuthBiz = true;
+            break;
+          }
+        } catch {
+          // try next
+        }
+      }
+    }
+    if (!pickedAuthBiz) {
+      try {
+        const hz = await fetch(`${parsedApi.origin}/healthz`, { method: "GET", signal: AbortSignal.timeout(1200) });
+        if (hz.ok) probePath = "/healthz";
+      } catch {
+        // keep "/" if unreachable or no /healthz
+      }
     }
   }
+  const proxiedHeaders = probePath === "/healthz" || probePath === "/readyz" ? {} : authCtx.headers;
   const probeApiUrl = new URL(probePath, parsedApi.origin).toString();
   const proxyName = `qa-proxy-${process.pid}-${Date.now()}-${crypto.randomBytes(2).toString("hex")}`;
 
@@ -461,7 +539,7 @@ async function main() {
       // Step 1: Baseline through proxy
       requestsConsumed += 1;
       assertions += 1;
-      const baseline = await sendProxiedHttpGet({ proxyPort, originalHost, reqPath: probePath, timeoutMs: 3000 });
+      const baseline = await sendProxiedHttpGet({ proxyPort, originalHost, reqPath: probePath, extraHeaders: proxiedHeaders, timeoutMs: 3000 });
       steps.baseline = baseline;
 
       if (baseline.status === 0 || baseline.error) {
@@ -497,7 +575,7 @@ async function main() {
         }
         requestsConsumed += 1;
         assertions += 1;
-        const latencyRes = await sendProxiedHttpGet({ proxyPort, originalHost, reqPath: probePath, timeoutMs: 2500 });
+        const latencyRes = await sendProxiedHttpGet({ proxyPort, originalHost, reqPath: probePath, extraHeaders: proxiedHeaders, timeoutMs: 2500 });
         steps.latency = latencyRes;
         await fetch(`${adminBaseUrl}/proxies/${proxyName}/toxics/qa_latency`, {
           method: "DELETE",
@@ -545,7 +623,7 @@ async function main() {
         }
         requestsConsumed += 1;
         assertions += 1;
-        const resetRes = await sendProxiedHttpGet({ proxyPort, originalHost, reqPath: probePath, timeoutMs: 2500 });
+        const resetRes = await sendProxiedHttpGet({ proxyPort, originalHost, reqPath: probePath, extraHeaders: proxiedHeaders, timeoutMs: 2500 });
         steps.resetPeer = resetRes;
         await fetch(`${adminBaseUrl}/proxies/${proxyName}/toxics/qa_reset`, {
           method: "DELETE",
@@ -555,7 +633,7 @@ async function main() {
         // Step 4: Recovery verification
         requestsConsumed += 1;
         assertions += 1;
-        const recoveryRes = await sendProxiedHttpGet({ proxyPort, originalHost, reqPath: probePath, timeoutMs: 2500 });
+        const recoveryRes = await sendProxiedHttpGet({ proxyPort, originalHost, reqPath: probePath, extraHeaders: proxiedHeaders, timeoutMs: 2500 });
         steps.recovery = recoveryRes;
         if (recoveryRes.status === 0 || recoveryRes.status >= 500) {
           findings.push({
@@ -610,10 +688,10 @@ async function main() {
 
   const routesVisited = [];
   if (!skipBrowser && targetUrl) {
-    const browserRes = await runBrowserFaultCheck(targetUrl, 11000);
+    const browserRes = await runBrowserFaultCheck(targetUrl, 11000, authCtx);
     steps.browserFaultCheck = browserRes;
     if (browserRes.executed) {
-      const targetRoute = new URL(targetUrl).pathname || "/";
+      const targetRoute = authCtx.route || new URL(targetUrl).pathname || "/";
       routesVisited.push(targetRoute);
       requestsConsumed += 2;
       assertions += 1;
@@ -668,7 +746,7 @@ async function main() {
     requests: requestsConsumed,
     routes: routesVisited,
     endpoints: browserOnly ? [] : [`GET ${probePath}`],
-    roles: ["anonymous"],
+    roles: [Object.keys(proxiedHeaders).length > 0 ? authCtx.role : "anonymous"],
     assertions,
     findings,
     traces: [relTracePath],

@@ -146,28 +146,53 @@ function runDockerK6(scriptSource, vus, iterations, timeoutMs = 19000) {
   });
 }
 
+function resolveRoleHeadersObj(r) {
+  const out = {};
+  if (r?.headers && typeof r.headers === "object" && !Array.isArray(r.headers)) {
+    for (const [k, v] of Object.entries(r.headers)) {
+      if (v !== undefined && v !== null) out[String(k)] = String(v);
+    }
+  }
+  if (r?.headersEnv && process.env[String(r.headersEnv)]) {
+    try {
+      const parsed = JSON.parse(String(process.env[String(r.headersEnv)]));
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        for (const [k, v] of Object.entries(parsed)) {
+          if (v !== undefined && v !== null) out[String(k)] = String(v);
+        }
+      }
+    } catch {
+      // ignore malformed headers env
+    }
+  }
+  return out;
+}
+
 function resolveAuthFromConfig(cfg, tokenEnvFlag) {
   if (tokenEnvFlag) {
     const flagTok = String(process.env[tokenEnvFlag] || "").trim();
     if (flagTok) {
-      return { token: flagTok, role: "configured", tokenEnv: tokenEnvFlag, missingTokenEnv: false };
+      return { token: flagTok, headers: {}, role: "configured", tokenEnv: tokenEnvFlag, missingTokenEnv: false };
     }
-    return { token: null, role: "configured", tokenEnv: tokenEnvFlag, missingTokenEnv: true };
+    return { token: null, headers: {}, role: "configured", tokenEnv: tokenEnvFlag, missingTokenEnv: true };
   }
   const roles = Array.isArray(cfg.roles) ? cfg.roles : Array.isArray(cfg.accounts) ? cfg.accounts : [];
   for (const r of roles) {
     if (!r || typeof r !== "object") continue;
     const tok = r.token || (r.tokenEnv ? process.env[r.tokenEnv] : null);
-    if (tok) {
+    const roleHeaders = resolveRoleHeadersObj(r);
+    if (tok || Object.keys(roleHeaders).length > 0) {
       return {
-        token: String(tok),
+        token: tok ? String(tok).trim() : null,
+        headers: roleHeaders,
         role: String(r.role || r.name || "configured"),
-        tokenEnv: r.tokenEnv ? String(r.tokenEnv) : "QA_TOKEN",
+        tokenEnv: r.tokenEnv ? String(r.tokenEnv) : tok ? "QA_TOKEN" : null,
+        headersEnv: r.headersEnv ? String(r.headersEnv) : null,
         missingTokenEnv: false,
       };
     }
   }
-  return { token: null, role: "anonymous", tokenEnv: null, missingTokenEnv: false };
+  return { token: null, headers: {}, role: "anonymous", tokenEnv: null, headersEnv: null, missingTokenEnv: false };
 }
 
 function buildRaceReproScript(finding, apiOrigin, method, targetEndpoint, tokenEnv) {
@@ -222,15 +247,23 @@ try {
 `;
 }
 
-function buildK6Script({ targetDockerUrl, originalHost, method, isRaceEndpoint, idempotencyKey, authToken }) {
+function buildK6Script({ targetDockerUrl, originalHost, method, isRaceEndpoint, idempotencyKey, authToken, extraHeaders = {}, customBody = null }) {
   const hasBody = method === "POST" || method === "PUT" || method === "PATCH";
-  const payload = isRaceEndpoint ? JSON.stringify({ idempotencyKey }) : hasBody ? JSON.stringify({}) : null;
+  const payload =
+    customBody !== null && customBody !== undefined
+      ? JSON.stringify(customBody)
+      : isRaceEndpoint
+        ? JSON.stringify({ idempotencyKey })
+        : hasBody
+          ? JSON.stringify({})
+          : null;
   const headersObj = {
+    ...(extraHeaders && typeof extraHeaders === "object" ? extraHeaders : {}),
     Host: originalHost,
     "Content-Type": "application/json",
     "Idempotency-Key": idempotencyKey,
   };
-  if (authToken) {
+  if (authToken && !Object.keys(headersObj).some((k) => k.toLowerCase() === "authorization")) {
     headersObj.Authorization = authToken.startsWith("Bearer ") ? authToken : `Bearer ${authToken}`;
   }
   return `
@@ -252,7 +285,7 @@ export default function () {
   }, params);
   if (res.status === 0) netErrors.add(1);
   if (res.status >= 500) http5xx.add(1);
-  if (${isRaceEndpoint ? "true" : "false"} && res.status === 200) race200.add(1);
+  if (${isRaceEndpoint ? "true" : "false"} && (res.status === 200 || res.status === 201)) race200.add(1);
   check(res, {
     "status < 500": (r) => r.status > 0 && r.status < 500
   });
@@ -398,17 +431,23 @@ async function main() {
       2,
     );
   }
+  const k6WriteRace = cfg.k6WriteRace && typeof cfg.k6WriteRace === "object" ? cfg.k6WriteRace : null;
   const cliEndpoint = values.endpoint ? String(values.endpoint).trim() : "";
   const cliRaceEndpoint = values["race-endpoint"] ? String(values["race-endpoint"]).trim() : "";
-  const cfgRaceEndpoint = cfg.raceEndpoint ? String(cfg.raceEndpoint).trim() : "";
+  const cfgRaceEndpoint = cfg.raceEndpoint
+    ? String(cfg.raceEndpoint).trim()
+    : k6WriteRace?.endpoint
+      ? String(k6WriteRace.endpoint).trim()
+      : "";
   let targetEndpoint = cliEndpoint || cliRaceEndpoint || cfgRaceEndpoint || cfg.concurrencyEndpoint || null;
   const allowedMethods = new Set(["GET", "POST", "PUT", "PATCH", "DELETE"]);
   const rawExplicitMethod = values.method ? String(values.method).trim().toUpperCase() : "";
   const explicitMethod = allowedMethods.has(rawExplicitMethod) ? rawExplicitMethod : null;
-  const rawCfgRaceMethod = cfg.raceMethod ? String(cfg.raceMethod).trim().toUpperCase() : "";
+  const rawCfgRaceMethod = String(cfg.raceMethod || k6WriteRace?.method || "").trim().toUpperCase();
   const cfgRaceMethod = allowedMethods.has(rawCfgRaceMethod) ? rawCfgRaceMethod : null;
   let method = explicitMethod || "GET";
   let isRaceEndpoint = false;
+  let customBody = k6WriteRace?.body !== undefined ? k6WriteRace.body : null;
   let probeRequests = 0;
   const explicitRaceConfigured =
     Boolean(cliRaceEndpoint) ||
@@ -425,9 +464,10 @@ async function main() {
       isRaceEndpoint = true;
     } else if (authInfo.token) {
       probeRequests += 1;
+      const probeHdrs = { ...(authInfo.headers || {}), Authorization: `Bearer ${authInfo.token}` };
       const authProbe = await fetchWithTimeout(
         `${apiOrigin}/v1/education/courses`,
-        { method: "GET", headers: { Authorization: `Bearer ${authInfo.token}` } },
+        { method: "GET", headers: probeHdrs },
         2000,
       );
       if (authProbe.ok) {
@@ -448,6 +488,13 @@ async function main() {
     method = explicitMethod || "GET";
   }
 
+  const effectiveExtraHeaders = {
+    ...(authInfo.headers || {}),
+    ...(k6WriteRace?.headers && typeof k6WriteRace.headers === "object" ? k6WriteRace.headers : {}),
+  };
+  const effectiveToken =
+    (k6WriteRace?.tokenEnv && process.env[String(k6WriteRace.tokenEnv)]) || authInfo.token;
+
   const fullTargetUrl = new URL(targetEndpoint, apiOrigin).toString();
   const { dockerUrl, originalHost } = toDockerHostUrl(fullTargetUrl);
   const idempotencyKey = `qa-race-${process.pid}-${Date.now()}`;
@@ -457,7 +504,9 @@ async function main() {
     method,
     isRaceEndpoint,
     idempotencyKey,
-    authToken: authInfo.token,
+    authToken: effectiveToken,
+    extraHeaders: effectiveExtraHeaders,
+    customBody,
   });
 
   const dockerRes = await runDockerK6(k6Source, vus, iterations, 19000);

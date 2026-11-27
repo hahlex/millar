@@ -26,6 +26,7 @@ import {
   writeJsonAtomic,
   writeTextAtomic,
 } from "./lib/common.mjs";
+import { synthesizeOpenApiFromObservedTraffic } from "./lib/har-to-openapi.mjs";
 import { getPythonBin } from "./python-env.mjs";
 import { generateHtmlReport } from "./report-html.mjs";
 import { evaluateSafetyAndBudget } from "./safety-guard.mjs";
@@ -116,6 +117,15 @@ const VALID_CHECK_MODES = new Set([
   "k6_p95",
   "mailpit_marker",
   "docker_logs",
+  "api_4xx",
+  "blank_screen",
+  "ui_occlusion",
+  "put_roundtrip_4xx",
+  "redis_stuck_queue",
+  "pg_min_rows",
+  "semantic_leak",
+  "custom_role_422",
+  "workflow_step",
 ]);
 
 function determineCheckMode(finding) {
@@ -1096,6 +1106,19 @@ export async function runQaLoop(opts = {}) {
   const maxMinutes = opts.maxMinutes ?? cfg.maxMinutes ?? cfg.limits?.maxMinutes;
   const maxRequests = opts.maxRequests ?? cfg.maxRequests ?? cfg.limits?.maxRequests;
   const maxAiCalls = opts.maxAiCalls ?? cfg.maxAiCalls ?? cfg.limits?.maxAiCalls;
+  const aiTimeoutMs = Math.max(
+    5000,
+    Math.min(
+      300000,
+      parseNonNegativeNumber(opts.aiTimeoutMs ?? cfg.aiTimeoutMs ?? cfg.limits?.aiTimeoutMs, 90000, "--ai-timeout-ms"),
+    ),
+  );
+  const rawDepth = String(opts.depth ?? cfg.depth ?? "standard").trim().toLowerCase();
+  const depth = ["smoke", "standard", "deep-business"].includes(rawDepth) ? rawDepth : "standard";
+  const specPaths = uniqueStrings([
+    ...(Array.isArray(opts.specPaths) ? opts.specPaths : []),
+    ...(Array.isArray(cfg.specPaths) ? cfg.specPaths : []),
+  ]);
   const dryRun = Boolean(opts.dryRun);
   const modes = parseModes(opts.modes);
 
@@ -1148,14 +1171,20 @@ export async function runQaLoop(opts = {}) {
     if (modes.some((m) => ["stateful", "property", "negative", "authorization"].includes(m))) {
       plannedTasks.push("api-fuzz-stateful.py");
     }
+    if (modes.includes("authorization")) {
+      plannedTasks.push("auth-matrix.mjs");
+    }
     if (modes.includes("concurrency")) {
       plannedTasks.push("concurrency-k6.mjs");
     }
     if (modes.includes("resilience")) {
       plannedTasks.push("resilience-toxiproxy.mjs");
     }
-    if (modes.includes("ai") && (aiUrl || aiProvider) && !isAiExhausted(currentBudget)) {
+    if (modes.includes("ai") && (aiUrl || aiProvider || cfg.aiProviderType) && !isAiExhausted(currentBudget)) {
       plannedTasks.push("ai-eval-promptfoo.mjs");
+    }
+    if (depth === "deep-business" && (specPaths.length > 0 || (Array.isArray(cfg.workflows) && cfg.workflows.length > 0))) {
+      plannedTasks.push("workflow-scenarios.mjs");
     }
     return {
       exitCode: 0,
@@ -1163,6 +1192,7 @@ export async function runQaLoop(opts = {}) {
         ok: true,
         dryRun: true,
         status: "dry_run",
+        depth,
         iterationsCompleted: 0,
         plannedIterations: maxIterations,
         plannedModes: modes,
@@ -1178,10 +1208,21 @@ export async function runQaLoop(opts = {}) {
   }
 
   // Step 2: Safe Ledger Load / Initialization
-  const coverageLedger = loadOrRecoverLedger(coveragePath, { schemaVersion: "1.0.0", iterations: [] });
-  const findingsLedger = loadOrRecoverLedger(findingsPath, { schemaVersion: "1.0.0", findings: [] });
+  const coverageLedger = loadOrRecoverLedger(coveragePath, { schemaVersion: "1.1.0", iterations: [], frontier: {} });
+  const findingsLedger = loadOrRecoverLedger(findingsPath, { schemaVersion: "1.1.0", findings: [] });
   if (!Array.isArray(coverageLedger.iterations)) coverageLedger.iterations = [];
   if (!Array.isArray(findingsLedger.findings)) findingsLedger.findings = [];
+  if (!coverageLedger.frontier || typeof coverageLedger.frontier !== "object") {
+    coverageLedger.frontier = {};
+  }
+  const visitedRoutesByRole =
+    coverageLedger.frontier.visitedRoutesByRole && typeof coverageLedger.frontier.visitedRoutesByRole === "object"
+      ? { ...coverageLedger.frontier.visitedRoutesByRole }
+      : {};
+  const cumulativeExercisedRoutes = new Set(Array.isArray(coverageLedger.frontier.exercisedRoutes) ? coverageLedger.frontier.exercisedRoutes : []);
+  const cumulativeExercisedEndpoints = new Set(
+    Array.isArray(coverageLedger.frontier.exercisedEndpoints) ? coverageLedger.frontier.exercisedEndpoints : [],
+  );
 
   ensureDir(path.join(memoryDir, "regressions"));
   ensureDir(path.join(memoryDir, "traces"));
@@ -1222,11 +1263,17 @@ export async function runQaLoop(opts = {}) {
     const phases = {};
     const toolsRun = new Set();
     const routes = new Set();
+    const discoveredRoutes = new Set();
+    const exercisedRoutes = new Set();
     const endpoints = new Set();
+    const discoveredEndpoints = new Set();
+    const exercisedEndpoints = new Set();
     const roles = new Set();
     const newFindings = [];
     let budgetExhaustedMidLoop = false;
     let endpointMetadata = {};
+    const prevExercisedRoutesCount = cumulativeExercisedRoutes.size;
+    const prevExercisedEndpointsCount = cumulativeExercisedEndpoints.size;
 
     // Phase 1: discover
     const discoveryOut = await runDiscovery({
@@ -1243,8 +1290,14 @@ export async function runQaLoop(opts = {}) {
       timeoutMs: 3000,
     });
     toolsRun.add("discover-surface");
-    for (const r of discoveryOut.coverage.routes) routes.add(r);
-    for (const e of discoveryOut.coverage.endpoints) endpoints.add(e);
+    for (const r of discoveryOut.coverage.routes) {
+      routes.add(r);
+      discoveredRoutes.add(r);
+    }
+    for (const e of discoveryOut.coverage.endpoints) {
+      endpoints.add(e);
+      discoveredEndpoints.add(e);
+    }
     for (const rl of discoveryOut.coverage.roles) roles.add(rl);
     for (const f of discoveryOut.findings) newFindings.push(f);
     const traceRel = discoveryOut.artifacts?.traces?.[0];
@@ -1263,11 +1316,14 @@ export async function runQaLoop(opts = {}) {
       summary: discoveryOut.notes,
     };
 
-    // Phase 2: plan
+    // Phase 2: plan (ordered so ui-explorer captures observed API traffic BEFORE auth-matrix & HAR->OpenAPI->Schemathesis)
     const plannedTasks = [];
     if (modes.includes("exploratory")) {
       plannedTasks.push({ file: "ui-explorer.mjs", isPy: false, mode: "exploratory" });
       plannedTasks.push({ file: "cdp-diagnostics.mjs", isPy: false, mode: "exploratory" });
+    }
+    if (modes.includes("authorization")) {
+      plannedTasks.push({ file: "auth-matrix.mjs", isPy: false, mode: "authorization" });
     }
     if (modes.some((m) => ["stateful", "property", "negative", "authorization"].includes(m))) {
       plannedTasks.push({ file: "api-fuzz-stateful.py", isPy: true, mode: "stateful" });
@@ -1278,114 +1334,182 @@ export async function runQaLoop(opts = {}) {
     if (modes.includes("resilience")) {
       plannedTasks.push({ file: "resilience-toxiproxy.mjs", isPy: false, mode: "resilience" });
     }
-    if (modes.includes("ai") && (aiUrl || aiProvider) && !isAiExhausted(currentBudget)) {
+    if (modes.includes("ai") && (aiUrl || aiProvider || cfg.aiProviderType) && !isAiExhausted(currentBudget)) {
       plannedTasks.push({ file: "ai-eval-promptfoo.mjs", isPy: false, mode: "ai" });
+    }
+    if (depth === "deep-business" && (specPaths.length > 0 || (Array.isArray(cfg.workflows) && cfg.workflows.length > 0))) {
+      plannedTasks.push({ file: "workflow-scenarios.mjs", isPy: false, mode: "stateful" });
     }
     phases.plan = {
       timestamp: new Date().toISOString(),
       status: "completed",
-      summary: `Planned ${plannedTasks.length} runner check(s) for modes: ${modes.join(",")}`,
+      summary: `Planned ${plannedTasks.length} runner check(s) (depth=${depth}) for modes: ${modes.join(",")}`,
     };
 
     // Phase 3 & 4: execute & observe
     const skippedRunners = [];
     const executedOutputs = [];
     const runnerStatuses = [];
+    let synthesizedOpenApiPath = null;
+    const frontierExcludePath = path.join(memoryDir, `.frontier-exclude-${process.pid}-${iterNum}.json`);
+    const frontierDiscoveredPath = path.join(memoryDir, `.frontier-discovered-${process.pid}-${iterNum}.json`);
 
     if (!budgetExhaustedMidLoop) {
-      for (const task of plannedTasks) {
-        if (isBudgetExhausted(currentBudget)) {
-          budgetExhaustedMidLoop = true;
-          break;
-        }
-        const remainingReq = Math.max(1, currentBudget.maxRequests - currentBudget.requestsUsed);
-        const remainingAi = Math.max(0, currentBudget.maxAiCalls - currentBudget.aiCallsUsed);
-        const runnerArgs = [];
-        if (resolvedConfig) runnerArgs.push("--config", resolvedConfig);
-        if (allowPrivateIp) runnerArgs.push("--allow-private-ip");
-        if (targetUrl) runnerArgs.push("--target-url", targetUrl);
-        if (apiUrl) runnerArgs.push("--api-url", apiUrl);
-        if (mailpitUrl) runnerArgs.push("--mailpit-url", mailpitUrl);
-        if (langfuseUrl) runnerArgs.push("--langfuse-url", langfuseUrl);
-        if (openapiUrl) runnerArgs.push("--openapi-url", openapiUrl);
-        if (task.file === "ui-explorer.mjs" && resolvedStorageState) {
-          runnerArgs.push("--storage-state", resolvedStorageState);
-        }
-        if (task.file === "api-fuzz-stateful.py" && resolvedRouteCatalogPath) {
-          runnerArgs.push("--route-catalog", resolvedRouteCatalogPath);
-        }
-        for (const rp of repoPaths) {
-          runnerArgs.push("--repo-path", rp);
-        }
-        if (opts.memoryDir) runnerArgs.push("--memory-dir", memoryDir);
-        if (task.mode === "ai" && (aiUrl || aiProvider)) {
-          if (aiUrl) runnerArgs.push("--ai-url", aiUrl);
-          if (aiProvider) runnerArgs.push("--ai-provider", String(aiProvider));
-          runnerArgs.push("--max-ai-calls", String(remainingAi));
-        }
-        if (task.mode !== "ai") {
-          const sliceCap = task.file === "api-fuzz-stateful.py" ? 60 : 40;
-          runnerArgs.push("--max-requests", String(Math.min(remainingReq, sliceCap)));
-        }
-
-        const runnerTimeout =
-          task.file === "ui-explorer.mjs"
-            ? 65000
-            : task.file === "api-fuzz-stateful.py" ||
-                task.file === "ai-eval-promptfoo.mjs" ||
-                task.file === "resilience-toxiproxy.mjs"
-              ? 45000
-              : task.file === "concurrency-k6.mjs" || task.file === "cdp-diagnostics.mjs"
-                ? 35000
-                : 30000;
-        const runRes = await runRegisteredRunner(task.file, runnerArgs, task.isPy, runnerTimeout);
-        if (!runRes.present) {
-          skippedRunners.push(task.file);
-          continue;
-        }
-        if (runRes.output) {
-          executedOutputs.push(runRes.output);
-          runnerStatuses.push({ runner: task.file, mode: task.mode, status: runRes.output.status || "passed" });
-          toolsRun.add(runRes.output.tool);
-          for (const r of runRes.output.coverage?.routes || []) routes.add(r);
-          for (const e of runRes.output.coverage?.endpoints || []) endpoints.add(e);
-          for (const rl of runRes.output.coverage?.roles || []) roles.add(rl);
-          for (const f of runRes.output.findings || []) newFindings.push(f);
-          const bCheck = updateBudget(
-            runRes.output.budgetConsumed?.requests || 0,
-            runRes.output.budgetConsumed?.aiCalls || 0,
-          );
-          if (bCheck.exitCode === 3) {
+      try {
+        for (const task of plannedTasks) {
+          if (isBudgetExhausted(currentBudget)) {
             budgetExhaustedMidLoop = true;
             break;
           }
-        } else {
-          const crashStatus = runRes.exitCode !== null && runRes.exitCode !== 0 ? "failed" : "degraded";
-          runnerStatuses.push({ runner: task.file, mode: task.mode, status: crashStatus });
-          const errDetail = sanitizeText(
-            [
-              runRes.exitCode !== null ? `exitCode=${runRes.exitCode}` : null,
-              runRes.killed ? "timedOut=true" : null,
-              runRes.error || "No valid Contract 2 JSON output",
-              runRes.stderrSnippet ? `stderr=${runRes.stderrSnippet}` : null,
-            ]
-              .filter(Boolean)
-              .join("; "),
-          ).replace(/[\r\n]+/g, " ");
-          newFindings.push({
-            id: `QA-RUN-${newFindings.length + 1}`,
-            fingerprint: `runtime_degraded|runner:${task.file}`,
-            classification: "runtime_degraded",
-            severity: "medium",
-            title: `Registered runner ${task.file} crashed or returned invalid JSON`,
-            endpointOrRoute: apiOrigin ? "/" : "",
-            checkMode: "unreachable",
-            ...(allowPrivateIp ? { allowPrivateIp: true } : {}),
-            reproCommand: `${task.isPy ? "python" : "node"} scripts/runners/${task.file}${allowPrivateIp ? " --allow-private-ip" : ""}`,
-            evidencePaths: [],
-            verifiedOutcome: errDetail || `Runner ${task.file} failed without valid Contract 2 JSON`,
-          });
+          const remainingReq = Math.max(1, currentBudget.maxRequests - currentBudget.requestsUsed);
+          const remainingAi = Math.max(0, currentBudget.maxAiCalls - currentBudget.aiCallsUsed);
+          const runnerArgs = [];
+          if (resolvedConfig) runnerArgs.push("--config", resolvedConfig);
+          if (allowPrivateIp) runnerArgs.push("--allow-private-ip");
+          if (targetUrl) runnerArgs.push("--target-url", targetUrl);
+          if (apiUrl) runnerArgs.push("--api-url", apiUrl);
+          if (mailpitUrl) runnerArgs.push("--mailpit-url", mailpitUrl);
+          if (langfuseUrl) runnerArgs.push("--langfuse-url", langfuseUrl);
+          if (openapiUrl) runnerArgs.push("--openapi-url", openapiUrl);
+          if (task.file === "ui-explorer.mjs") {
+            if (resolvedStorageState) runnerArgs.push("--storage-state", resolvedStorageState);
+            writeJsonAtomic(frontierExcludePath, visitedRoutesByRole);
+            writeJsonAtomic(frontierDiscoveredPath, Array.from(discoveredRoutes));
+            runnerArgs.push("--exclude-routes-file", frontierExcludePath);
+            runnerArgs.push("--discovered-routes-file", frontierDiscoveredPath);
+            const routeCap = depth === "smoke" ? 2 : depth === "deep-business" ? 8 : 5;
+            runnerArgs.push("--max-routes-per-role", String(routeCap));
+            if (depth === "smoke") runnerArgs.push("--no-interactive");
+            else runnerArgs.push("--interactive");
+          }
+          if (task.file === "api-fuzz-stateful.py") {
+            if (resolvedRouteCatalogPath) runnerArgs.push("--route-catalog", resolvedRouteCatalogPath);
+            if (synthesizedOpenApiPath && fs.existsSync(synthesizedOpenApiPath)) {
+              runnerArgs.push("--synthesized-openapi", synthesizedOpenApiPath);
+            }
+          }
+          if (task.file === "workflow-scenarios.mjs") {
+            for (const sp of specPaths) runnerArgs.push("--spec-path", sp);
+          }
+          for (const rp of repoPaths) {
+            runnerArgs.push("--repo-path", rp);
+          }
+          if (opts.memoryDir) runnerArgs.push("--memory-dir", memoryDir);
+          if (task.mode === "ai" && (aiUrl || aiProvider || cfg.aiProviderType)) {
+            if (aiUrl) runnerArgs.push("--ai-url", aiUrl);
+            if (aiProvider) runnerArgs.push("--ai-provider", String(aiProvider));
+            runnerArgs.push("--max-ai-calls", String(remainingAi));
+            runnerArgs.push("--ai-timeout-ms", String(aiTimeoutMs));
+          }
+          if (task.mode !== "ai") {
+            const sliceCap =
+              task.file === "api-fuzz-stateful.py"
+                ? depth === "smoke"
+                  ? 25
+                  : 60
+                : task.file === "ui-explorer.mjs" && depth === "deep-business"
+                  ? 65
+                  : 40;
+            runnerArgs.push("--max-requests", String(Math.min(remainingReq, sliceCap)));
+          }
+
+          const runnerTimeout =
+            task.file === "ui-explorer.mjs"
+              ? depth === "deep-business"
+                ? 95000
+                : 78000
+              : task.file === "ai-eval-promptfoo.mjs"
+                ? Math.max(105000, aiTimeoutMs + 15000)
+                : task.file === "api-fuzz-stateful.py" ||
+                    task.file === "resilience-toxiproxy.mjs" ||
+                    task.file === "workflow-scenarios.mjs"
+                  ? 55000
+                  : task.file === "concurrency-k6.mjs" || task.file === "cdp-diagnostics.mjs" || task.file === "auth-matrix.mjs"
+                    ? 40000
+                    : 30000;
+          const runRes = await runRegisteredRunner(task.file, runnerArgs, task.isPy, runnerTimeout);
+          if (!runRes.present) {
+            skippedRunners.push(task.file);
+            continue;
+          }
+          if (runRes.output) {
+            executedOutputs.push(runRes.output);
+            runnerStatuses.push({ runner: task.file, mode: task.mode, status: runRes.output.status || "passed" });
+            toolsRun.add(runRes.output.tool);
+            for (const r of runRes.output.coverage?.routes || []) {
+              routes.add(r);
+              exercisedRoutes.add(r);
+              cumulativeExercisedRoutes.add(r);
+            }
+            for (const e of runRes.output.coverage?.endpoints || []) {
+              endpoints.add(e);
+              exercisedEndpoints.add(e);
+              cumulativeExercisedEndpoints.add(e);
+            }
+            for (const rl of runRes.output.coverage?.roles || []) roles.add(rl);
+            for (const f of runRes.output.findings || []) newFindings.push(f);
+
+            // Update per-role frontier from ui-explorer trace + trigger passive HAR-to-OpenAPI synthesis
+            if (task.file === "ui-explorer.mjs") {
+              const uiTraceRel = runRes.output.artifacts?.traces?.find((t) => t.endsWith(".json"));
+              if (uiTraceRel) {
+                const uiTraceAbs = path.isAbsolute(uiTraceRel) ? uiTraceRel : path.resolve(STAGING_ROOT, uiTraceRel);
+                const uiTraceData = readJsonSafe(uiTraceAbs);
+                for (const pr of Array.isArray(uiTraceData.data?.pageReports) ? uiTraceData.data.pageReports : []) {
+                  if (pr?.role && pr?.route) {
+                    if (!Array.isArray(visitedRoutesByRole[pr.role])) visitedRoutesByRole[pr.role] = [];
+                    if (!visitedRoutesByRole[pr.role].includes(pr.route)) visitedRoutesByRole[pr.role].push(pr.route);
+                  }
+                }
+              }
+              const synth = synthesizeOpenApiFromObservedTraffic({
+                memoryDir,
+                apiOrigin: apiOrigin || undefined,
+              });
+              if (synth.ok && synth.outPath) {
+                synthesizedOpenApiPath = synth.outPath;
+              }
+            }
+
+            const bCheck = updateBudget(
+              runRes.output.budgetConsumed?.requests || 0,
+              runRes.output.budgetConsumed?.aiCalls || 0,
+            );
+            if (bCheck.exitCode === 3) {
+              budgetExhaustedMidLoop = true;
+              break;
+            }
+          } else {
+            const crashStatus = runRes.exitCode !== null && runRes.exitCode !== 0 ? "failed" : "degraded";
+            runnerStatuses.push({ runner: task.file, mode: task.mode, status: crashStatus });
+            const errDetail = sanitizeText(
+              [
+                runRes.exitCode !== null ? `exitCode=${runRes.exitCode}` : null,
+                runRes.killed ? "timedOut=true" : null,
+                runRes.error || "No valid Contract 2 JSON output",
+                runRes.stderrSnippet ? `stderr=${runRes.stderrSnippet}` : null,
+              ]
+                .filter(Boolean)
+                .join("; "),
+            ).replace(/[\r\n]+/g, " ");
+            newFindings.push({
+              id: `QA-RUN-${newFindings.length + 1}`,
+              fingerprint: `runtime_degraded|runner:${task.file}`,
+              classification: "runtime_degraded",
+              severity: "medium",
+              title: `Registered runner ${task.file} crashed or returned invalid JSON`,
+              endpointOrRoute: apiOrigin ? "/" : "",
+              checkMode: "unreachable",
+              ...(allowPrivateIp ? { allowPrivateIp: true } : {}),
+              reproCommand: `${task.isPy ? "python" : "node"} scripts/runners/${task.file}${allowPrivateIp ? " --allow-private-ip" : ""}`,
+              evidencePaths: [],
+              verifiedOutcome: errDetail || `Runner ${task.file} failed without valid Contract 2 JSON`,
+            });
+          }
         }
+      } finally {
+        fs.rmSync(frontierExcludePath, { force: true });
+        fs.rmSync(frontierDiscoveredPath, { force: true });
       }
 
       // Built-in lightweight non-mutating baseline probes when M3 runners are not yet registered
@@ -1503,7 +1627,11 @@ export async function runQaLoop(opts = {}) {
         timeoutMs: 3000,
       });
       toolsRun.add("verify-outcomes");
-      for (const e of verifyOut.coverage.endpoints) endpoints.add(e);
+      for (const e of verifyOut.coverage.endpoints) {
+        endpoints.add(e);
+        exercisedEndpoints.add(e);
+        cumulativeExercisedEndpoints.add(e);
+      }
       for (const f of verifyOut.findings) newFindings.push(f);
       const bCheck = updateBudget(verifyOut.budgetConsumed.requests, 0);
       if (bCheck.exitCode === 3) budgetExhaustedMidLoop = true;
@@ -1654,30 +1782,50 @@ export async function runQaLoop(opts = {}) {
     writeJsonAtomic(findingsPath, findingsLedger);
 
     const iterCompletedAt = new Date().toISOString();
+    const routeDelta = cumulativeExercisedRoutes.size - prevExercisedRoutesCount;
+    const epDelta = cumulativeExercisedEndpoints.size - prevExercisedEndpointsCount;
+    const unvisitedDiscovered = Array.from(discoveredRoutes).filter((r) => !cumulativeExercisedRoutes.has(r));
     phases.explore_further = {
       timestamp: iterCompletedAt,
       status: budgetExhaustedMidLoop ? "stopped_budget_exhausted" : "completed",
       summary: budgetExhaustedMidLoop
-        ? "Stopping loop: request or runtime budget exhausted"
+        ? `Stopping loop: budget exhausted (+${routeDelta} routes, +${epDelta} endpoints exercised)`
         : iterIdx + 1 < maxIterations
-          ? "Proceeding to next QA loop iteration"
-          : "Completed requested iterations",
+          ? `Frontier expanded (+${routeDelta} new exercised routes, +${epDelta} new exercised endpoints; ${unvisitedDiscovered.length} discovered routes remaining); proceeding to next iteration`
+          : `Completed requested iterations (+${routeDelta} new exercised routes, +${epDelta} new exercised endpoints; ${unvisitedDiscovered.length} discovered routes remaining)`,
     };
 
     phases.report = {
       timestamp: iterCompletedAt,
       status: "completed",
-      summary: `Persisted iteration #${iterNum} and ${findingsLedger.findings.length} finding(s)`,
+      summary: `Persisted iteration #${iterNum} (depth=${depth}) and ${findingsLedger.findings.length} finding(s)`,
+    };
+
+    coverageLedger.frontier = {
+      visitedRoutesByRole,
+      exercisedRoutes: Array.from(cumulativeExercisedRoutes),
+      discoveredRoutes: uniqueStrings([...(coverageLedger.frontier?.discoveredRoutes || []), ...Array.from(discoveredRoutes)]),
+      exercisedEndpoints: Array.from(cumulativeExercisedEndpoints),
+      discoveredEndpoints: uniqueStrings([
+        ...(coverageLedger.frontier?.discoveredEndpoints || []),
+        ...Array.from(discoveredEndpoints),
+      ]),
+      synthesizedOpenApi: synthesizedOpenApiPath ? toStagingRelPath(synthesizedOpenApiPath) : null,
     };
 
     coverageLedger.iterations.push({
       iteration: iterNum,
+      depth,
       startedAt: iterStartedAt,
       completedAt: iterCompletedAt,
       phases,
       toolsRun: Array.from(toolsRun),
       routes: Array.from(routes),
+      discoveredRoutes: Array.from(discoveredRoutes),
+      exercisedRoutes: Array.from(exercisedRoutes),
       endpoints: Array.from(endpoints),
+      discoveredEndpoints: Array.from(discoveredEndpoints),
+      exercisedEndpoints: Array.from(exercisedEndpoints),
       roles: Array.from(roles),
       modes,
       budgetSnapshot: currentBudget,
@@ -1699,9 +1847,12 @@ export async function runQaLoop(opts = {}) {
     summary: sanitizeForOutput({
       ok: true,
       status: isBudgetExhausted(currentBudget) ? "stopped_budget_exhausted" : "completed",
+      depth,
       iterationsCompleted,
       totalIterationsRecorded: coverageLedger.iterations.length,
       totalFindingsRecorded: findingsLedger.findings.length,
+      exercisedRoutesCount: cumulativeExercisedRoutes.size,
+      exercisedEndpointsCount: cumulativeExercisedEndpoints.size,
       budget: currentBudget,
       coverageLedgerPath: toStagingRelPath(coveragePath),
       findingsLedgerPath: toStagingRelPath(findingsPath),
@@ -1713,12 +1864,12 @@ export async function runQaLoop(opts = {}) {
 async function main() {
   const { values } = parseCliArgs(process.argv.slice(2), {
     booleanFlags: ["dry-run", "reset-budget", "allow-private-ip", "help"],
-    multiFlags: ["repo-path"],
+    multiFlags: ["repo-path", "spec-path"],
   });
 
   if (values.help) {
     console.log(
-      "Usage: node scripts/run-qa-loop.mjs [--config <path>] --target-url <url> [--api-url <url>] [--ai-url <url>] [--ai-provider <id-or-file>] [--mailpit-url <url>] [--langfuse-url <url>] [--pg-query <sql>] [--memory-dir <dir>] [--budget-file <path>] [--iterations N] [--max-requests N] [--max-ai-calls N] [--dry-run] [--out-report <path>]",
+      "Usage: node scripts/run-qa-loop.mjs [--config <path>] --target-url <url> [--api-url <url>] [--ai-url <url>] [--ai-provider <id-or-file>] [--ai-timeout-ms N] [--mailpit-url <url>] [--langfuse-url <url>] [--pg-query <sql>] [--depth smoke|standard|deep-business] [--spec-path <md>] [--memory-dir <dir>] [--budget-file <path>] [--iterations N] [--max-requests N] [--max-ai-calls N] [--dry-run] [--out-report <path>]",
     );
     process.exit(0);
   }
@@ -1729,6 +1880,7 @@ async function main() {
     apiUrl: values["api-url"],
     aiUrl: values["ai-url"],
     aiProvider: values["ai-provider"],
+    aiTimeoutMs: values["ai-timeout-ms"],
     mailpitUrl: values["mailpit-url"],
     langfuseUrl: values["langfuse-url"],
     oidcUrl: values["oidc-url"],
@@ -1736,6 +1888,8 @@ async function main() {
     storageState: values["storage-state"],
     pgQuery: values["pg-query"],
     repoPaths: values["repo-path"],
+    specPaths: values["spec-path"],
+    depth: values.depth,
     memoryDir: values["memory-dir"],
     budgetFile: values["budget-file"],
     modes: values.modes,

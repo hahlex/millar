@@ -272,3 +272,85 @@ export function slugify(input, maxLen = 40) {
 export function uniqueStrings(list) {
   return Array.from(new Set((list || []).filter((v) => typeof v === "string" && v.length > 0)));
 }
+
+export function normalizeSafeOrigin(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== "string") return null;
+  try {
+    return new URL(rawUrl).origin;
+  } catch {
+    return null;
+  }
+}
+
+const STATIC_ASSET_EXT_RE =
+  /\.(?:js|mjs|cjs|ts|tsx|jsx|css|scss|less|map|woff|woff2|ttf|otf|eot|png|jpg|jpeg|gif|webp|svg|ico|avif|mp4|webm|mp3|wav)$/i;
+const STATIC_ASSET_PATH_RE = /^\/(?:@vite\/|@fs\/|@react-refresh|@id\/|node_modules\/|src\/|assets\/|static\/|_next\/static\/|favicon\.ico)/i;
+const STATIC_ASSET_HOST_RE = /(?:^|\.)(?:fonts\.googleapis\.com|fonts\.gstatic\.com|cdn\.jsdelivr\.net|unpkg\.com)$/i;
+const API_LIKE_PATH_RE =
+  /^\/(?:api\/|v\d+\/|graphql\b|healthz\b|readyz\b|livez\b|openapi\.json\b|swagger\.json\b|auth\/|oauth2?\/|rpc\/)/i;
+
+export function isStaticAssetUrl(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== "string") return false;
+  try {
+    const u = new URL(rawUrl);
+    if (STATIC_ASSET_HOST_RE.test(u.hostname)) return true;
+    if (STATIC_ASSET_PATH_RE.test(u.pathname)) return true;
+    if (STATIC_ASSET_EXT_RE.test(u.pathname)) return true;
+    return false;
+  } catch {
+    return STATIC_ASSET_PATH_RE.test(rawUrl) || STATIC_ASSET_EXT_RE.test(rawUrl);
+  }
+}
+
+export function isApiLikeUrl(rawUrl) {
+  if (!rawUrl || typeof rawUrl !== "string") return false;
+  if (isStaticAssetUrl(rawUrl)) return false;
+  try {
+    const u = new URL(rawUrl);
+    return API_LIKE_PATH_RE.test(u.pathname);
+  } catch {
+    return API_LIKE_PATH_RE.test(rawUrl);
+  }
+}
+
+export function getNodeModulesSearchDirs() {
+  const dirs = [path.join(STAGING_ROOT, "node_modules")];
+  if (process.env.AUTONOMOUS_QA_NODE_MODULES) {
+    dirs.push(path.resolve(process.env.AUTONOMOUS_QA_NODE_MODULES));
+  }
+  if (process.env.NODE_PATH) {
+    for (const part of process.env.NODE_PATH.split(path.delimiter)) {
+      if (part && part.trim()) dirs.push(path.resolve(part.trim()));
+    }
+  }
+  const home = os.homedir();
+  if (home) {
+    dirs.push(path.join(home, ".gemini", "config", "skills", "millar-autonomous-qa", "node_modules"));
+    dirs.push(path.join(home, ".agents", "skills", "millar-autonomous-qa", "node_modules"));
+    dirs.push(path.join(home, ".claude", "skills", "millar-autonomous-qa", "node_modules"));
+  }
+  return uniqueStrings(dirs);
+}
+
+export function resolveNodeDepPath(relSubpath) {
+  const cleanRel = String(relSubpath || "").replace(/^[/\\]+/, "");
+  for (const nmDir of getNodeModulesSearchDirs()) {
+    const candidate = path.join(nmDir, cleanRel);
+    if (fs.existsSync(candidate)) return candidate;
+  }
+  return path.join(STAGING_ROOT, "node_modules", cleanRel);
+}
+
+export async function loadPlaywright() {
+  try {
+    return await import("playwright");
+  } catch {
+    const pwEntry = resolveNodeDepPath("playwright/index.js");
+    if (fs.existsSync(pwEntry)) {
+      const { createRequire } = await import("node:module");
+      const req = createRequire(pwEntry);
+      return req(pwEntry);
+    }
+    throw new Error("Playwright package not found in skill node_modules or AUTONOMOUS_QA_NODE_MODULES");
+  }
+}

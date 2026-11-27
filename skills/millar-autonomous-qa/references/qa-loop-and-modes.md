@@ -19,13 +19,13 @@ Each iteration appended to `memory/coverage-ledger.json` records ISO-8601 timest
 
 ### 2.1 `exploratory` (Playwright + Chrome DevTools MCP)
 - **Entry Condition**: Reachable frontend `--target-url`.
-- **Actions**: Launch isolated browser contexts (`browser.newContext()`) per configured role/tenant, traverse discovered routes, inspect rendered landmarks/DOM state, submit safe/QA-prefixed forms, capture `console.error`, `pageerror`, and HTTP `>= 400` responses, and collect CDP Web Vitals / performance traces.
-- **Pass Criteria**: Zero uncaught `pageerror`, zero unexpected `console.error`, zero broken primary navigation routes.
+- **Actions**: Launch isolated browser contexts (`browser.newContext()`) per configured role/tenant with **origin-scoped `context.route()` header injection** (never global `extraHTTPHeaders`), traverse unvisited frontier routes across iterations, inspect ARIA accessibility snapshots, click safe read-only tabs (`--interactive`), check button occlusion, blank screens, React `flushSync` warnings, and i18n/em-dash DOM hygiene, capture structured authenticated `4xx` API errors (with exact URL, status, and JSON error code) alongside `5xx`/`console.error`/`pageerror`, record redacted API traffic to `memory/traces/observed-api-traffic.json`, and run authenticated CDP Web Vitals diagnostics with Vite/CDN static assets filtered out of API KPIs.
+- **Pass Criteria**: Zero uncaught `pageerror`, zero unexpected `console.error`, zero authenticated `4xx`/`5xx` API failures, zero occluded primary action buttons or blank screens.
 
-### 2.2 `stateful` (Schemathesis + Hypothesis `RuleBasedStateMachine`)
-- **Entry Condition**: Reachable `--api-url` with OpenAPI schema or configured CRUD endpoints.
-- **Actions**: Chain `POST` creation -> `GET` read -> `PUT`/`PATCH` update -> `DELETE` cleanup using captured resource IDs and QA-prefixed identifiers.
-- **Pass Criteria**: Persisted entities match written attributes and deleted entities return `404` on subsequent reads.
+### 2.2 `stateful` (Schemathesis + Hypothesis `RuleBasedStateMachine` + `workflow-scenarios.mjs`)
+- **Entry Condition**: Reachable `--api-url` with live OpenAPI schema, passively synthesized `memory/synthesized-openapi.json` (via `scripts/lib/har-to-openapi.mjs`), or configured CRUD / `workflows[]` definitions.
+- **Actions**: Chain `POST` creation -> `GET` read -> `PUT`/`PATCH` update -> `DELETE` cleanup using captured resource IDs and QA-prefixed identifiers; flag `GET -> PUT` round-trip `4xx` schema mismatches explicitly as `spec_gap`; in `--depth=deep-business`, execute spec-driven multi-step persona workflows with causal Mailpit/Postgres/post-revocation checks and guaranteed `cleanup: true` steps.
+- **Pass Criteria**: Persisted entities match written attributes, causal downstream outcomes succeed, and deleted/revoked entities return `403`/`404` on subsequent reads.
 
 ### 2.3 `property` (Hypothesis + Schemathesis)
 - **Entry Condition**: Reachable `--api-url` with parameterized endpoints or domain invariants.
@@ -39,23 +39,23 @@ Each iteration appended to `memory/coverage-ledger.json` records ISO-8601 timest
 
 ### 2.5 `concurrency` (k6 Docker + Postgres Uniqueness Checks)
 - **Entry Condition**: Reachable `--api-url` with idempotent or state-mutating endpoints and Docker `grafana/k6` available.
-- **Actions**: Run bounded virtual-user bursts (`--vus`, `--iterations`) with identical idempotency keys or concurrent creates against test records; verify p95/p99 latency and duplicate prevention.
-- **Pass Criteria**: Duplicate submissions are rejected (`409`) or deduplicated cleanly with zero duplicate database rows.
+- **Actions**: Run bounded virtual-user bursts (`--vus`, `--iterations`) with full multi-header role auth (`Authorization` + tenant/membership headers) and optional `cfg.k6WriteRace` write payloads sharing an `Idempotency-Key`; verify p95 latency and duplicate prevention.
+- **Pass Criteria**: Duplicate submissions are rejected (`409`) or deduplicated cleanly (`<= 1` HTTP `200`/`201`) with zero duplicate database rows.
 
-### 2.6 `authorization` (Hypothesis Matrix + Playwright Multi-Context)
-- **Entry Condition**: Two or more configured roles or tenants (for example `owner` vs `viewer`, `tenantA` vs `tenantB`).
-- **Actions**: Authenticate per role/tenant, create or locate tenant-scoped resources, then replay cross-tenant IDs and unauthenticated/lower-role tokens against privileged and foreign-tenant routes.
-- **Pass Criteria**: Strict `401`/`403`/`404` isolation; zero cross-tenant data leakage (`IDOR`).
+### 2.6 `authorization` (4-Axis Differential `auth-matrix.mjs` + Hypothesis + Playwright)
+- **Entry Condition**: Two or more configured roles, campuses, or tenants (ALL configured roles participate without slice caps, including `guardian` and `custom_*` roles).
+- **Actions**: Harvest observed entity URLs from Playwright traffic and execute 4 differential axes: (1) Cross-Tenant BOLA replay, (2) Cross-Campus / Sub-Tenant BOLA read & write probes, (3) Vertical RBAC + custom-role filter parity (`?role=custom_*` must not return `422`), and (4) Semantic Body Leak Diffing on HTTP `200` payloads against `forbiddenResponsePatterns` / `forbiddenEntityIds`.
+- **Pass Criteria**: Strict `401`/`403`/`404` isolation across tenant/campus/role boundaries and zero semantic body leaks.
 
 ### 2.7 `resilience` (Toxiproxy Docker + Playwright `page.route()`)
 - **Entry Condition**: Reachable frontend/API and Docker `ghcr.io/shopify/toxiproxy` (or Playwright `page.route()` for client faults).
-- **Actions**: Inject bounded TCP latency, connection reset, or `503`/offline browser route faults; observe error handling, bounded retries, and recovery once toxics are removed. Always clean up ephemeral proxies in `finally`.
+- **Actions**: Proxy authenticated business endpoints (`cfg.resilienceAuthProbePath` or auto-detected `/v1/session`, `/v1/education/courses` before `/healthz` fallback) through ephemeral Toxiproxy containers with latency and `reset_peer` toxics; run authenticated Playwright `503`/abort route fault injection and verify clean recovery. Always clean up ephemeral proxies in `finally`.
 - **Pass Criteria**: Bounded timeouts without process crash; clean recovery after fault removal.
 
-### 2.8 `ai` (Promptfoo + Langfuse)
-- **Entry Condition**: Reachable `--ai-url` AND `maxAiCalls > 0`.
-- **Actions**: Evaluate groundedness, citation/JSON schema conformance, and prompt-injection / system-prompt extraction resistance within `maxAiCalls` budget; correlate Langfuse traces if configured.
-- **Pass Criteria**: Schema-valid responses and refusal of system-prompt/PII exfiltration.
+### 2.8 `ai` (Promptfoo + Built-in Declarative SSE Provider + Langfuse)
+- **Entry Condition**: Reachable `--ai-url`, `--ai-provider`, or `cfg.aiProviderType` (`sse-thread-turns` / `http-json`) AND `maxAiCalls > 0`.
+- **Actions**: Evaluate groundedness, Unicode-normalized multilingual (EN/VI, handling `U+2019` curly apostrophes) prompt-injection refusal, optional `llm-rubric`, and custom `cfg.aiTests` within `maxAiCalls` and configurable `--ai-timeout-ms` (`90000`ms default); key findings by stable `testIdx` and exit `3` (`DEGRADED_TIMEOUT`) on reproducer timeout instead of false `exit 1`.
+- **Pass Criteria**: Schema-valid responses and verified refusal of system-prompt/PII exfiltration.
 
 ### 2.9 `outcome_verification` (`scripts/verify-outcomes.mjs`)
 - **Entry Condition**: Any active API, Mailpit, Postgres, Redis, Langfuse, or Docker log channel.

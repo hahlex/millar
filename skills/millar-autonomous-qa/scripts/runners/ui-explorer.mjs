@@ -6,10 +6,15 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   ensureDir,
+  isApiLikeUrl,
+  isStaticAssetUrl,
   loadConfigFile,
+  loadPlaywright,
   MEMORY_DIR,
+  normalizeSafeOrigin,
   parseCliArgs,
   parseNonNegativeNumber,
+  readJsonSafe,
   sanitizeForOutput,
   sanitizeText,
   slugify,
@@ -79,6 +84,7 @@ function buildUiReproScript(finding, defaultTargetUrl, checkType, routePath, aut
     : [];
   const defaultStorageState = authMeta.storageState ? String(authMeta.storageState) : "";
   const localStorageKey = String(authMeta.localStorageKey || "");
+  const allowedOriginsList = uniqueStrings(authMeta.allowedHeaderOrigins || [normalizeSafeOrigin(defaultTargetUrl)].filter(Boolean));
   const cleanStorageEntries = {};
   if (authMeta.localStorageEntries && typeof authMeta.localStorageEntries === "object") {
     for (const [k, v] of Object.entries(authMeta.localStorageEntries)) {
@@ -93,14 +99,32 @@ function buildUiReproScript(finding, defaultTargetUrl, checkType, routePath, aut
   }
   const subResourceMethod = String(authMeta.subResourceMethod || "GET");
   const subResourcePath = String(authMeta.subResourcePath || "");
+  const expected4xxStatus = Number(authMeta.expected4xxStatus || 0);
 
   return `#!/usr/bin/env node
 // Reproducer for ${safeId}: ${safeTitle}
 import fs from "node:fs";
 import { createRequire } from "node:module";
+import os from "node:os";
 import path from "node:path";
-const require = createRequire(${JSON.stringify(pkgJsonPath)});
-const { chromium } = require("playwright");
+
+function loadPw() {
+  const candidates = [
+    ${JSON.stringify(pkgJsonPath)},
+    process.env.AUTONOMOUS_QA_NODE_MODULES ? path.join(process.env.AUTONOMOUS_QA_NODE_MODULES, "playwright", "index.js") : "",
+    path.join(os.homedir(), ".gemini", "config", "skills", "millar-autonomous-qa", "node_modules", "playwright", "index.js"),
+  ].filter(Boolean);
+  for (const cand of candidates) {
+    try {
+      const req = createRequire(cand);
+      return req(cand.endsWith("package.json") ? "playwright" : cand);
+    } catch {
+      // try next candidate
+    }
+  }
+  throw new Error("Playwright not found for UI reproducer");
+}
+const { chromium } = loadPw();
 
 const args = process.argv.slice(2);
 function getFlag(name, fallback) {
@@ -110,6 +134,7 @@ function getFlag(name, fallback) {
 }
 
 const baseUrl = getFlag("--target-url", getFlag("--api-url", ${JSON.stringify(defaultTargetUrl)}));
+const apiUrlFlag = getFlag("--api-url", "");
 const targetUrl = new URL(${JSON.stringify(routePath)}, baseUrl).toString();
 const checkType = ${JSON.stringify(checkType)};
 const requiredRole = ${JSON.stringify(requiredRole)};
@@ -127,6 +152,11 @@ const localStorageKey = ${JSON.stringify(localStorageKey)};
 const defaultStorageEntries = ${JSON.stringify(cleanStorageEntries)};
 const subResourceMethod = ${JSON.stringify(subResourceMethod)};
 const subResourcePath = ${JSON.stringify(subResourcePath)};
+const expected4xxStatus = ${JSON.stringify(expected4xxStatus)};
+
+const allowedOrigins = new Set(${JSON.stringify(allowedOriginsList)});
+try { allowedOrigins.add(new URL(baseUrl).origin); } catch {}
+if (apiUrlFlag) { try { allowedOrigins.add(new URL(apiUrlFlag).origin); } catch {} }
 
 const authToken = tokenEnvName ? String(process.env[tokenEnvName] || "").trim() : "";
 const rawHeadersEnv = headersEnvName ? String(process.env[headersEnvName] || "").trim() : "";
@@ -211,26 +241,53 @@ try {
     browser = await chromium.launch({ headless: true });
   }
   const contextOpts = { viewport: { width: 1280, height: 720 } };
-  if (hasExtraHeaders) {
-    contextOpts.extraHTTPHeaders = extraHeaders;
-  }
   if (hasStorageState) {
     contextOpts.storageState = resolvedStorageState;
   }
   const context = await browser.newContext(contextOpts);
+  // Origin-scoped header injection: never leak auth or tenant headers to third-party origins
   if (hasExtraHeaders) {
-    await context.setExtraHTTPHeaders(extraHeaders);
+    await context.route("**/*", async (route) => {
+      try {
+        const reqOrigin = new URL(route.request().url()).origin;
+        if (allowedOrigins.has(reqOrigin)) {
+          const merged = { ...route.request().headers() };
+          const existingLower = new Set(Object.keys(merged).map((k) => k.toLowerCase()));
+          for (const [hk, hv] of Object.entries(extraHeaders)) {
+            if (!existingLower.has(hk.toLowerCase())) merged[hk] = hv;
+          }
+          await route.continue({ headers: merged });
+          return;
+        }
+      } catch {
+        // ignore URL parse error
+      }
+      await route.continue();
+    });
   }
   const page = await context.newPage();
   const pageErrors = [];
   const consoleErrors = [];
   const serverErrors = [];
+  const api4xxErrors = [];
   page.on("pageerror", (err) => pageErrors.push(err instanceof Error ? err.message : String(err)));
   page.on("console", (msg) => {
     if (msg.type() === "error") consoleErrors.push(msg.text());
   });
   page.on("response", (res) => {
-    if (res.status() >= 500) serverErrors.push(res.status() + " " + res.url());
+    const st = res.status();
+    if (st >= 500) {
+      serverErrors.push(st + " " + res.url());
+    } else if (st >= 400 && st < 500) {
+      try {
+        const u = new URL(res.url());
+        if (allowedOrigins.has(u.origin) && /^\\/(?:api|v\\d+)\\//i.test(u.pathname)) {
+          api4xxErrors.push({ status: st, method: res.request().method(), pathname: u.pathname, url: res.url() });
+        }
+      } catch {
+        // ignore
+      }
+    }
   });
 
   const entriesToInject = { ...defaultStorageEntries };
@@ -258,7 +315,7 @@ try {
   await page
     .waitForFunction(() => (document.body?.innerText || "").trim().length > 60, null, { timeout: 1500 })
     .catch(() => {});
-  await page.waitForTimeout(350);
+  await page.waitForTimeout(450);
 
   const linkCount = await page.locator("a[href]").count().catch(() => 0);
   if (linkCount === 0) {
@@ -279,8 +336,7 @@ try {
       const hdrs = { ...extraHeaders };
       const hasAuthHdr = Object.keys(hdrs).some((k) => k.toLowerCase() === "authorization");
       if (authToken && !localStorageKey && !hasAuthHdr) {
-        const authHeaderName = "Authorization";
-        hdrs[authHeaderName] = authToken.startsWith("Bearer ") ? authToken : "Bearer " + authToken;
+        hdrs.Authorization = authToken.startsWith("Bearer ") ? authToken : "Bearer " + authToken;
       }
       const subRes = hasStorageState
         ? await context.request.fetch(subUrl, { method: subResourceMethod, headers: hdrs, timeout: 4000 })
@@ -298,10 +354,21 @@ try {
   if (checkType === "pageerror") reproduced = pageErrors.length > 0;
   else if (checkType === "console_error") reproduced = consoleErrors.length > 0;
   else if (checkType === "server_5xx") reproduced = serverErrors.length > 0;
-  else reproduced = pageErrors.length > 0 || consoleErrors.length > 0 || serverErrors.length > 0;
+  else if (checkType === "api_4xx") {
+    reproduced = api4xxErrors.some(
+      (e) =>
+        (!subResourcePath || e.pathname.includes(subResourcePath.split("?")[0])) &&
+        (!expected4xxStatus || e.status === expected4xxStatus),
+    );
+  } else if (checkType === "blank_screen") {
+    const len = await page.evaluate(() => (document.body?.innerText || "").trim().length).catch(() => 0);
+    reproduced = len < 20;
+  } else {
+    reproduced = pageErrors.length > 0 || consoleErrors.length > 0 || serverErrors.length > 0;
+  }
 
   if (reproduced) {
-    console.error("STILL_REPRODUCES", ${JSON.stringify(safeId)}, JSON.stringify({ pageErrors, consoleErrors, serverErrors }));
+    console.error("STILL_REPRODUCES", ${JSON.stringify(safeId)}, JSON.stringify({ pageErrors, consoleErrors, serverErrors, api4xxErrors }));
     exitCode = 1;
   } else {
     console.log("RESOLVED", ${JSON.stringify(safeId)}, targetUrl);
@@ -318,7 +385,7 @@ process.exit(exitCode);
 }
 
 async function launchBrowser() {
-  const { chromium } = await import("playwright");
+  const { chromium } = await loadPlaywright();
   try {
     const browser = await chromium.launch({ channel: "chrome", headless: true });
     return { browser, channelUsed: "chrome" };
@@ -339,6 +406,16 @@ async function launchBrowser() {
 function isExpectedGuestAuthNoise(text, roleName) {
   if (roleName !== "guest") return false;
   return /status of 401|status of 403|\b401\s*\(Unauthorized\)/i.test(String(text || ""));
+}
+
+function isRouteExploratoryCandidate(routePath, roleName) {
+  if (typeof routePath !== "string" || !routePath.startsWith("/")) return false;
+  if (routePath.includes(":") || routePath.includes("{") || routePath.includes("*")) return false;
+  if (/^\/(?:logout|sign-out|signout|log-out)(?:\/|\?|$)/i.test(routePath)) return false;
+  if (roleName !== "guest" && /^\/(?:login|signin|sign-in|register|forgot-password|reset-password|auth\/callback)(?:\/|\?|$)/i.test(routePath)) {
+    return false;
+  }
+  return true;
 }
 
 function resolveConfigPath(configPath) {
@@ -367,18 +444,71 @@ function resolvePathCandidates(rawPath, searchDirs = [process.cwd(), STAGING_ROO
   return path.resolve(primary, trimmed);
 }
 
+function isExpectedApiStatus(roleCfg, pathname, status) {
+  const allowList = Array.isArray(roleCfg?.expectedApiStatuses) ? roleCfg.expectedApiStatuses : [];
+  for (const rule of allowList) {
+    if (!rule || typeof rule !== "object") continue;
+    const statusMatch = rule.status === undefined || Number(rule.status) === status;
+    const pathMatch = !rule.path || pathname.includes(String(rule.path));
+    if (statusMatch && pathMatch) return true;
+  }
+  return false;
+}
+
+function extractErrorSnippet(rawText) {
+  const cleaned = sanitizeText(String(rawText || "").trim());
+  if (!cleaned) return { code: "", detail: "" };
+  try {
+    const obj = JSON.parse(cleaned);
+    const code = String(obj?.code || obj?.error?.code || obj?.error_code || "").slice(0, 64);
+    const detailRaw = obj?.detail || obj?.message || obj?.error?.message || obj?.error || "";
+    const detail = sanitizeText(typeof detailRaw === "string" ? detailRaw : JSON.stringify(detailRaw)).slice(0, 220);
+    return { code, detail };
+  } catch {
+    return { code: "", detail: cleaned.slice(0, 220) };
+  }
+}
+
+function compactJsonSample(rawText, maxChars = 1800) {
+  if (!rawText || typeof rawText !== "string") return null;
+  const trimmed = rawText.trim();
+  if (!trimmed || (!trimmed.startsWith("{") && !trimmed.startsWith("["))) return null;
+  try {
+    const parsed = JSON.parse(trimmed.slice(0, Math.max(maxChars * 4, 8192)));
+    const shrink = (val, depth = 0) => {
+      if (depth > 3) return typeof val;
+      if (Array.isArray(val)) return val.slice(0, 3).map((item) => shrink(item, depth + 1));
+      if (val && typeof val === "object") {
+        const out = {};
+        let kCount = 0;
+        for (const [k, v] of Object.entries(val)) {
+          if (kCount >= 24) break;
+          out[k] = shrink(v, depth + 1);
+          kCount += 1;
+        }
+        return out;
+      }
+      if (typeof val === "string") return sanitizeText(val).slice(0, 160);
+      return val;
+    };
+    return sanitizeForOutput(shrink(parsed, 0));
+  } catch {
+    return null;
+  }
+}
+
 async function main() {
   const startedMs = Date.now();
   const startedAt = new Date(startedMs).toISOString();
 
   const { values } = parseCliArgs(process.argv.slice(2), {
-    booleanFlags: ["dry-run", "allow-private-ip", "help"],
+    booleanFlags: ["dry-run", "allow-private-ip", "interactive", "no-interactive", "check-occlusion", "help"],
     multiFlags: ["repo-path"],
   });
 
   if (values.help) {
     console.log(
-      "Usage: node scripts/runners/ui-explorer.mjs [--config <path>] --target-url <url> [--api-url <url>] [--storage-state <path>] [--memory-dir <dir>] [--trace-dir <dir>] [--out <file>] [--max-requests N] [--dry-run]",
+      "Usage: node scripts/runners/ui-explorer.mjs [--config <path>] --target-url <url> [--api-url <url>] [--storage-state <path>] [--exclude-routes-file <json>] [--discovered-routes-file <json>] [--max-routes-per-role N] [--interactive] [--memory-dir <dir>] [--trace-dir <dir>] [--out <file>] [--max-requests N] [--dry-run]",
     );
     process.exit(0);
   }
@@ -399,7 +529,36 @@ async function main() {
     30,
     "--max-requests",
   );
+  const maxRoutesPerRoleOverride = values["max-routes-per-role"]
+    ? parseNonNegativeNumber(values["max-routes-per-role"], 6, "--max-routes-per-role")
+    : cfg.maxRoutesPerRole
+      ? parseNonNegativeNumber(cfg.maxRoutesPerRole, 6, "maxRoutesPerRole")
+      : null;
+  const enableInteractive = values["no-interactive"]
+    ? false
+    : Boolean(values.interactive || cfg.interactiveTabs !== false);
   const dryRun = Boolean(values["dry-run"]);
+
+  // Optional frontier inputs from run-qa-loop.mjs for Iteration 2+ expansion
+  let excludeRoutesByRole = {};
+  let globalExcludeRoutes = new Set();
+  if (values["exclude-routes-file"]) {
+    const exRes = readJsonSafe(path.resolve(values["exclude-routes-file"]));
+    if (Array.isArray(exRes.data)) {
+      globalExcludeRoutes = new Set(exRes.data.filter((r) => typeof r === "string"));
+    } else if (exRes.data && typeof exRes.data === "object") {
+      excludeRoutesByRole = exRes.data;
+    }
+  }
+  let discoveredFrontierRoutes = [];
+  if (values["discovered-routes-file"]) {
+    const discRes = readJsonSafe(path.resolve(values["discovered-routes-file"]));
+    if (Array.isArray(discRes.data)) {
+      discoveredFrontierRoutes = uniqueStrings(discRes.data);
+    } else if (Array.isArray(discRes.data?.routes)) {
+      discoveredFrontierRoutes = uniqueStrings(discRes.data.routes);
+    }
+  }
 
   if (!targetUrl) {
     emitAndExit(
@@ -509,6 +668,8 @@ async function main() {
   const screenshots = [];
   const regressionTests = [];
   const pageReports = [];
+  const observedApiRecords = [];
+  const observedApiKeySet = new Set();
   const seenFingerprints = new Set();
 
   let requestsConsumed = 0;
@@ -521,14 +682,23 @@ async function main() {
       : Array.isArray(cfg.accounts) && cfg.accounts.length > 0
         ? cfg.accounts
         : [{ role: "guest", tenantId: "default" }];
-  const roleCap = Math.min(rawConfiguredRoles.length, Math.max(1, Math.floor(maxRequests / 4)));
+  const roleCap = Math.min(rawConfiguredRoles.length, Math.max(1, Math.floor(maxRequests / 3)));
   const configuredRoles = rawConfiguredRoles.slice(0, roleCap);
 
   const parsedEntry = new URL(targetUrl);
   const entryOrigin = parsedEntry.origin;
+  const apiOrigin = normalizeSafeOrigin(apiUrl);
   const entryRouteWithSearch = `${parsedEntry.pathname || "/"}${parsedEntry.search || ""}`;
+  const allowedHeaderOrigins = new Set(
+    [
+      entryOrigin,
+      apiOrigin,
+      ...(Array.isArray(cfg.headerAllowedOrigins) ? cfg.headerAllowedOrigins.map(normalizeSafeOrigin) : []),
+    ].filter(Boolean),
+  );
+  const allowedHeaderOriginsList = Array.from(allowedHeaderOrigins);
   const softDeadlineMs =
-    startedMs + (configuredRoles.length >= 5 ? 48000 : configuredRoles.length > 2 ? 32000 : 18000);
+    startedMs + (configuredRoles.length >= 5 ? 68000 : configuredRoles.length > 2 ? 42000 : 24000);
 
   const pushFinding = (f, checkType, routePath, authMeta = {}) => {
     const fp = f.fingerprint;
@@ -551,7 +721,10 @@ async function main() {
     if (f.classification === "confirmed_bug") {
       const regName = `ui-${slugify(f.id, 16)}-${uniqueTag}.mjs`;
       const regAbs = path.join(regDir, regName);
-      const src = buildUiReproScript(f, entryOrigin, checkType, routePath, authMeta);
+      const src = buildUiReproScript(f, entryOrigin, checkType, routePath, {
+        ...authMeta,
+        allowedHeaderOrigins: allowedHeaderOriginsList,
+      });
       writeTextAtomic(regAbs, src);
       let syntaxOk = true;
       try {
@@ -577,12 +750,16 @@ async function main() {
 
       const roleName = String(roleCfg.role || roleCfg.name || "guest");
       const tenantId = String(roleCfg.tenantId || "default");
+      const campusId = roleCfg.campusId ? String(roleCfg.campusId) : "";
       rolesVisited.push(roleName);
 
+      // Prefer explicit browserHeaders if supplied (allows empty {} when SPA handles own API headers); otherwise roleCfg.headers
       const rawHeadersObj =
-        roleCfg.headers && typeof roleCfg.headers === "object" && !Array.isArray(roleCfg.headers)
-          ? roleCfg.headers
-          : null;
+        roleCfg.browserHeaders && typeof roleCfg.browserHeaders === "object" && !Array.isArray(roleCfg.browserHeaders)
+          ? roleCfg.browserHeaders
+          : roleCfg.headers && typeof roleCfg.headers === "object" && !Array.isArray(roleCfg.headers)
+            ? roleCfg.headers
+            : null;
       const headerKeys = rawHeadersObj ? Object.keys(rawHeadersObj).filter((k) => String(k).trim().length > 0) : [];
       let runtimeRoleHeaders = rawHeadersObj ? { ...rawHeadersObj } : null;
       if ((!runtimeRoleHeaders || headerKeys.length === 0) && roleCfg.headersEnv && process.env[String(roleCfg.headersEnv)]) {
@@ -628,10 +805,9 @@ async function main() {
           : `Bearer ${resolvedToken}`;
       }
 
+      // P0 Security + Zero-FP Fix: NEVER set global contextOpts.extraHTTPHeaders.
+      // Attach origin-scoped route interception so auth/tenant headers NEVER leak to external CDNs/fonts.
       const contextOpts = { viewport: { width: 1280, height: 720 } };
-      if (Object.keys(contextHeaders).length > 0) {
-        contextOpts.extraHTTPHeaders = contextHeaders;
-      }
       const rawRoleStorageState = roleCfg.storageState ? String(roleCfg.storageState) : "";
       const resolvedRoleStorageState = rawRoleStorageState
         ? resolvePathCandidates(rawRoleStorageState, [configDir, process.cwd(), STAGING_ROOT])
@@ -642,6 +818,29 @@ async function main() {
       }
 
       const context = await browser.newContext(contextOpts);
+      if (Object.keys(contextHeaders).length > 0) {
+        await context.route("**/*", async (route) => {
+          try {
+            const reqUrl = route.request().url();
+            const reqOrigin = new URL(reqUrl).origin;
+            if (allowedHeaderOrigins.has(reqOrigin) && !isStaticAssetUrl(reqUrl)) {
+              const merged = { ...route.request().headers() };
+              const existingLower = new Set(Object.keys(merged).map((k) => k.toLowerCase()));
+              for (const [hk, hv] of Object.entries(contextHeaders)) {
+                if (!existingLower.has(hk.toLowerCase())) {
+                  merged[hk] = hv;
+                }
+              }
+              await route.continue({ headers: merged });
+              return;
+            }
+          } catch {
+            // fall through to unmodified request
+          }
+          await route.continue();
+        });
+      }
+
       const pwZipPath = path.join(pwTraceDir, `ui-${uniqueTag}-${slugify(roleName, 16)}.zip`);
       let tracingActive = false;
       try {
@@ -653,11 +852,21 @@ async function main() {
 
       const page = await context.newPage();
       const visitedInContext = new Set();
-      const seedRoutes = Array.isArray(roleCfg.routes) ? roleCfg.routes.filter((r) => typeof r === "string" && r.startsWith("/")) : [];
-      const queue = uniqueStrings([entryRouteWithSearch, ...seedRoutes]);
+      const roleExcludeSet = new Set([
+        ...globalExcludeRoutes,
+        ...(Array.isArray(excludeRoutesByRole[roleName]) ? excludeRoutesByRole[roleName] : []),
+      ]);
+      const seedRoutes = Array.isArray(roleCfg.routes)
+        ? roleCfg.routes.filter((r) => isRouteExploratoryCandidate(r, roleName))
+        : [];
+      const frontierCandidates = discoveredFrontierRoutes.filter((r) => isRouteExploratoryCandidate(r, roleName));
+      // Prioritize UNVISITED routes across iterations (frontier expansion!)
+      const allCandidateRoutes = uniqueStrings([...seedRoutes, ...frontierCandidates, entryRouteWithSearch]);
+      const unvisitedPriority = allCandidateRoutes.filter((r) => !roleExcludeSet.has(r));
+      const fallbackVisited = allCandidateRoutes.filter((r) => roleExcludeSet.has(r));
+      const queue = unvisitedPriority.length > 0 ? [...unvisitedPriority, ...fallbackVisited] : [...fallbackVisited];
 
       try {
-        // Optional token/login bootstrap when credentials exist
         const storageEntries = {};
         if (roleCfg.localStorageEntries && typeof roleCfg.localStorageEntries === "object") {
           for (const [sk, sv] of Object.entries(roleCfg.localStorageEntries)) {
@@ -721,11 +930,20 @@ async function main() {
         }
 
         const remainingRoles = Math.max(1, configuredRoles.length - roleIdx);
-        const perRoleCap = configuredRoles.length >= 5 ? 3 : 6;
-        const maxRoutesForRole = Math.max(1, Math.min(perRoleCap, Math.floor((maxRequests - requestsConsumed) / remainingRoles)));
+        const defaultPerRoleCap = configuredRoles.length >= 5 ? 5 : 7;
+        const perRoleCap = maxRoutesPerRoleOverride ?? defaultPerRoleCap;
+        const maxRoutesForRole = Math.max(
+          1,
+          Math.min(perRoleCap, Math.floor((maxRequests - requestsConsumed) / remainingRoles)),
+        );
         let routesExploredInRole = 0;
 
-        while (queue.length > 0 && routesExploredInRole < maxRoutesForRole && requestsConsumed < maxRequests && Date.now() < softDeadlineMs) {
+        while (
+          queue.length > 0 &&
+          routesExploredInRole < maxRoutesForRole &&
+          requestsConsumed < maxRequests &&
+          Date.now() < softDeadlineMs
+        ) {
           const relRoute = queue.shift();
           if (!relRoute || visitedInContext.has(relRoute)) continue;
           visitedInContext.add(relRoute);
@@ -733,16 +951,23 @@ async function main() {
           const fullPageUrl = new URL(relRoute, entryOrigin).toString();
           const pageErrors = [];
           const consoleErrors = [];
+          const reactLifecycleWarnings = [];
           const ignoredConsoleAuth = [];
           const serverErrors = [];
+          const api4xxErrors = [];
           const expectedAuthStatuses = [];
+          const pendingResponseReads = [];
 
           const onPageError = (err) => {
             pageErrors.push(err instanceof Error ? err.message : String(err));
           };
           const onConsole = (msg) => {
-            if (msg.type() === "error") {
-              const txt = msg.text();
+            const mType = msg.type();
+            const txt = msg.text();
+            if (/flushSync was called from inside a lifecycle method|Hydration failed|Minified React error/i.test(txt)) {
+              reactLifecycleWarnings.push(txt);
+            }
+            if (mType === "error") {
               if (isExpectedGuestAuthNoise(txt, roleName)) {
                 ignoredConsoleAuth.push(txt);
               } else {
@@ -752,23 +977,84 @@ async function main() {
           };
           const onResponse = (res) => {
             const st = res.status();
+            const req = res.request();
+            const method = req.method().toUpperCase();
+            const resUrl = res.url();
+            let u = null;
             try {
-              const u = new URL(res.url());
-              if (
-                u.pathname.startsWith("/api/") ||
-                u.pathname.startsWith("/v1/") ||
-                u.pathname === "/healthz" ||
-                u.pathname === "/readyz"
-              ) {
-                endpointsObserved.push(`${res.request().method()} ${u.pathname}`);
-              }
+              u = new URL(resUrl);
             } catch {
-              // ignore non-standard url
+              u = null;
             }
+            const isTargetApi = Boolean(u && allowedHeaderOrigins.has(u.origin) && isApiLikeUrl(resUrl));
+            if (isTargetApi) {
+              endpointsObserved.push(`${method} ${u.pathname}`);
+            }
+
             if (st >= 500) {
-              serverErrors.push({ status: st, url: res.url(), method: res.request().method() });
+              serverErrors.push({ status: st, url: resUrl, method });
             } else if ((st === 401 || st === 403) && roleName === "guest") {
-              expectedAuthStatuses.push({ status: st, url: res.url() });
+              expectedAuthStatuses.push({ status: st, url: resUrl });
+            } else if (st >= 400 && st < 500 && isTargetApi && !isExpectedApiStatus(roleCfg, u.pathname, st)) {
+              const p = res
+                .text()
+                .then((bodyText) => {
+                  const { code, detail } = extractErrorSnippet(bodyText);
+                  api4xxErrors.push({
+                    status: st,
+                    method,
+                    url: resUrl,
+                    pathname: u.pathname,
+                    search: u.search || "",
+                    code,
+                    detail,
+                  });
+                })
+                .catch(() => {
+                  api4xxErrors.push({
+                    status: st,
+                    method,
+                    url: resUrl,
+                    pathname: u.pathname,
+                    search: u.search || "",
+                    code: "",
+                    detail: "",
+                  });
+                });
+              pendingResponseReads.push(p);
+            }
+
+            // Record API traffic observation for HAR-to-OpenAPI synthesis & 4-axis Auth Matrix
+            if (isTargetApi && observedApiRecords.length < 180) {
+              const obsKey = `${roleName}|${method}|${u.pathname}|${st}`;
+              if (!observedApiKeySet.has(obsKey)) {
+                observedApiKeySet.add(obsKey);
+                const queryKeys = Array.from(u.searchParams.keys()).slice(0, 12);
+                const reqPostData = req.postData();
+                const reqSample = reqPostData ? compactJsonSample(reqPostData, 600) : null;
+                const pObs = res
+                  .text()
+                  .then((txt) => {
+                    observedApiRecords.push(
+                      sanitizeForOutput({
+                        role: roleName,
+                        tenantId,
+                        campusId,
+                        route: relRoute,
+                        method,
+                        origin: u.origin,
+                        pathname: u.pathname,
+                        search: u.search || "",
+                        queryKeys,
+                        status: st,
+                        requestSample: reqSample,
+                        responseSample: st < 500 ? compactJsonSample(txt, 1400) : null,
+                      }),
+                    );
+                  })
+                  .catch(() => {});
+                pendingResponseReads.push(pObs);
+              }
             }
           };
 
@@ -785,9 +1071,9 @@ async function main() {
             navStatus = resp ? resp.status() : 200;
             targetReachable = true;
             await page
-              .waitForFunction(() => (document.body?.innerText || "").trim().length > 60, null, { timeout: 1200 })
+              .waitForFunction(() => (document.body?.innerText || "").trim().length > 60, null, { timeout: 1400 })
               .catch(() => {});
-            await page.waitForTimeout(250);
+            await page.waitForTimeout(300);
           } catch (err) {
             navError = err instanceof Error ? err.message : String(err);
           }
@@ -795,15 +1081,30 @@ async function main() {
           let domInfo = await page
             .evaluate(() => {
               const title = document.title || "";
-              const textLen = (document.body?.innerText || "").trim().length;
+              const bodyText = (document.body?.innerText || "").trim();
+              const textLen = bodyText.length;
               const hasMain = Boolean(document.querySelector("main, h1, [role='main']"));
+              const hasSpinner = Boolean(document.querySelector("[role='progressbar'], .ant-spin-spinning, .animate-spin"));
               const links = Array.from(document.querySelectorAll("a[href]"))
                 .map((a) => a.getAttribute("href") || "")
                 .filter(Boolean);
               const formCount = document.querySelectorAll("form").length;
-              return { title, textLen, hasMain, links, formCount };
+              const hasEmDash = bodyText.includes("\u2014");
+              const rawKeyMatches = (bodyText.match(/\b[a-z]{2,14}\.[a-z0-9_]{2,20}\.[a-z0-9_]{2,24}\b/g) || [])
+                .filter((tok) => !/\.(?:com|org|net|io|vn|local|dev|edu|js|ts|css|png|svg|pdf|json|html)$/i.test(tok))
+                .slice(0, 5);
+              return { title, textLen, hasMain, hasSpinner, links, formCount, hasEmDash, rawKeyMatches };
             })
-            .catch(() => ({ title: "", textLen: 0, hasMain: false, links: [], formCount: 0 }));
+            .catch(() => ({
+              title: "",
+              textLen: 0,
+              hasMain: false,
+              hasSpinner: false,
+              links: [],
+              formCount: 0,
+              hasEmDash: false,
+              rawKeyMatches: [],
+            }));
 
           // Fallback for WorkspaceChooser / PlatformModeChooser button screens when no nav links yet
           if (domInfo.links.length === 0 && Date.now() < softDeadlineMs - 1500) {
@@ -817,16 +1118,115 @@ async function main() {
               domInfo = await page
                 .evaluate(() => {
                   const title = document.title || "";
-                  const textLen = (document.body?.innerText || "").trim().length;
+                  const bodyText = (document.body?.innerText || "").trim();
+                  const textLen = bodyText.length;
                   const hasMain = Boolean(document.querySelector("main, h1, [role='main']"));
+                  const hasSpinner = Boolean(
+                    document.querySelector("[role='progressbar'], .ant-spin-spinning, .animate-spin"),
+                  );
                   const links = Array.from(document.querySelectorAll("a[href]"))
                     .map((a) => a.getAttribute("href") || "")
                     .filter(Boolean);
                   const formCount = document.querySelectorAll("form").length;
-                  return { title, textLen, hasMain, links, formCount };
+                  const hasEmDash = bodyText.includes("\u2014");
+                  const rawKeyMatches = (bodyText.match(/\b[a-z]{2,14}\.[a-z0-9_]{2,20}\.[a-z0-9_]{2,24}\b/g) || [])
+                    .filter((tok) => !/\.(?:com|org|net|io|vn|local|dev|edu|js|ts|css|png|svg|pdf|json|html)$/i.test(tok))
+                    .slice(0, 5);
+                  return { title, textLen, hasMain, hasSpinner, links, formCount, hasEmDash, rawKeyMatches };
                 })
                 .catch(() => domInfo);
             }
+          }
+
+          // Phase 2: Lightweight ARIA accessibility snapshot summary + safe read-only tab probing
+          let ariaSummary = null;
+          let tabsClicked = [];
+          if (!navError && Date.now() < softDeadlineMs - 2000) {
+            try {
+              const snap = await page.locator("body").ariaSnapshot({ timeout: 1200 });
+              const lines = String(snap || "").split(/\r?\n/);
+              ariaSummary = {
+                lineCount: lines.length,
+                headings: lines.filter((l) => /\bheading\b/.test(l)).length,
+                buttons: lines.filter((l) => /\bbutton\b/.test(l)).length,
+                tabs: lines.filter((l) => /\btab\b/.test(l)).length,
+                links: lines.filter((l) => /\blink\b/.test(l)).length,
+              };
+              assertions += 1;
+            } catch {
+              ariaSummary = null;
+            }
+
+            if (enableInteractive && Date.now() < softDeadlineMs - 2200) {
+              try {
+                const tabLoc = page.locator("[role='tab']:visible");
+                const tabCount = Math.min(await tabLoc.count(), 4);
+                const unsafeTabRe = /delete|remove|logout|sign ?out|submit|pay|cancel|archive|revoke|reset|xóa|đăng xuất|thanh toán/i;
+                let clicked = 0;
+                for (let ti = 0; ti < tabCount && clicked < 2; ti += 1) {
+                  const tab = tabLoc.nth(ti);
+                  const selected = await tab.getAttribute("aria-selected").catch(() => null);
+                  const txt = (await tab.innerText().catch(() => "")).trim();
+                  if (selected === "true" || !txt || unsafeTabRe.test(txt)) continue;
+                  await tab.click({ timeout: 1500 }).catch(() => {});
+                  await page.waitForTimeout(380);
+                  tabsClicked.push(txt.slice(0, 40));
+                  clicked += 1;
+                  assertions += 1;
+                }
+              } catch {
+                // ignore tab probe error
+              }
+            }
+          }
+
+          // Phase 2: UI Occlusion check on visible primary action buttons
+          let occludedButtons = [];
+          if (!navError && Date.now() < softDeadlineMs - 1500) {
+            occludedButtons = await page
+              .evaluate(() => {
+                const results = [];
+                const buttons = Array.from(
+                  document.querySelectorAll("button[type='submit'], .ant-btn-primary, button[data-primary='true']"),
+                ).slice(0, 8);
+                for (const btn of buttons) {
+                  const rect = btn.getBoundingClientRect();
+                  if (rect.width < 20 || rect.height < 16) continue;
+                  if (rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth) {
+                    continue;
+                  }
+                  const pts = [
+                    [rect.left + rect.width * 0.5, rect.top + rect.height * 0.5],
+                    [rect.left + rect.width * 0.25, rect.top + rect.height * 0.5],
+                    [rect.left + rect.width * 0.75, rect.top + rect.height * 0.5],
+                    [rect.left + rect.width * 0.5, rect.top + rect.height * 0.25],
+                  ];
+                  let blockedPts = 0;
+                  let blockerDesc = "";
+                  for (const [px, py] of pts) {
+                    const stack = document.elementsFromPoint(px, py);
+                    const topEl = stack[0];
+                    if (!topEl || btn === topEl || btn.contains(topEl) || topEl.contains(btn)) continue;
+                    const cs = window.getComputedStyle(topEl);
+                    const pos = cs.position;
+                    if (pos === "fixed" || pos === "sticky" || Number(cs.zIndex || 0) >= 50) {
+                      blockedPts += 1;
+                      if (!blockerDesc) {
+                        blockerDesc = `${topEl.tagName.toLowerCase()}${topEl.id ? "#" + topEl.id : ""}${typeof topEl.className === "string" && topEl.className.trim() ? "." + topEl.className.trim().split(/\s+/).slice(0, 2).join(".") : ""}`;
+                      }
+                    }
+                  }
+                  if (blockedPts >= 2) {
+                    results.push({
+                      label: (btn.innerText || btn.getAttribute("aria-label") || "primary-button").trim().slice(0, 50),
+                      blocker: blockerDesc || "fixed-overlay",
+                      blockedRatio: blockedPts / pts.length,
+                    });
+                  }
+                }
+                return results;
+              })
+              .catch(() => []);
           }
 
           assertions += 1;
@@ -915,6 +1315,25 @@ async function main() {
             }
           }
 
+          // Wait briefly for pending response body reads (structured api_4xx + HAR observations)
+          if (pendingResponseReads.length > 0) {
+            await Promise.race([
+              Promise.allSettled(pendingResponseReads),
+              new Promise((resolve) => setTimeout(resolve, 1200)),
+            ]);
+          }
+
+          // Deduplicate redundant generic console errors ("Failed to load resource: status of 404/403")
+          // when we already captured the structured API 4xx finding with exact URL & error code.
+          const captured4xxStatuses = new Set(api4xxErrors.map((e) => e.status));
+          const filteredConsoleErrors = consoleErrors.filter((txt) => {
+            const m = String(txt || "").match(/Failed to load resource:.*status of (\d{3})/i);
+            if (m && captured4xxStatuses.has(Number.parseInt(m[1], 10))) {
+              return false;
+            }
+            return true;
+          });
+
           const routeFindings = [];
           const trackRouteFinding = (pushed) => {
             if (pushed) routeFindings.push(pushed);
@@ -982,20 +1401,159 @@ async function main() {
                 ),
               );
             }
-            if (consoleErrors.length > 0) {
+            for (const apiErr of api4xxErrors) {
+              assertions += 1;
+              const codeSuffix = apiErr.code ? ` [${apiErr.code}]` : "";
+              const detailSuffix = apiErr.detail ? `: ${apiErr.detail}` : "";
+              trackRouteFinding(
+                pushFinding(
+                  {
+                    id: `QA-UI-${String(findings.length + 1).padStart(3, "0")}`,
+                    fingerprint: `confirmed_bug|ui:api4xx:${roleName}:${apiErr.method} ${apiErr.pathname}:${apiErr.status}`,
+                    classification: "confirmed_bug",
+                    severity: apiErr.status === 403 || apiErr.status === 404 || apiErr.status === 422 ? "high" : "medium",
+                    title: `Authenticated UI API call returned HTTP ${apiErr.status} on ${apiErr.method} ${apiErr.pathname} (role=${roleName}, route=${relRoute})`,
+                    endpointOrRoute: `${apiErr.method} ${apiErr.pathname}`,
+                    checkMode: "api_4xx",
+                    reproCommand: `node scripts/runners/ui-explorer.mjs --target-url ${fullPageUrl}`,
+                    evidencePaths: [relJsonTracePath],
+                    verifiedOutcome: sanitizeText(
+                      `During UI load of ${relRoute} as role=${roleName}, ${apiErr.method} ${apiErr.pathname}${apiErr.search} returned HTTP ${apiErr.status}${codeSuffix}${detailSuffix}`,
+                    ),
+                  },
+                  "api_4xx",
+                  relRoute,
+                  {
+                    ...roleAuthMetaBase,
+                    subResourceMethod: apiErr.method,
+                    subResourcePath: `${apiErr.pathname}${apiErr.search}`,
+                    expected4xxStatus: apiErr.status,
+                  },
+                ),
+              );
+            }
+            if (filteredConsoleErrors.length > 0) {
               assertions += 1;
               trackRouteFinding(
                 pushFinding(
                   {
                     id: `QA-UI-${String(findings.length + 1).padStart(3, "0")}`,
-                    fingerprint: `confirmed_bug|ui:console_error:${relRoute}`,
+                    fingerprint: `confirmed_bug|ui:console_error:${roleName}:${relRoute}`,
                     classification: "confirmed_bug",
                     severity: "medium",
-                    title: `Browser console.error detected on ${relRoute}`,
+                    title: `Browser console.error detected on ${relRoute} (role=${roleName})`,
                     endpointOrRoute: relRoute,
                     reproCommand: `node scripts/runners/ui-explorer.mjs --target-url ${fullPageUrl}`,
                     evidencePaths: [relJsonTracePath],
-                    verifiedOutcome: `Console error(s): ${sanitizeText(consoleErrors.join("; "))}`,
+                    verifiedOutcome: `Console error(s): ${sanitizeText(filteredConsoleErrors.join("; "))}`,
+                  },
+                  "console_error",
+                  relRoute,
+                  roleAuthMetaBase,
+                ),
+              );
+            }
+            if (reactLifecycleWarnings.length > 0) {
+              assertions += 1;
+              trackRouteFinding(
+                pushFinding(
+                  {
+                    id: `QA-UI-${String(findings.length + 1).padStart(3, "0")}`,
+                    fingerprint: `confirmed_bug|ui:react_lifecycle:${relRoute}`,
+                    classification: "confirmed_bug",
+                    severity: "medium",
+                    title: `React lifecycle or hydration error detected on ${relRoute}`,
+                    endpointOrRoute: relRoute,
+                    checkMode: "console_error",
+                    reproCommand: `node scripts/runners/ui-explorer.mjs --target-url ${fullPageUrl}`,
+                    evidencePaths: [relJsonTracePath],
+                    verifiedOutcome: sanitizeText(reactLifecycleWarnings.slice(0, 2).join("; ")),
+                  },
+                  "console_error",
+                  relRoute,
+                  roleAuthMetaBase,
+                ),
+              );
+            }
+            if (roleName !== "guest" && navStatus === 200 && domInfo.textLen < 20 && !domInfo.hasSpinner) {
+              assertions += 1;
+              trackRouteFinding(
+                pushFinding(
+                  {
+                    id: `QA-UI-${String(findings.length + 1).padStart(3, "0")}`,
+                    fingerprint: `confirmed_bug|ui:blank_screen:${roleName}:${relRoute}`,
+                    classification: "confirmed_bug",
+                    severity: "high",
+                    title: `Blank or empty screen rendered on ${relRoute} (role=${roleName})`,
+                    endpointOrRoute: relRoute,
+                    checkMode: "blank_screen",
+                    reproCommand: `node scripts/runners/ui-explorer.mjs --target-url ${fullPageUrl}`,
+                    evidencePaths: [relJsonTracePath],
+                    verifiedOutcome: `HTTP 200 on ${relRoute} as role=${roleName} rendered only ${domInfo.textLen} visible character(s) with no active loading indicator`,
+                  },
+                  "blank_screen",
+                  relRoute,
+                  roleAuthMetaBase,
+                ),
+              );
+            }
+            for (const occ of occludedButtons) {
+              assertions += 1;
+              trackRouteFinding(
+                pushFinding(
+                  {
+                    id: `QA-UI-${String(findings.length + 1).padStart(3, "0")}`,
+                    fingerprint: `confirmed_bug|ui:occlusion:${relRoute}:${occ.label}`,
+                    classification: "confirmed_bug",
+                    severity: "medium",
+                    title: `Primary button "${occ.label}" occluded by overlay "${occ.blocker}" on ${relRoute}`,
+                    endpointOrRoute: relRoute,
+                    checkMode: "ui_occlusion",
+                    reproCommand: `node scripts/runners/ui-explorer.mjs --target-url ${fullPageUrl}`,
+                    evidencePaths: [relJsonTracePath],
+                    verifiedOutcome: `Button "${occ.label}" on ${relRoute} had ${Math.round(occ.blockedRatio * 100)}% of sampled hit points covered by ${occ.blocker}`,
+                  },
+                  "ui_occlusion",
+                  relRoute,
+                  roleAuthMetaBase,
+                ),
+              );
+            }
+            if (cfg.forbidEmDash && domInfo.hasEmDash) {
+              assertions += 1;
+              trackRouteFinding(
+                pushFinding(
+                  {
+                    id: `QA-UI-${String(findings.length + 1).padStart(3, "0")}`,
+                    fingerprint: `spec_gap|ui:em_dash:${relRoute}`,
+                    classification: "spec_gap",
+                    severity: "low",
+                    title: `Rendered UI copy contains forbidden U+2014 em-dash on ${relRoute}`,
+                    endpointOrRoute: relRoute,
+                    reproCommand: `node scripts/runners/ui-explorer.mjs --target-url ${fullPageUrl}`,
+                    evidencePaths: [relJsonTracePath],
+                    verifiedOutcome: `Visible DOM text on ${relRoute} contains U+2014 em-dash character(s)`,
+                  },
+                  "console_error",
+                  relRoute,
+                  roleAuthMetaBase,
+                ),
+              );
+            }
+            if (Array.isArray(domInfo.rawKeyMatches) && domInfo.rawKeyMatches.length > 0) {
+              assertions += 1;
+              trackRouteFinding(
+                pushFinding(
+                  {
+                    id: `QA-UI-${String(findings.length + 1).padStart(3, "0")}`,
+                    fingerprint: `spec_gap|ui:untranslated_i18n:${relRoute}`,
+                    classification: "spec_gap",
+                    severity: "low",
+                    title: `Possible untranslated i18n key(s) visible on ${relRoute}`,
+                    endpointOrRoute: relRoute,
+                    reproCommand: `node scripts/runners/ui-explorer.mjs --target-url ${fullPageUrl}`,
+                    evidencePaths: [relJsonTracePath],
+                    verifiedOutcome: `Visible DOM text contained dot-delimited key-like token(s): ${domInfo.rawKeyMatches.join(", ")}`,
                   },
                   "console_error",
                   relRoute,
@@ -1039,7 +1597,13 @@ async function main() {
           }
 
           const routeHasFinding = Boolean(
-            navError || navStatus >= 500 || pageErrors.length > 0 || consoleErrors.length > 0 || serverErrors.length > 0,
+            routeFindings.length > 0 ||
+              navError ||
+              navStatus >= 500 ||
+              pageErrors.length > 0 ||
+              filteredConsoleErrors.length > 0 ||
+              api4xxErrors.length > 0 ||
+              serverErrors.length > 0,
           );
           if (screenshots.length === 0 || routeHasFinding) {
             const shotDir = routeHasFinding ? evidenceDir : screenshotDir;
@@ -1070,12 +1634,14 @@ async function main() {
             try {
               const resolved = new URL(href, entryOrigin);
               if (resolved.origin === entryOrigin) {
-                if (/\/(logout|sign-out|signout|log-out)(?:\/|\?|$)/i.test(resolved.pathname)) {
-                  continue;
-                }
                 const candidateRoute = `${resolved.pathname || "/"}${resolved.search || ""}`;
+                if (!isRouteExploratoryCandidate(candidateRoute, roleName)) continue;
                 if (!visitedInContext.has(candidateRoute) && !queue.includes(candidateRoute)) {
-                  queue.push(candidateRoute);
+                  if (!roleExcludeSet.has(candidateRoute)) {
+                    queue.unshift(candidateRoute);
+                  } else {
+                    queue.push(candidateRoute);
+                  }
                 }
               }
             } catch {
@@ -1091,9 +1657,14 @@ async function main() {
             title: domInfo.title,
             textLen: domInfo.textLen,
             hasMain: domInfo.hasMain,
+            ariaSummary,
+            tabsClicked,
+            occludedButtons,
             formCheckSummary,
             pageErrors,
-            consoleErrors,
+            consoleErrors: filteredConsoleErrors,
+            api4xxErrors,
+            reactLifecycleWarnings,
             ignoredConsoleAuth,
             serverErrors,
             expectedAuthStatuses,
@@ -1120,6 +1691,23 @@ async function main() {
     await browser.close().catch(() => {});
   }
 
+  // Persist merged redacted API traffic observations for HAR-to-OpenAPI synthesis & 4-axis Auth Matrix
+  if (observedApiRecords.length > 0) {
+    const obsPath = path.join(traceDir, "observed-api-traffic.json");
+    const prevObs = readJsonSafe(obsPath);
+    const prevRecords = Array.isArray(prevObs.data?.records) ? prevObs.data.records : [];
+    const mergedMap = new Map();
+    for (const rec of [...prevRecords, ...observedApiRecords]) {
+      const k = `${rec.role}|${rec.method}|${rec.pathname}|${rec.status}`;
+      mergedMap.set(k, rec);
+    }
+    writeJsonAtomic(obsPath, {
+      updatedAt: new Date().toISOString(),
+      apiOrigin: apiOrigin || entryOrigin,
+      records: Array.from(mergedMap.values()).slice(-300),
+    });
+  }
+
   let status = "passed";
   if (!targetReachable) {
     status = "degraded";
@@ -1142,13 +1730,14 @@ async function main() {
     traces: traceArtifacts,
     screenshots,
     regressionTests,
-    notes: `Explored ${uniqueStrings(routesVisited).length} route(s) across ${uniqueStrings(rolesVisited).length} role(s) via Playwright (${launchRes.channelUsed}); findings=${findings.length}, errorsCaptured=${findings.filter((f) => f.classification === "confirmed_bug").length}.`,
+    notes: `Explored ${uniqueStrings(routesVisited).length} route(s) across ${uniqueStrings(rolesVisited).length} role(s) via Playwright (${launchRes.channelUsed}); findings=${findings.length}, confirmedBugs=${findings.filter((f) => f.classification === "confirmed_bug").length}, observedApiCalls=${observedApiRecords.length}.`,
   });
 
   writeJsonAtomic(jsonTracePath, {
     ...output,
     channelUsed: launchRes.channelUsed,
     targetUrl,
+    allowedHeaderOrigins: allowedHeaderOriginsList,
     pageReports,
   });
 

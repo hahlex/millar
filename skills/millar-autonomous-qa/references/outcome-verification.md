@@ -16,20 +16,22 @@ Autonomous QA never stops at HTTP status codes. `scripts/verify-outcomes.mjs` ve
 - An HTTP `200` with malformed JSON or an HTTP `>= 500` is recorded immediately as a `confirmed_bug` with a saved trace in `memory/traces/`.
 
 ### 2.2 Mailpit Email Channel (`--mailpit-url`)
-- Queries `GET ${mailpitUrl}/api/v1/messages` with a bounded timeout.
+- Queries `GET ${mailpitUrl}/api/v1/messages` with pagination and bounded timeouts.
+- Supports causal outbox polling via `--expect-mailpit-within-ms <ms>` (polling every `400`ms up to the configured window right after an email-triggering mutation).
 - Safely handles empty inboxes (`{ total: 0, messages: [] }`) without null-dereference errors.
 - Searches `ID`, `MessageID`, `Subject`, `Snippet`, and `To[].Address` for `--expect-mailpit-marker` or `--request-id`.
-- If `--expect-mailpit-marker` is expected (for example after an action that claims to send email) and zero messages match, records a `confirmed_bug` finding (silent downstream drop).
+- If `--expect-mailpit-marker` is expected (for example after an action that claims to send email) and zero messages match within the polling window, records a `confirmed_bug` finding (silent downstream drop).
 
 ### 2.3 Postgres Channel (`--pg-dsn` / `config.pgDsnEnv`)
 - Because `package.json` omits `pg`, `verify-outcomes.mjs` delegates database queries to `getPythonBin()` from `scripts/python-env.mjs` using `psycopg 3.3.9`.
 - Passes DSNs via the `QA_PG_DSN` child environment variable (`connect_timeout=3`), never via CLI arguments or log files.
-- Executes `SELECT 1 AS ok` or an explicit read-only `--pg-query` check against `education_db` (`:5432`) or `ai_db` (`:5433`).
+- Executes `SELECT 1 AS ok` or an explicit read-only `--pg-query` check against `education_db` (`:5432`) or `ai_db` (`:5433`), and optionally enforces `--expect-pg-min-rows <N>` (emitting `confirmed_bug` when observed row/count `< N`).
 - If unconfigured or unreachable, marks the channel `degraded` or `skipped` without crashing the verifier.
 
 ### 2.4 Redis & RQ Queue Channel (`--redis-url` / `config.redisUrlEnv`)
 - Delegates Redis verification to `getPythonBin()` using `redis 8.2.0` (`socket_timeout=3`) via `QA_REDIS_URL`.
-- Executes `PING` and inspects `rq:queue:*` key lengths (`LLEN`) to verify queue health and detect stuck background jobs.
+- Executes `PING`, inspects `rq:queue:*` key lengths (`LLEN`), and checks `rq:workers` (`SMEMBERS`).
+- When any `rq:queue:*` holds `count > 0` pending jobs while `rqWorkerCount === 0`, emits a `high`-severity `runtime_degraded` finding (`runtime_degraded|redis:rq_no_workers`) so dead background workers are never silently marked healthy.
 
 ### 2.5 Langfuse Channel (`--langfuse-url`)
 - Probes `GET ${langfuseUrl}/api/public/health` (expecting `{"status":"OK"}`).

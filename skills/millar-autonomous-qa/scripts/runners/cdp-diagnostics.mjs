@@ -6,10 +6,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   ensureDir,
+  isApiLikeUrl,
+  isStaticAssetUrl,
   loadConfigFile,
   MEMORY_DIR,
+  normalizeSafeOrigin,
   parseCliArgs,
   parseNonNegativeNumber,
+  resolveNodeDepPath,
   sanitizeForOutput,
   sanitizeText,
   STAGING_ROOT,
@@ -235,13 +239,13 @@ async function main() {
   const startedAt = new Date(startedMs).toISOString();
 
   const { values } = parseCliArgs(process.argv.slice(2), {
-    booleanFlags: ["dry-run", "allow-private-ip", "trace", "lighthouse", "help"],
+    booleanFlags: ["dry-run", "allow-private-ip", "trace", "lighthouse", "guest-only", "help"],
     multiFlags: ["repo-path"],
   });
 
   if (values.help) {
     console.log(
-      "Usage: node scripts/runners/cdp-diagnostics.mjs [--config <path>] --target-url <url> [--trace] [--lighthouse] [--memory-dir <dir>] [--trace-dir <dir>] [--out <file>] [--dry-run]",
+      "Usage: node scripts/runners/cdp-diagnostics.mjs [--config <path>] --target-url <url> [--role <name>] [--route <path>] [--guest-only] [--trace] [--lighthouse] [--memory-dir <dir>] [--trace-dir <dir>] [--out <file>] [--dry-run]",
     );
     process.exit(0);
   }
@@ -254,6 +258,7 @@ async function main() {
   const dryRun = Boolean(values["dry-run"]);
   const enableTrace = Boolean(values.trace);
   const enableLighthouse = Boolean(values.lighthouse);
+  const guestOnly = Boolean(values["guest-only"]);
   const allowPrivateIp = Boolean(values["allow-private-ip"] || cfg.allowPrivateIp);
   const privIpFlag = allowPrivateIp ? " --allow-private-ip" : "";
 
@@ -326,17 +331,7 @@ async function main() {
   const tracePath = path.join(traceDir, `cdp-diagnostics-${uniqueTag}.json`);
   const relTracePath = toStagingRelPath(tracePath);
 
-  const mcpBin = path.join(
-    STAGING_ROOT,
-    "node_modules",
-    "chrome-devtools-mcp",
-    "out",
-    "Default",
-    "gen",
-    "src",
-    "bin",
-    "chrome-devtools-mcp.js",
-  );
+  const mcpBin = resolveNodeDepPath("chrome-devtools-mcp/out/Default/gen/src/bin/chrome-devtools-mcp.js");
 
   if (!fs.existsSync(mcpBin)) {
     const output = buildOutput({
@@ -362,10 +357,38 @@ async function main() {
     emitAndExit(output, values.out, 0);
   }
 
+  // Pick an optional authenticated role from config when available (unless --guest-only)
+  const configuredRoles = Array.isArray(cfg.roles) ? cfg.roles : Array.isArray(cfg.accounts) ? cfg.accounts : [];
+  let selectedAuthRole = null;
+  if (!guestOnly && configuredRoles.length > 0) {
+    const requestedRole = values.role ? String(values.role).trim() : "";
+    for (const rc of configuredRoles) {
+      if (!rc || typeof rc !== "object") continue;
+      const rName = String(rc.role || rc.name || "");
+      if (requestedRole && rName !== requestedRole) continue;
+      const tok = rc.token || (rc.tokenEnv ? process.env[rc.tokenEnv] : null);
+      if (tok && rc.localStorageKey) {
+        selectedAuthRole = {
+          role: rName || "authenticated",
+          token: String(tok).trim(),
+          localStorageKey: String(rc.localStorageKey),
+          localStorageEntries: rc.localStorageEntries && typeof rc.localStorageEntries === "object" ? rc.localStorageEntries : {},
+          route:
+            (values.route ? String(values.route).trim() : "") ||
+            (Array.isArray(rc.routes) && rc.routes.find((r) => typeof r === "string" && r.startsWith("/") && r !== "/")) ||
+            targetRoute,
+        };
+        break;
+      }
+    }
+  }
+
   const client = new McpStdioClient(mcpBin);
   const findings = [];
   const routes = [];
   const endpoints = [];
+  const rolesMeasured = [];
+  let staticAssetsFiltered = 0;
   let assertions = 0;
   let requestsConsumed = 0;
   let pageId = null;
@@ -375,8 +398,10 @@ async function main() {
   let perfTraceText = null;
   let lighthouseText = null;
   let cdpError = null;
+  let activeRoute = targetRoute;
+  const allowedOrigins = new Set([normalizeSafeOrigin(targetUrl), normalizeSafeOrigin(apiUrl)].filter(Boolean));
 
-  const overallRpcBudgetMs = enableTrace || enableLighthouse ? 23000 : 15000;
+  const overallRpcBudgetMs = enableTrace || enableLighthouse ? 25000 : selectedAuthRole ? 20000 : 15000;
   const rpcDeadlineMs = startedMs + overallRpcBudgetMs;
   const remainingRpcMs = (capMs) => {
     const rem = rpcDeadlineMs - Date.now();
@@ -392,7 +417,7 @@ async function main() {
       {
         protocolVersion: "2024-11-05",
         capabilities: {},
-        clientInfo: { name: "autonomous-qa-cdp", version: "1.0.0" },
+        clientInfo: { name: "autonomous-qa-cdp", version: "1.1.0" },
       },
       remainingRpcMs(7000),
     );
@@ -416,6 +441,54 @@ async function main() {
     routes.push(targetRoute);
     assertions += 1;
 
+    // Optional authenticated CDP bootstrap via localStorage + navigation to authenticated route
+    if (selectedAuthRole) {
+      const storageToSet = {
+        ...Object.fromEntries(
+          Object.entries(selectedAuthRole.localStorageEntries || {}).map(([k, v]) => [
+            k,
+            typeof v === "string" ? v : JSON.stringify(v),
+          ]),
+        ),
+        [selectedAuthRole.localStorageKey]: selectedAuthRole.token,
+      };
+      const injectFn = `() => { const entries = ${JSON.stringify(storageToSet)}; for (const [k, v] of Object.entries(entries)) { try { window.localStorage.setItem(k, v); } catch {} } return Object.keys(entries).length; }`;
+      await client.request(
+        "tools/call",
+        { name: "evaluate_script", arguments: { pageId, function: injectFn } },
+        remainingRpcMs(4000),
+      );
+      const authNavUrl = new URL(selectedAuthRole.route, parsedTarget.origin).toString();
+      const navRes = await client.request(
+        "tools/call",
+        {
+          name: "navigate_page",
+          arguments: { pageId, type: "url", url: authNavUrl, timeout: Math.min(6000, remainingRpcMs(6000)) },
+        },
+        remainingRpcMs(7000),
+      );
+      if (!navRes?.isError) {
+        requestsConsumed += 1;
+        activeRoute = selectedAuthRole.route;
+        routes.push(activeRoute);
+        rolesMeasured.push(selectedAuthRole.role);
+        await client
+          .request(
+            "tools/call",
+            {
+              name: "evaluate_script",
+              arguments: {
+                pageId,
+                function: "() => new Promise((resolve) => setTimeout(() => resolve(true), 600))",
+              },
+            },
+            remainingRpcMs(2500),
+          )
+          .catch(() => {});
+      }
+    }
+    if (rolesMeasured.length === 0) rolesMeasured.push("guest");
+
     const evalRes = await client.request(
       "tools/call",
       {
@@ -423,7 +496,7 @@ async function main() {
         arguments: {
           pageId,
           function:
-            "() => ({ title: document.title || '', readyState: document.readyState, bodyLen: (document.body?.innerText || '').trim().length, hasMain: Boolean(document.querySelector('main, h1')), fcpMs: performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? null, domInteractiveMs: performance.getEntriesByType('navigation')[0]?.domInteractive ?? null })",
+            "() => ({ title: document.title || '', readyState: document.readyState, bodyLen: (document.body?.innerText || '').trim().length, hasMain: Boolean(document.querySelector('main, h1, [role=\"main\"]')), fcpMs: performance.getEntriesByName('first-contentful-paint')[0]?.startTime ?? null, domInteractiveMs: performance.getEntriesByType('navigation')[0]?.domInteractive ?? null })",
         },
       },
       remainingRpcMs(5000),
@@ -461,17 +534,20 @@ async function main() {
       if (!m) continue;
       const errMsg = m[1].trim();
       if (!errMsg || seenConsoleErrors.has(errMsg)) continue;
+      if (rolesMeasured[0] === "guest" && /status of 401|status of 403|\b401\s*\(Unauthorized\)/i.test(errMsg)) {
+        continue;
+      }
       seenConsoleErrors.add(errMsg);
       const isUncaught = /uncaught|pageerror|typeerror|referenceerror/i.test(errMsg);
       findings.push({
         id: `QA-CDP-${String(findings.length + 1).padStart(3, "0")}`,
-        fingerprint: `confirmed_bug|cdp:${isUncaught ? "pageerror" : "console_error"}:${targetRoute}:${errMsg.slice(0, 80)}`,
+        fingerprint: `confirmed_bug|cdp:${isUncaught ? "pageerror" : "console_error"}:${activeRoute}:${errMsg.slice(0, 80)}`,
         classification: "confirmed_bug",
         severity: isUncaught ? "high" : "medium",
         title: isUncaught
-          ? `CDP uncaught pageerror detected on ${targetRoute}`
-          : `CDP browser console.error detected on ${targetRoute}`,
-        endpointOrRoute: targetRoute,
+          ? `CDP uncaught pageerror detected on ${activeRoute}`
+          : `CDP browser console.error detected on ${activeRoute}`,
+        endpointOrRoute: activeRoute,
         checkMode: isUncaught ? "cdp_pageerror" : "cdp_console_error",
         ...(allowPrivateIp ? { allowPrivateIp: true } : {}),
         reproCommand: `node scripts/runners/cdp-diagnostics.mjs --target-url ${targetUrl}${privIpFlag}`,
@@ -498,10 +574,16 @@ async function main() {
         const reqUrl = m[2];
         const statusCode = Number.parseInt(m[3], 10);
         let reqPath = reqUrl;
+        let isStatic = isStaticAssetUrl(reqUrl);
+        let isApi = isApiLikeUrl(reqUrl);
         try {
           const u = new URL(reqUrl);
           reqPath = `${u.pathname}${u.search}`;
-          endpoints.push(`${method} ${u.pathname}`);
+          if (isStatic) {
+            staticAssetsFiltered += 1;
+          } else if (isApi && allowedOrigins.has(u.origin)) {
+            endpoints.push(`${method} ${u.pathname}`);
+          }
         } catch {
           // ignore
         }
@@ -579,18 +661,20 @@ async function main() {
     requests: requestsConsumed,
     routes,
     endpoints,
-    roles: ["guest"],
+    roles: rolesMeasured.length > 0 ? rolesMeasured : ["guest"],
     assertions,
     findings,
     traces: [relTracePath],
     notes: cdpError
       ? `CDP diagnostics degraded: ${cdpError}`
-      : `CDP diagnostics completed on ${targetRoute} (pageId=${pageId}, title=${JSON.stringify(evalData?.title || "")}, fcpMs=${evalData?.fcpMs ?? "n/a"}).`,
+      : `CDP diagnostics completed on ${activeRoute} (role=${rolesMeasured[0] || "guest"}, pageId=${pageId}, title=${JSON.stringify(evalData?.title || "")}, fcpMs=${evalData?.fcpMs ?? "n/a"}, apiEndpoints=${uniqueStrings(endpoints).length}, staticAssetsFiltered=${staticAssetsFiltered}).`,
   });
 
   writeJsonAtomic(tracePath, {
     ...output,
     targetUrl,
+    activeRoute,
+    staticAssetsFiltered,
     pageId,
     evalData,
     consoleText,

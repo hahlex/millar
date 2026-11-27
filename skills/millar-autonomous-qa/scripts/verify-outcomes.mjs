@@ -140,9 +140,22 @@ export async function runVerifyOutcomes(opts = {}) {
   const probeEndpoint = opts.probeEndpoint;
   const requestId = opts.requestId;
   const expectMailpitMarker = opts.expectMailpitMarker;
+  const expectMailpitWithinMs = parseNonNegativeNumber(
+    opts.expectMailpitWithinMs ?? cfg.expectMailpitWithinMs,
+    0,
+    "--expect-mailpit-within-ms",
+  );
+  const expectPgMinRows =
+    opts.expectPgMinRows !== undefined && opts.expectPgMinRows !== null
+      ? parseNonNegativeNumber(opts.expectPgMinRows, 0, "--expect-pg-min-rows")
+      : cfg.expectPgMinRows !== undefined && cfg.expectPgMinRows !== null
+        ? parseNonNegativeNumber(cfg.expectPgMinRows, 0, "expectPgMinRows")
+        : null;
   const pgDsn = opts.pgDsn ?? opts.pgUrl ?? cfg.pgDsn ?? (cfg.pgDsnEnv ? process.env[cfg.pgDsnEnv] : undefined);
   const pgQuery = opts.pgQuery ?? cfg.pgQuery;
   const redisUrl = opts.redisUrl ?? cfg.redisUrl ?? (cfg.redisUrlEnv ? process.env[cfg.redisUrlEnv] : undefined);
+  const tokenEnv = opts.tokenEnv ? String(opts.tokenEnv) : "";
+  const apiHeadersEnv = opts.apiHeadersEnv ? String(opts.apiHeadersEnv) : "";
   const dockerContainersValueless = opts.dockerContainers === true;
   const dockerContainerInputs = Array.isArray(opts.dockerContainers)
     ? opts.dockerContainers
@@ -173,6 +186,24 @@ export async function runVerifyOutcomes(opts = {}) {
 
   const headers = {};
   if (requestId) headers["X-Request-Id"] = requestId;
+  if (apiHeadersEnv && process.env[apiHeadersEnv]) {
+    try {
+      const parsedH = JSON.parse(String(process.env[apiHeadersEnv]));
+      if (parsedH && typeof parsedH === "object" && !Array.isArray(parsedH)) {
+        for (const [hk, hv] of Object.entries(parsedH)) {
+          if (hv !== undefined && hv !== null) headers[hk] = String(hv);
+        }
+      }
+    } catch {
+      // ignore malformed headers env
+    }
+  }
+  if (tokenEnv && process.env[tokenEnv]) {
+    const tok = String(process.env[tokenEnv]).trim();
+    if (tok && !Object.keys(headers).some((k) => k.toLowerCase() === "authorization")) {
+      headers.Authorization = tok.startsWith("Bearer ") ? tok : `Bearer ${tok}`;
+    }
+  }
 
   const tryParseUrl = (raw, base) => {
     try {
@@ -333,36 +364,37 @@ export async function runVerifyOutcomes(opts = {}) {
       const mpOrigin = mpParsed.origin;
       const mpBaseUrl = `${mpOrigin}/api/v1/messages`;
       const pageLimit = 200;
-      let startOffset = 0;
-      const allMessages = [];
-      let mailpitError = null;
-      let lastStatus = 0;
       endpointsChecked.push("GET /api/v1/messages");
-
-      for (let page = 0; page < 10; page += 1) {
-        const mpUrl = `${mpBaseUrl}?limit=${pageLimit}&start=${startOffset}`;
-        const res = await fetchWithTimeout(mpUrl, { method: "GET" }, timeoutMs);
-        requests += 1;
-        lastStatus = res.status;
-        if (!res.ok || !res.json) {
-          mailpitError =
-            res.error || (res.status >= 400 ? `Mailpit returned HTTP ${res.status}` : "Invalid Mailpit response");
-          break;
+      const pollMailpitOnce = async () => {
+        let startOffset = 0;
+        const collected = [];
+        let err = null;
+        let status = 0;
+        for (let page = 0; page < 10; page += 1) {
+          const mpUrl = `${mpBaseUrl}?limit=${pageLimit}&start=${startOffset}`;
+          const res = await fetchWithTimeout(mpUrl, { method: "GET" }, timeoutMs);
+          requests += 1;
+          status = res.status;
+          if (!res.ok || !res.json) {
+            err =
+              res.error || (res.status >= 400 ? `Mailpit returned HTTP ${res.status}` : "Invalid Mailpit response");
+            break;
+          }
+          const pageMessages = Array.isArray(res.json.messages) ? res.json.messages : [];
+          collected.push(...pageMessages);
+          const total = typeof res.json.total === "number" ? res.json.total : null;
+          if (pageMessages.length === 0) break;
+          if (total !== null && collected.length >= total) break;
+          if (total === null && pageMessages.length < pageLimit) break;
+          startOffset += pageMessages.length;
         }
-        const pageMessages = Array.isArray(res.json.messages) ? res.json.messages : [];
-        allMessages.push(...pageMessages);
-        const total = typeof res.json.total === "number" ? res.json.total : null;
-        if (pageMessages.length === 0) break;
-        if (total !== null && allMessages.length >= total) break;
-        if (total === null && pageMessages.length < pageLimit) break;
-        startOffset += pageMessages.length;
-      }
+        return { collected, err, status, startOffset };
+      };
 
-      const marker = expectMailpitMarker || requestId;
-      let matchedCount = 0;
-      if (marker && allMessages.length > 0) {
-        assertions += 1;
-        for (const msg of allMessages) {
+      const countMarkerMatches = (msgs, needle) => {
+        if (!needle || msgs.length === 0) return 0;
+        let count = 0;
+        for (const msg of msgs) {
           const hay = [
             msg?.ID,
             msg?.MessageID,
@@ -372,10 +404,34 @@ export async function runVerifyOutcomes(opts = {}) {
           ]
             .filter(Boolean)
             .join(" ");
-          if (hay.includes(marker)) {
-            matchedCount += 1;
-          }
+          if (hay.includes(needle)) count += 1;
         }
+        return count;
+      };
+
+      const marker = expectMailpitMarker || requestId;
+      let pollRes = await pollMailpitOnce();
+      let allMessages = pollRes.collected;
+      let mailpitError = pollRes.err;
+      let lastStatus = pollRes.status;
+      let startOffset = pollRes.startOffset;
+      let matchedCount = countMarkerMatches(allMessages, marker);
+
+      // Causal outbox polling when --expect-mailpit-within-ms > 0
+      if (!mailpitError && expectMailpitMarker && matchedCount === 0 && expectMailpitWithinMs > 0) {
+        const pollDeadline = Date.now() + Math.min(expectMailpitWithinMs, 15000);
+        while (Date.now() < pollDeadline && matchedCount === 0 && !mailpitError) {
+          await new Promise((r) => setTimeout(r, 400));
+          pollRes = await pollMailpitOnce();
+          allMessages = pollRes.collected;
+          mailpitError = pollRes.err;
+          lastStatus = pollRes.status;
+          startOffset = pollRes.startOffset;
+          matchedCount = countMarkerMatches(allMessages, marker);
+        }
+      }
+      if (marker && allMessages.length > 0) {
+        assertions += 1;
       }
 
       if (mailpitError) {
@@ -482,6 +538,29 @@ export async function runVerifyOutcomes(opts = {}) {
         evidencePaths: [relTracePath],
         verifiedOutcome: pgRes.error || "Postgres query failed",
       });
+    } else if (pgRes.status === "passed" && expectPgMinRows !== null) {
+      assertions += 1;
+      const observedCount =
+        pgRes.rowCount === 1 && /^\d+$/.test(String(pgRes.firstValue ?? "")) && /\bcount\s*\(/i.test(String(pgQuery || ""))
+          ? Number.parseInt(String(pgRes.firstValue), 10)
+          : Number(pgRes.rowCount || 0);
+      channels.postgres.expectedMinRows = expectPgMinRows;
+      channels.postgres.observedCount = observedCount;
+      if (observedCount < expectPgMinRows) {
+        hasBug = true;
+        findings.push({
+          id: nextFindingId(),
+          fingerprint: `confirmed_bug|verify_outcomes:pg_min_rows:${expectPgMinRows}`,
+          classification: "confirmed_bug",
+          severity: "high",
+          title: `Postgres causal outcome assertion failed: expected >= ${expectPgMinRows} row(s), observed ${observedCount}`,
+          endpointOrRoute: "postgres",
+          checkMode: "pg_min_rows",
+          reproCommand: "node scripts/verify-outcomes.mjs",
+          evidencePaths: [relTracePath],
+          verifiedOutcome: `Query returned observedCount=${observedCount}, below required expectPgMinRows=${expectPgMinRows}`,
+        });
+      }
     }
   }
 
@@ -504,6 +583,29 @@ export async function runVerifyOutcomes(opts = {}) {
         evidencePaths: [relTracePath],
         verifiedOutcome: rdRes.error || "Redis check failed",
       });
+    } else if (rdRes.status === "passed") {
+      const queuesObj = rdRes.queues && typeof rdRes.queues === "object" ? rdRes.queues : {};
+      const workerCount = Number(rdRes.rqWorkerCount || 0);
+      const stuckQueues = Object.entries(queuesObj)
+        .filter(([, count]) => Number(count) > 0)
+        .map(([name, count]) => `${name}=${count}`);
+      if (stuckQueues.length > 0 && workerCount === 0) {
+        assertions += 1;
+        hasDegraded = true;
+        channels.redis.stuckQueues = stuckQueues;
+        findings.push({
+          id: nextFindingId(),
+          fingerprint: "runtime_degraded|redis:rq_no_workers",
+          classification: "runtime_degraded",
+          severity: "high",
+          title: "Redis RQ queue(s) have pending jobs with 0 active workers",
+          endpointOrRoute: "redis:rq",
+          checkMode: "redis_stuck_queue",
+          reproCommand: "node scripts/verify-outcomes.mjs",
+          evidencePaths: [relTracePath],
+          verifiedOutcome: `Detected pending RQ jobs with rqWorkerCount=0 (${stuckQueues.join(", ")}); background jobs are queued without an active worker`,
+        });
+      }
     }
   }
 
@@ -634,6 +736,10 @@ async function main() {
     requestId: values["request-id"],
     probeEndpoint: values["probe-endpoint"],
     expectMailpitMarker: values["expect-mailpit-marker"],
+    expectMailpitWithinMs: values["expect-mailpit-within-ms"],
+    expectPgMinRows: values["expect-pg-min-rows"],
+    tokenEnv: values["token-env"],
+    apiHeadersEnv: values["api-headers-env"],
     timeoutMs: values["timeout-ms"],
     memoryDir: values["memory-dir"],
     traceDir: values["trace-dir"],

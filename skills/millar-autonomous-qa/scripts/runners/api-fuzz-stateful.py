@@ -771,6 +771,7 @@ def main() -> int:
     parser.add_argument("--mailpit-url")
     parser.add_argument("--langfuse-url")
     parser.add_argument("--openapi-url")
+    parser.add_argument("--synthesized-openapi")
     parser.add_argument("--oidc-url")
     parser.add_argument("--route-catalog")
     parser.add_argument("--repo-path", action="append", default=[])
@@ -1058,6 +1059,30 @@ def main() -> int:
                 )
 
         static_routes = discover_static_routes(cfg, repo_paths, config_dir=config_dir, extra_catalog_path=args.route_catalog)
+        spec_source = "live_openapi" if spec_dict is not None else "none"
+        if spec_dict is None:
+            synth_candidates: list[Path] = []
+            if args.synthesized_openapi:
+                synth_candidates.append(Path(args.synthesized_openapi).resolve())
+            synth_candidates.append(memory_dir / "synthesized-openapi.json")
+            for synth_path in synth_candidates:
+                if synth_path.is_file():
+                    try:
+                        synth_data = json.loads(synth_path.read_text(encoding="utf-8"))
+                        if isinstance(synth_data, dict) and isinstance(synth_data.get("paths"), dict) and synth_data["paths"]:
+                            spec_dict = synth_data
+                            spec_source = "synthesized_har_openapi"
+                            trace_records.append(
+                                {
+                                    "phase": "openapi_synthesized_load",
+                                    "file": str(synth_path),
+                                    "pathCount": len(synth_data["paths"]),
+                                }
+                            )
+                            break
+                    except Exception as synth_exc:
+                        trace_records.append({"phase": "openapi_synthesized_load", "file": str(synth_path), "error": str(synth_exc)})
+
         if spec_dict is None:
             if not api_reachable:
                 add_finding(
@@ -1257,8 +1282,12 @@ def main() -> int:
                         )
                         if p in known_paths or any(e["path"] == p for e in static_routes)
                     ]
-                    lower_roles = [r for r in resolved_roles if r["role"] in ("student", "guardian", "viewer", "teacher")]
-                    for lr in lower_roles[:3]:
+                    lower_roles = [
+                        r for r in resolved_roles
+                        if r["role"] in ("student", "guardian", "viewer", "teacher")
+                        or str(r["role"]).startswith("custom")
+                    ]
+                    for lr in lower_roles:
                         for gp in gated_rbac_paths[:2]:
                             if lr["role"] == "viewer" and "finance" in gp:
                                 continue
@@ -2190,6 +2219,29 @@ def main() -> int:
                                         headers_env=actor_headers_env,
                                         required_header_keys=actor_header_keys,
                                     )
+                                elif 400 <= np_put.status_code < 500:
+                                    body_preview = sanitize_text(np_put.text[:240]).replace("\n", " ")
+                                    add_finding(
+                                        fid=f"QA-FUZZ-{len(findings) + 1:03d}",
+                                        fp=f"spec_gap|put_roundtrip_4xx:PUT /v1/education/notification-preferences:{np_put.status_code}",
+                                        classification="spec_gap",
+                                        severity="medium",
+                                        title=f"GET -> PUT round-trip on /v1/education/notification-preferences rejected with HTTP {np_put.status_code}",
+                                        endpoint_or_route="PUT /v1/education/notification-preferences",
+                                        check_mode="put_roundtrip_4xx",
+                                        repro_cmd=f"curl -i -X PUT {api_origin}/v1/education/notification-preferences",
+                                        verified_outcome=(
+                                            f"Idempotent GET -> PUT round-trip returned HTTP {np_put.status_code} "
+                                            f"(request/response schema mismatch or undocumented required field): {body_preview}"
+                                        ),
+                                        method="PUT",
+                                        rel_path="/v1/education/notification-preferences",
+                                        headers=actor_hdrs,
+                                        json_body=put_body,
+                                        token_env=actor_token_env,
+                                        headers_env=actor_headers_env,
+                                        required_header_keys=actor_header_keys,
+                                    )
                     except Exception as exc:
                         trace_records.append({"phase": "live_put_roundtrip", "error": str(exc)})
 
@@ -2228,7 +2280,26 @@ def main() -> int:
                     except Exception as exc:
                         trace_records.append({"phase": "live_negative", "path": rel_p, "error": str(exc)})
 
-        # Phase 3: Schemathesis OpenAPI Fuzzing
+        # Phase 3: Schemathesis OpenAPI Fuzzing (live OpenAPI or HAR-synthesized OpenAPI)
+        primary_auth_headers: dict[str, str] = {}
+        primary_auth_role: str | None = None
+        primary_auth_token_env: str | None = None
+        primary_auth_headers_env: str | None = None
+        primary_auth_header_keys: list[str] = []
+        for rc in configured_roles:
+            tok = resolve_role_token(rc)
+            eh, h_env, h_keys = resolve_role_headers(rc)
+            merged_h = dict(eh)
+            if tok:
+                merged_h["Authorization"] = f"Bearer {tok}"
+            if merged_h:
+                primary_auth_headers = merged_h
+                primary_auth_role = str(rc.get("role") or rc.get("name") or "authenticated")
+                primary_auth_token_env = str(rc.get("tokenEnv")) if rc.get("tokenEnv") else None
+                primary_auth_headers_env = h_env
+                primary_auth_header_keys = h_keys
+                break
+
         if spec_dict is not None and requests_used < max_requests and time.monotonic() < soft_deadline:
             tool_used = "schemathesis"
             try:
@@ -2246,6 +2317,9 @@ def main() -> int:
                     op_label = f"{op.method.upper()} {op.path}"
                     if "/hang" in op.path:
                         continue
+                    if spec_source == "synthesized_har_openapi" and op.method.upper() not in ("GET", "HEAD", "OPTIONS"):
+                        # Keep synthesized HAR fuzzing non-destructive by default
+                        continue
                     endpoints_covered.append(op_label)
                     remaining = max_requests - requests_used
                     per_op_examples = max(1, min(max_examples, 2, remaining))
@@ -2257,11 +2331,17 @@ def main() -> int:
                             return
                         requests_used += 1
                         assertions += 1
-                        mark_role("anonymous")
-                        resp = case.call(base_url=api_origin, timeout=3.0)
+                        call_headers: dict[str, str] | None = None
+                        if spec_source == "synthesized_har_openapi" and primary_auth_headers:
+                            call_headers = dict(primary_auth_headers)
+                            mark_role(primary_auth_role or "authenticated")
+                        else:
+                            mark_role("anonymous")
+                        resp = case.call(base_url=api_origin, headers=call_headers, timeout=3.0)
                         trace_records.append(
                             {
                                 "phase": "schemathesis",
+                                "specSource": spec_source,
                                 "op": op_label,
                                 "path": case.formatted_path,
                                 "status": resp.status_code,
@@ -2387,9 +2467,10 @@ def main() -> int:
             except Exception as sch_exc:
                 trace_records.append({"phase": "schemathesis_init", "error": str(sch_exc)})
 
-        # Phase 4: Static-Catalog Route Probing & Negative Boundary Checks (when OpenAPI unavailable)
-        if spec_dict is None and static_routes and api_reachable and requests_used < max_requests and time.monotonic() < soft_deadline:
-            tool_used = "hypothesis"
+        # Phase 4: Static-Catalog Route Probing & Negative Boundary Checks (unauth + authenticated probes)
+        if static_routes and api_reachable and requests_used < max_requests and time.monotonic() < soft_deadline:
+            if spec_dict is None:
+                tool_used = "hypothesis"
             unparam_gets = [
                 e for e in static_routes
                 if e["method"] == "GET" and "{" not in e["path"] and "/logout" not in e["path"] and "/sse" not in e["path"]
@@ -2413,7 +2494,7 @@ def main() -> int:
                 bad_path = re.sub(r"\{[^}]+\}", "not-a-valid-uuid", e["path"]) + "?limit=-1&page=abc"
                 selected_static.append((e, bad_path, False))
 
-            probe_budget = min(max_requests - requests_used, 12)
+            probe_budget = min(max_requests - requests_used, 14)
             probed_count = 0
             for entry, req_path, expect_protected in selected_static:
                 if probed_count >= probe_budget or requests_used >= max_requests or time.monotonic() >= soft_deadline:
@@ -2428,6 +2509,7 @@ def main() -> int:
                     trace_records.append(
                         {
                             "phase": "static_catalog_probe",
+                            "mode": "unauthenticated",
                             "path": req_path,
                             "template": entry["path"],
                             "expectProtected": expect_protected,
@@ -2484,6 +2566,47 @@ def main() -> int:
                                 verified_outcome=f"Expected 401/403 for gated route {entry['path']}, got HTTP 200",
                                 method="GET",
                                 rel_path=req_path,
+                            )
+                    # Follow up with authenticated probe when unauth returned 401/403 so endpoint handler is exercised
+                    if (
+                        primary_auth_headers
+                        and s_resp.status_code in (401, 403)
+                        and probed_count < probe_budget
+                        and requests_used < max_requests
+                        and time.monotonic() < soft_deadline
+                    ):
+                        probed_count += 1
+                        requests_used += 1
+                        assertions += 1
+                        mark_role(primary_auth_role or "authenticated")
+                        a_resp = client.get(f"{api_origin}{req_path}", headers=primary_auth_headers)
+                        trace_records.append(
+                            {
+                                "phase": "static_catalog_probe",
+                                "mode": "authenticated",
+                                "role": primary_auth_role or "authenticated",
+                                "path": req_path,
+                                "template": entry["path"],
+                                "status": a_resp.status_code,
+                            }
+                        )
+                        if a_resp.status_code >= 500:
+                            add_finding(
+                                fid=f"QA-FUZZ-{len(findings) + 1:03d}",
+                                fp=f"confirmed_bug|static_auth500:GET {req_path}",
+                                classification="confirmed_bug",
+                                severity="high",
+                                title=f"Authenticated static-catalog probe triggered HTTP {a_resp.status_code} on GET {req_path}",
+                                endpoint_or_route=f"GET {entry['path']}",
+                                check_mode="status_gte_500",
+                                repro_cmd=f"curl -i {api_origin}{req_path}",
+                                verified_outcome=f"Authenticated GET {req_path} ({primary_auth_role}) returned HTTP {a_resp.status_code}",
+                                method="GET",
+                                rel_path=req_path,
+                                headers=primary_auth_headers,
+                                token_env=primary_auth_token_env,
+                                headers_env=primary_auth_headers_env,
+                                required_header_keys=primary_auth_header_keys,
                             )
                 except Exception as exc:
                     trace_records.append({"phase": "static_catalog_probe", "path": req_path, "error": str(exc)})

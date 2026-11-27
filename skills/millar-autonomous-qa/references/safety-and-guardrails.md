@@ -40,6 +40,7 @@ To keep target repositories 100% unmodified:
 ## 4. Isolated Test Accounts and Read-Only Target Integrity
 
 - Use only explicit non-production seeded accounts (for example `.local` test users) or ephemeral `qa-` prefixed records created in the non-production environment.
+- **Origin-Scoped Header Injection**: Never set Playwright global `contextOpts.extraHTTPHeaders` for authenticated browser sessions. Always scope `Authorization` and `X-*` tenant/membership headers via `context.route("**/*", ...)` restricted strictly to target and API origins (`headerAllowedOrigins`) so credentials never leak to third-party CDNs or Google Fonts and never trigger CORS preflight false positives.
 - Never mutate target application source code, git working trees, or design-system documents.
 - Redact `Bearer` tokens, database passwords, and API secrets via `redactSecrets()` before writing any trace, ledger, or HTML report.
 

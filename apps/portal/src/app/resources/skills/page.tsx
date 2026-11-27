@@ -103,17 +103,17 @@ const SKILLS: SkillDocItem[] = [
   {
     id: "millar-autonomous-qa",
     name: "millar-autonomous-qa",
-    headline: "Continuous 8-stage autonomous QA loop across 9 full-stack modes & HTML reports",
+    headline: "Hybrid-depth 8-stage autonomous QA loop, 4-axis security matrix, HAR-to-OpenAPI & Report v2",
     uri: "millar://skills/millar-autonomous-qa",
     references: [
       { file: "tool-selection.md", purpose: "Non-redundant 7-tool stack (Playwright, CDP MCP, Schemathesis, Hypothesis, k6, Toxiproxy, Promptfoo)" },
-      { file: "qa-loop-and-modes.md", purpose: "8-stage continuous loop, 9 testing modes, triage rubric & regression promotion" },
-      { file: "safety-and-guardrails.md", purpose: "Non-prod target verification, budget caps, CWD/cache isolation & cleanup rules" },
-      { file: "outcome-verification.md", purpose: "Multi-channel correlation across X-Request-Id, Postgres, Redis/RQ, Mailpit, Docker & Langfuse" },
-      { file: "self-validation-log.md", purpose: "Empirical validation log & 166/166 strict E2E adversarial hardening audit" },
-      { file: "scripts/run-qa-loop.mjs", purpose: "Continuous QA loop runner with persistent memory ledgers & HTML report export" },
+      { file: "qa-loop-and-modes.md", purpose: "8-stage frontier loop, --depth=smoke|standard|deep-business, 4-axis auth matrix & workflow scenarios" },
+      { file: "safety-and-guardrails.md", purpose: "Non-prod target verification, origin-scoped auth headers, budget caps & cache isolation" },
+      { file: "outcome-verification.md", purpose: "Causal verification across X-Request-Id, Postgres, stuck Redis RQ queues, Mailpit polling & Docker" },
+      { file: "self-validation-log.md", purpose: "Empirical validation log (166/166 strict E2E + v0.4.0 0% FP live benchmark)" },
+      { file: "scripts/run-qa-loop.mjs", purpose: "Continuous QA loop CLI with HAR-to-OpenAPI, persona workflows & interactive HTML Report v2" },
     ],
-    promptExample: "Run millar-autonomous-qa against http://localhost:5173: enforce safety-guard, test multi-role UI/API/RBAC/resilience/outcomes, and emit an HTML report.",
+    promptExample: "Run millar-autonomous-qa (--depth=deep-business) against http://localhost:5173: enforce safety-guard, expand UI frontier, run 4-axis auth matrix & causal outcome checks, and emit HTML Report v2.",
   },
 ];
 

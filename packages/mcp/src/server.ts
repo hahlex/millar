@@ -1422,7 +1422,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Autonomous End-to-End QA & Outcome Verification",
       description:
-        "Activates millar-autonomous-qa v0.1: continuous 8-stage QA loop across multi-role/multi-tenant sessions and 9 testing modes (Playwright, Chrome DevTools MCP, Schemathesis, Hypothesis, k6, Toxiproxy, Promptfoo, Postgres/Redis/Mailpit/Langfuse outcome checks) with non-prod safety guards and self-contained HTML reporting.",
+        "Activates millar-autonomous-qa v0.4: continuous 8-stage QA loop with hybrid --depth=smoke|standard|deep-business modes, origin-scoped multi-role/multi-tenant browser sessions, frontier route expansion, ARIA/occlusion/i18n audits, passive HAR-to-OpenAPI synthesis for Schemathesis, 4-axis differential authorization matrix, k6/Toxiproxy/Promptfoo built-in SSE eval, multi-channel causal outcome verification, and interactive HTML Report v2.",
       argsSchema: {
         targetUrl: z.string().describe("Non-production frontend or application URL to validate (e.g. 'http://localhost:5173')."),
         modes: z

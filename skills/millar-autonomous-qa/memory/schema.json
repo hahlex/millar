@@ -33,6 +33,7 @@
       "required": ["iteration", "startedAt", "completedAt", "phases", "toolsRun", "routes", "endpoints", "roles", "modes"],
       "properties": {
         "iteration": { "type": "integer", "minimum": 1 },
+        "depth": { "type": "string", "enum": ["smoke", "standard", "deep-business"] },
         "startedAt": { "type": "string", "format": "date-time" },
         "completedAt": { "type": "string", "format": "date-time" },
         "phases": {
@@ -52,7 +53,11 @@
         },
         "toolsRun": { "type": "array", "items": { "type": "string" } },
         "routes": { "type": "array", "items": { "type": "string" } },
+        "discoveredRoutes": { "type": "array", "items": { "type": "string" } },
+        "exercisedRoutes": { "type": "array", "items": { "type": "string" } },
         "endpoints": { "type": "array", "items": { "type": "string" } },
+        "discoveredEndpoints": { "type": "array", "items": { "type": "string" } },
+        "exercisedEndpoints": { "type": "array", "items": { "type": "string" } },
         "roles": { "type": "array", "items": { "type": "string" } },
         "modes": { "type": "array", "items": { "type": "string" } },
         "budgetSnapshot": { "$ref": "#/$defs/runBudget" }
@@ -155,6 +160,17 @@
         "redisUrlEnv": { "type": "string" },
         "dockerContainers": { "type": "array", "items": { "type": "string" } },
         "allowPrivateIp": { "type": "boolean" },
+        "depth": { "type": "string", "enum": ["smoke", "standard", "deep-business"] },
+        "aiTimeoutMs": { "type": "integer", "minimum": 5000 },
+        "aiProviderType": { "type": "string", "enum": ["sse-thread-turns", "http-json", "openai-chat"] },
+        "aiLlmRubric": { "type": ["boolean", "string"] },
+        "specPaths": { "type": "array", "items": { "type": "string" } },
+        "workflows": { "type": "array", "items": { "type": "object" } },
+        "authMatrix": { "type": "object" },
+        "k6WriteRace": { "type": "object" },
+        "resilienceAuthProbePath": { "type": "string" },
+        "headerAllowedOrigins": { "type": "array", "items": { "type": "string" } },
+        "forbidEmDash": { "type": "boolean" },
         "limits": {
           "type": "object",
           "properties": {
