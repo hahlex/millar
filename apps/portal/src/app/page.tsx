@@ -226,7 +226,7 @@ export default function MillarIntroductionPage() {
       href: "/resources/mcp",
       section: "Resources",
       title: "MCP Server & Agents",
-      caption: "13 read-only Tools, 8 Skills & 11 MCP Prompts",
+      caption: "13 read-only Tools, 9 Skills & 12 MCP Prompts",
       preview: (
         <div
           style={{
@@ -266,7 +266,7 @@ export default function MillarIntroductionPage() {
           { value: String(registry.components.length), label: "Product UI Primitives" },
           { value: String(registry.compositionPatterns.length), label: "Marketing Compositions" },
           { value: String(registry.visualAssets.length), label: "Code-Native Assets" },
-          { value: "13", label: "MCP Tools · 8 Skills" },
+          { value: "13", label: "MCP Tools · 9 Skills" },
         ].map((item) => (
           <div
             key={item.label}

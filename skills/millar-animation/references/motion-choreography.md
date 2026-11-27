@@ -60,8 +60,34 @@ Content renders visible by default; modern browsers enhance smoothly on the comp
 }
 ```
 
-### Cross-Page Continuity via View Transitions
-Assign matching `view-transition-name` identifiers to persistent brand marks, active section headers, or hero-to-detail media frames so navigating across routes feels spatially continuous rather than a jarring white flash.
+### Cross-Page Continuity via View Transitions Level 2
+Assign unique visible `view-transition-name` identifiers to persistent brand marks, active section headers, or hero-to-detail media frames (never duplicate a visible `view-transition-name`, which silently aborts transitions) and opt in to MPA continuity with `@view-transition { navigation: auto; }` plus `view-transition-class` for shared group timing.
+
+### Native Top-Layer Entry/Exit (`@starting-style` + `allow-discrete`) & Auto-Height (`interpolate-size`)
+Animate native `[popover]`, `<dialog>`, and expanding disclosures cleanly without JavaScript measurement hacks:
+```css
+@media (prefers-reduced-motion: no-preference) {
+  [popover] {
+    opacity: 0;
+    transform: scale(0.96);
+    transition: opacity 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      display 180ms allow-discrete,
+      overlay 180ms allow-discrete;
+  }
+  [popover]:popover-open {
+    opacity: 1;
+    transform: scale(1);
+    @starting-style {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+  @supports (interpolate-size: allow-keywords) {
+    :root { interpolate-size: allow-keywords; }
+  }
+}
+```
 
 ### Mandatory `prefers-reduced-motion` Alternative
 Strip spatial displacement and loops while keeping crisp color/opacity feedback:

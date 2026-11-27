@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 /**
- * millar CLI: Zero-GitHub installer for Millar Agent Skills + standalone audit runner.
+ * millar CLI: Zero-GitHub installer for Millar Agent Skills + standalone audit & harden runners.
  *
  * Commands:
- *   npx millar install [--target=<dir>] [--dry-run]   Install or update all 8 Millar Skills locally
+ *   npx millar install [--target=<dir>] [--dry-run]   Install or update all 9 Millar Skills locally
  *   npx millar update  [--target=<dir>] [--dry-run]   Alias for install (overwrites with latest bundled skills)
- *   npx millar audit <path> [audit-flags]             Run bundled Zero-MCP millar-audit.mjs
+ *   npx millar audit <path> [audit-flags]             Run bundled Zero-MCP millar-audit.mjs (v0.4.0)
+ *   npx millar harden <path> [harden-flags]           Run bundled Zero-MCP millar-harden-scan.mjs (v0.1.0)
  *   npx millar mcp                                    Print MCP config / launch stdio server
  *   npx millar --version                              Print bundled CLI version
  */
@@ -33,7 +34,7 @@ function readCliVersion() {
       }
     }
   }
-  return "0.6.0-draft.1";
+  return "0.7.0-draft.1";
 }
 
 function resolveSkillsDir() {
@@ -94,10 +95,19 @@ function runAudit(auditArgs) {
   process.exit(res.status ?? 0);
 }
 
+function runHarden(hardenArgs) {
+  const skillsSrc = resolveSkillsDir();
+  const hardenScript = path.join(skillsSrc, "millar-diagnose-and-harden", "scripts", "millar-harden-scan.mjs");
+  const res = spawnSync(process.execPath, [hardenScript, ...hardenArgs], { stdio: "inherit" });
+  process.exit(res.status ?? 0);
+}
+
 if (cmd === "install" || cmd === "update" || cmd === "upgrade" || cmd === "install-skills" || cmd === "skills") {
   runInstall(args.slice(1));
 } else if (cmd === "audit") {
   runAudit(args.slice(1));
+} else if (cmd === "harden" || cmd === "scan") {
+  runHarden(args.slice(1));
 } else if (cmd === "mcp") {
   console.log(
     JSON.stringify(
@@ -117,7 +127,7 @@ if (cmd === "install" || cmd === "update" || cmd === "upgrade" || cmd === "insta
   console.log(`millar v${readCliVersion()}`);
 } else if (cmd === "--help" || cmd === "-h" || cmd === "help") {
   console.log(
-    `millar v${readCliVersion()}\nUsage:\n  npx millar install [--target=<dir>] [--dry-run]\n  npx millar update  [--target=<dir>] [--dry-run]\n  npx millar audit <path> [flags]\n  npx millar mcp\n  npx millar --version`,
+    `millar v${readCliVersion()}\nUsage:\n  npx millar install [--target=<dir>] [--dry-run]\n  npx millar update  [--target=<dir>] [--dry-run]\n  npx millar audit <path> [flags]\n  npx millar harden <path> [flags]\n  npx millar mcp\n  npx millar --version`,
   );
 } else {
   console.error(`Unknown command: ${cmd}. Try: npx millar install`);

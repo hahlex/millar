@@ -14,13 +14,14 @@ src/
 - **Two-Adapter Rule:** Only introduce an abstraction seam when two concrete implementations exist (e.g. real API + in-memory test fake, or light + dark register adapters).
 - **Accept Dependencies:** Pass fetchers, clocks, or formatters into pure domain modules so tests stay deterministic and sub-second.
 
-## 2. React / Next.js Server-Client Boundary Discipline
+## 2. Impact-Ordered Performance & React 19 / Modern CSS Discipline
 
-- **Server by Default:** Keep `layout.tsx`, `page.tsx`, static copy, and read queries on the server.
-- **Push `"use client"` Down:** Isolate stateful interactivity (search bars, modals, theme toggles, interactive playgrounds) into lean leaf components.
-- **Slot Composition:** Pass Server Components as `children` into Client layout wrappers (shells, drawers, dialogs) instead of marking the entire subtree `"use client"`.
-- **Zero Hydration Mismatches:** Never branch initial render markup on `window`, `Date.now()`, `Math.random()`, or `localStorage`; read browser-only state inside `useEffect` or sync cleanly via cookie/header/CSS media query.
-- **Server vs. Client State:** Never copy server-fetched lists into global client stores unless live optimistic editing genuinely requires it.
+Optimize strictly in order of measurable user impact (never micro-memoize before fixing waterfalls and bundle weight):
+1. **Priority 1 (Eliminate Async Waterfalls):** Run independent data fetches in parallel (`Promise.all()`), evaluate cheap synchronous guards before awaiting I/O, and wrap slow secondary panels in `<Suspense>` boundaries so primary UI streams immediately.
+2. **Priority 2 (Client Bundle Discipline):** Keep `layout.tsx`, `page.tsx`, static copy, and read queries on the server (`0 KB` client JS). Push `"use client"` down to lean interactive leaves and pass Server Components through `children` slots. Avoid wholesale barrel imports (`lodash`, `moment`, `* as Icons`) in favor of direct subpath or tree-shaken imports; dynamically import heavy below-the-fold charts/editors.
+3. **Priority 3 (React 19 & Native CSS Primitives):** Use `useActionState` + `useTransition` for form mutations and filter transitions so typing/clicking stays interruptible; break up heavy client loops with `scheduler.yield()`; prefer native CSS Container Queries (`@container`), Popover API (`[popover]`), `<dialog>`, and CSS Anchor Positioning (`anchor-name` / `position-anchor`) over heavy third-party positioning JS.
+4. **Zero Hydration Mismatches & Clean State:** Never branch initial render markup on `window`, `Date.now()`, `Math.random()`, or `localStorage`; read browser-only state inside `useEffect` or sync via cookie/header/CSS media query. Never copy server-fetched lists into global client stores unless live optimistic editing genuinely requires it.
+5. **Frontend Security Defaults:** Never render unsanitized HTML (`dangerouslySetInnerHTML`/`innerHTML`), always pair `target="_blank"` with `rel="noopener noreferrer"`, and never expose server secrets in `NEXT_PUBLIC_*` or `VITE_*` variables.
 
 ## 3. Forms, Tables & Interactive Ergonomics
 

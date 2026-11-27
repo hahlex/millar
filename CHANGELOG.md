@@ -2,6 +2,26 @@
 
 All notable changes to **Millar** (Hahlex Design System) are documented here following [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/).
 
+## [0.7.0-draft.1 / MCP 0.3.0-draft.1] - 2026-11-28 (9th Skill `millar-diagnose-and-harden` & SOTA 2025-2026 Suite Enrichment)
+
+### Added
+- **`millar-diagnose-and-harden` (`skills/millar-diagnose-and-harden/`, `v0.1.0-draft.1`)**: Ninth open-standard Millar skill closing the QA -> Fix -> Verify loop with 6-phase white-box scientific root-cause debugging, OWASP Top 10 / API Security / Agentic AI hardening, Vercel Priority 1-3 waterfall & N+1 performance profiling, surgical minimal-diff remediation with real-seam regression tests, 4 progressive-disclosure reference playbooks (`root-cause-protocol.md`, `owasp-security-hardening.md`, `performance-and-waterfall-diagnosis.md`, `minimal-diff-and-seam-testing.md`), and two zero-dependency Node.js CLIs:
+  - `scripts/millar-harden-scan.mjs`: Static OWASP/secret/perf/reliability scanner (`--diff-base`, inline `millar-harden-ok` suppressions, `--report-md`) plus live HTTP security header, cookie, and adversarial CORS origin-reflection probing (`--url`).
+  - `scripts/triage-repro-loop.mjs`: Multi-run tight feedback loop & flake classifier (`--expect=red|green`, p95 timing, Bearer/JWT redaction) plus `--from-qa-ledger` importer turning `millar-autonomous-qa` `findings-ledger.json` into prioritized `.millar/remediation-plan.md`.
+- **`millar@0.7.0-draft.1` CLI**: Added **`npx millar harden <path> [flags]`** subcommand invoking bundled `millar-harden-scan.mjs` alongside `install`, `update`, `audit`, `mcp`, and `--version`, bundling all 9 skills.
+- **`@hahlex/millar-mcp@0.3.0-draft.1`**: Exposes all 9 Millar skills, 28 progressive-disclosure reference playbooks, `millar://skills/millar-diagnose-and-harden` resources, 6 combination recipes (adding `qa-to-fix-hardening-loop`), and the 12th MCP Prompt `millar-diagnose-and-harden`.
+
+### Changed
+- **Enriched all 8 existing Millar skills with 2025-2026 SOTA practices**:
+  - `millar-verify-web` (`v0.4.0-draft.1`) & `scripts/millar-audit.mjs v0.4.0`: Added `a11y/wcag22-target-size` (WCAG 2.2 SC 2.5.8 `< 24x24px` live check), `a11y/focus-outline-removed`, `security/target-blank-noopener`, `security/unsafe-html-sink`, `cwv/lcp-lazy-hero`, `cwv/live-cls-exceeded`, and `perf/barrel-import`.
+  - `millar-build-web` (`v0.4.0-draft.1`): Added Vercel Priority 1-3 impact hierarchy (eliminating waterfalls, bundle discipline, server perf), React 19 `useActionState`/`useTransition`, `scheduler.yield()` & LoAF INP guidance, Speculation Rules API, `@container` / `[popover]` / CSS Anchor Positioning, and frontend security defaults.
+  - `millar-animation` (`v0.4.0-draft.1`): Added `@starting-style` + `transition-behavior: allow-discrete`, `interpolate-size: allow-keywords`, and View Transitions Level 2 (`@view-transition { navigation: auto }`, `view-transition-class`).
+  - `millar-design` (`v0.4.0-draft.1`): Added WCAG 2.2 AA target-size/focus floors, `@container`-first component fluid sizing, and updated 9-skill handoff routing.
+  - `millar-deep-research` (`v0.4.0-draft.1`): Added Technical Surface Forensics (font loading, landmarks, LCP media, motion primitives).
+  - `millar-create-image` (`v0.5.1-draft.1`): Added CWV-safe dual-format delivery guidance (2K PNG master + AVIF/WebP `srcset`, `fetchPriority="high"`).
+  - `millar-autonomous-qa` (`v0.4.1-draft.1`): Added closed-loop handoff to `millar-diagnose-and-harden` via `triage-repro-loop.mjs --from-qa-ledger`.
+  - `millar-web-workflow` (`v0.4.0-draft.1`): Updated master conductor & Track S/M/L routing across all 9 Millar skills.
+
 ## [0.6.0-draft.1 / MCP 0.2.0-draft.1] - 2026-11-28 (Millar Autonomous QA Skill Release)
 
 ### Added

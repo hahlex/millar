@@ -1,7 +1,7 @@
 ---
 name: millar-create-image
-description: "Gallery-grade visual art direction, Subject-First English prompting (80-135 words), Context-Appropriate Natural Daylight (zero gloomy classrooms), Kinetic Mid-Action Storytelling, Natural Hand-Drawn Editorial Illustration, Brand Motif Elevation, Organic Path H Hybrid Photo+2K Print-on-Paper Vector Compositing, and 503/offline 4-layer procedural craft (v0.5.0)."
-version: 0.5.0-draft.1
+description: "Gallery-grade visual art direction, Subject-First English prompting (80-135 words), Context-Appropriate Natural Daylight (zero gloomy classrooms), Kinetic Mid-Action Storytelling, Natural Hand-Drawn Editorial Illustration, Brand Motif Elevation, Organic Path H Hybrid Photo+2K Print-on-Paper Vector Compositing, CWV-safe dual-format delivery, and 503/offline 4-layer procedural craft (v0.5.1)."
+version: 0.5.1-draft.1
 license: MIT
 ---
 
@@ -59,4 +59,4 @@ Read the matching specialist playbook(s) BEFORE drafting prompts:
 2. **Kinetic Concrete Action Veto:** Are people or hands frozen in generic poses (*vaguely pointing, hovering horizontally in mid-air, standing stiffly*) instead of doing ONE clear, natural physical action with real props? If YES -> **REJECT & REGENERATE!**
 3. **Natural Linework & Organic Print Veto:** Do illustrations look like stiff uniform CAD/corporate vectors, OR do `Path H` overlays look like glossy 3D plastic balls / pasted CSS UI pill buttons on paper? If YES -> **REJECT & REBUILD WITH ORGANIC INK-SOAK & VARIABLE LINEWEIGHT!**
 4. **Brand Motif & Countable Integrity Veto:** Every iconic brand motif elevated (no timid substitutions), every `1..9` count/emblem mathematically crisp, and exact 5 natural fingers per hand.
-5. **Zero-Addition Pass 2 Polish + Dual Provenance:** Refine clearance, seam integration, and shadow warmth without adding clutter, then embed PNG `tEXt` + `.prompt.json` via `node <skill-dir>/scripts/embed-provenance.mjs <plate.png> --prompt="..." --brand="..." --method="..." --aspect="16:9" --sidecar`.
+5. **Zero-Addition Pass 2 Polish, CWV Delivery & Dual Provenance:** Refine clearance, seam integration, and shadow warmth without adding clutter, embed PNG `tEXt` + `.prompt.json` via `node <skill-dir>/scripts/embed-provenance.mjs <plate.png> --prompt="..." --brand="..." --method="..." --aspect="16:9" --sidecar`, and ship responsive `AVIF`/`WebP` web exports alongside explicit `width`/`height` (`fetchPriority="high"` on above-the-fold LCP heroes, `loading="lazy"` strictly below the fold).

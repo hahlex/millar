@@ -6,7 +6,7 @@ import { createMillarMcpServer } from "./server.js";
 
 const REPO_ROOT = path.resolve(import.meta.dirname, "../../..");
 
-describe("@hahlex/millar-mcp: Resources, 13 Tools, 11 Prompts & 8 Millar Agent Skills Suite", () => {
+describe("@hahlex/millar-mcp: Resources, 13 Tools, 12 Prompts & 9 Millar Agent Skills Suite", () => {
   let closePair: (() => Promise<void>) | null = null;
 
   async function connectClient() {
@@ -76,6 +76,9 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 11 Prompts & 8 Millar Agent S
     expect(uris).toContain("millar://skills/millar-autonomous-qa");
     expect(uris).toContain("millar://skills/millar-autonomous-qa/references/qa-loop-and-modes.md");
     expect(uris).toContain("millar://skills/millar-autonomous-qa/references/safety-and-guardrails.md");
+    expect(uris).toContain("millar://skills/millar-diagnose-and-harden");
+    expect(uris).toContain("millar://skills/millar-diagnose-and-harden/references/root-cause-protocol.md");
+    expect(uris).toContain("millar://skills/millar-diagnose-and-harden/references/owasp-security-hardening.md");
     expect(uris).toContain("millar://skills/millar-design/references/style-dna-contract.md");
     expect(uris).toContain("millar://skills/millar-web-workflow/references/creative-divergence-protocol.md");
     expect(uris).toContain("millar://skills/millar-verify-web/references/five-layer-qa-gate.md");
@@ -176,7 +179,7 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 11 Prompts & 8 Millar Agent S
 
     const skillList = await client.callTool({ name: "list_skills", arguments: {} });
     const sListData = skillList.structuredContent as { count: number; skills: Array<{ id: string }>; recipes: unknown[] };
-    expect(sListData.count).toBe(8);
+    expect(sListData.count).toBe(9);
     expect(sListData.skills.map((s) => s.id).sort()).toEqual([
       "millar-animation",
       "millar-autonomous-qa",
@@ -184,10 +187,29 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 11 Prompts & 8 Millar Agent S
       "millar-create-image",
       "millar-deep-research",
       "millar-design",
+      "millar-diagnose-and-harden",
       "millar-verify-web",
       "millar-web-workflow",
     ]);
-    expect(sListData.recipes.length).toBeGreaterThanOrEqual(5);
+    expect(sListData.recipes.length).toBeGreaterThanOrEqual(6);
+
+    const hardenSkillDetail = await client.callTool({
+      name: "get_skill",
+      arguments: { name: "millar-diagnose-and-harden", includeAllReferences: true },
+    });
+    const hardenSkillData = hardenSkillDetail.structuredContent as {
+      id: string;
+      skillMarkdown: string;
+      includedReferences: Array<{ file: string; content: string }>;
+    };
+    expect(hardenSkillData.id).toBe("millar-diagnose-and-harden");
+    expect(hardenSkillData.skillMarkdown).toContain("millar-harden-scan.mjs");
+    expect(hardenSkillData.includedReferences.map((r) => r.file).sort()).toEqual([
+      "minimal-diff-and-seam-testing.md",
+      "owasp-security-hardening.md",
+      "performance-and-waterfall-diagnosis.md",
+      "root-cause-protocol.md",
+    ]);
 
     const qaSkillDetail = await client.callTool({
       name: "get_skill",
@@ -234,7 +256,7 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 11 Prompts & 8 Millar Agent S
     expect(wfData.includedReferences[0]?.content).toContain("Three-Family Cultural Derivation");
   });
 
-  it("exposes all 11 user-controlled MCP Prompts (3 core workflows + 8 composable Millar Skills)", async () => {
+  it("exposes all 12 user-controlled MCP Prompts (3 core workflows + 9 composable Millar Skills)", async () => {
     const client = await connectClient();
     const { prompts } = await client.listPrompts();
     expect(prompts.map((p) => p.name).sort()).toEqual([
@@ -247,9 +269,19 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 11 Prompts & 8 Millar Agent S
       "millar-create-image",
       "millar-deep-research",
       "millar-design",
+      "millar-diagnose-and-harden",
       "millar-verify-web",
       "millar-web-workflow",
     ]);
+
+    const hardenPrompt = await client.getPrompt({
+      name: "millar-diagnose-and-harden",
+      arguments: { target: "apps/api/src", mode: "qa-remediation", symptoms: "QA-005 422 custom role bug", lang: "vi" },
+    });
+    expect(hardenPrompt.messages.length).toBe(2);
+    expect(JSON.stringify(hardenPrompt.messages)).toContain("millar://skills/millar-diagnose-and-harden");
+    expect(JSON.stringify(hardenPrompt.messages)).toContain("QA-005");
+    expect(JSON.stringify(hardenPrompt.messages)).toContain("Vietnamese");
 
     const autoQaPrompt = await client.getPrompt({
       name: "millar-autonomous-qa",
@@ -333,7 +365,7 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 11 Prompts & 8 Millar Agent S
     });
     const qaFirst = qaRef.contents[0];
     const qaText = qaFirst && "text" in qaFirst ? qaFirst.text : "";
-    expect(qaText).toContain("v0.3.0");
+    expect(qaText).toContain("v0.4.0");
     expect(qaText).toContain("view-transition-name");
 
     const archRef = await client.readResource({

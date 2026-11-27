@@ -59,9 +59,9 @@ pnpm add @hahlex/millar-tokens@draft @hahlex/millar-ui@draft @hahlex/millar-mark
 | `packages/domain-education` | `@hahlex/millar-domain-education` | Optional vertical extension pack (`SkillDomainBadge`, `LearnerHighlight`) keeping Millar core 100% product-agnostic |
 | `packages/marketing` | `@hahlex/millar-marketing` | 6 diverse Composition Patterns, 14 code-native photo-free Visual Assets (SVG/CSS/Canvas/React), Productive & Expressive Motion Library, 10 Marketing Sections, 4 Page/App Templates, and live Visual Do's & Don'ts |
 | `packages/validator` | `@hahlex/millar-validator` | Deterministic design compliance engine + CLI (`pnpm run check:design`) strictly separating `automatedChecks` from `humanReviewCriteria` |
-| `packages/mcp` | `@hahlex/millar-mcp` | MCP `2026-07-28` server (`dist/stdio.js` + `dist/http.js`) exposing `millar://` Resources (including `millar://skills/*`), 13 read-only Tools, 11 Prompts, and all 8 bundled Millar Agent Skills |
-| `packages/cli` | `millar` | Zero-GitHub CLI (`npx millar install`, `npx millar update`, `npx millar audit`, `npx millar mcp`) shipping all 8 bundled Millar skills |
-| `skills/` | Millar Agent Skills | 8 open-standard composable skills (`v0.6.0` adding `millar-autonomous-qa` + `v0.5.0` visual craft + 24 playbooks + standalone Zero-MCP `scripts/millar-audit.mjs`, `scripts/embed-provenance.mjs`, & `scripts/run-qa-loop.mjs`) bundled inside `@hahlex/millar-mcp` or installable standalone via `npx millar install` across Antigravity, Claude Code, Codex, and Cursor |
+| `packages/mcp` | `@hahlex/millar-mcp` | MCP `2026-07-28` server (`dist/stdio.js` + `dist/http.js`) exposing `millar://` Resources (including `millar://skills/*`), 13 read-only Tools, 12 Prompts, and all 9 bundled Millar Agent Skills |
+| `packages/cli` | `millar` | Zero-GitHub CLI (`npx millar install`, `npx millar update`, `npx millar audit`, `npx millar harden`, `npx millar mcp`) shipping all 9 bundled Millar skills |
+| `skills/` | Millar Agent Skills | 9 open-standard composable skills (`v0.7.0` adding `millar-diagnose-and-harden` + SOTA upgrades across all 8 skills + 28 playbooks + standalone Zero-MCP `scripts/millar-audit.mjs v0.4.0`, `scripts/millar-harden-scan.mjs`, `scripts/triage-repro-loop.mjs`, `scripts/embed-provenance.mjs`, & `scripts/run-qa-loop.mjs`) bundled inside `@hahlex/millar-mcp` or installable standalone via `npx millar install` across Antigravity, Claude Code, Codex, and Cursor |
 | `apps/portal` | `@hahlex/millar-portal` | Next.js 15 App Router static portal live at `https://millar.hahlex.com` (`basePath: "/millar"`) showcasing Foundations, Marketing, Product, Agent Skills Suite, Resources, `Ctrl+K` search, Light/Dark, and EN/VI live specimens |
 
 ## Connect the Millar MCP Server
@@ -102,7 +102,7 @@ PORT=3105 node packages/mcp/dist/http.js
 | `pnpm run check:governance` | Enforces Draft/Approved/Deprecated lifecycle rules, blocks AI self-approval, and verifies visual-asset referential integrity |
 | `pnpm run typecheck` | Runs `tsc --noEmit` across all 8 workspace packages & apps |
 | `pnpm run test` | Runs Vitest unit, accessibility (`axe-core`), validator, and in-memory MCP protocol tests |
-| `pnpm run test:mcp-stdio` | Spawns real OS stdio child process (`dist/stdio.js`) and verifies all 13 Tools, static Resources (`millar://skills/*`), and 11 Prompts |
+| `pnpm run test:mcp-stdio` | Spawns real OS stdio child process (`dist/stdio.js`) and verifies all 13 Tools, static Resources (`millar://skills/*`), and 12 Prompts |
 | `pnpm run check:design -- --register=product <file>` | Runs deterministic CLI compliance checks on any TSX/CSS/HTML file |
 | `pnpm run test:e2e` | Runs Playwright + real-browser `@axe-core/playwright` across Portal routes (Light & Dark, 1440px / 768px / 375px, keyboard, VI locale, reduced-motion, live component interactivity) |
 | `pnpm run publish:dry-run` | Verifies npm tarball packing & topological `workspace:*` resolution for all 7 `@hahlex/millar-*` packages |

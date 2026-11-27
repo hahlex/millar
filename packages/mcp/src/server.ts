@@ -425,7 +425,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Agent Skills Suite Index",
       description:
-        "Catalog of all 8 composable Millar web, design & autonomous QA agent skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web, millar-autonomous-qa) with 24 progressive-disclosure references and standalone Zero-MCP CLIs.",
+        "Catalog of all 9 composable Millar web, design, autonomous QA & root-cause hardening agent skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web, millar-autonomous-qa, millar-diagnose-and-harden) with 28 progressive-disclosure references and standalone Zero-MCP CLIs.",
       mimeType: "application/json",
     },
     async (uri) => ({
@@ -473,7 +473,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Agent Skill Definition (SKILL.md)",
       description:
-        "Full SKILL.md playbook for millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web, or millar-autonomous-qa.",
+        "Full SKILL.md playbook for millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web, millar-autonomous-qa, or millar-diagnose-and-harden.",
       mimeType: "text/markdown",
     },
     async (uri, vars) => {
@@ -913,9 +913,9 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "List Millar Agent Skills Suite",
       description:
-        "Lists all 8 composable Hahlex/Millar web engineering, design & autonomous QA skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web, millar-autonomous-qa), bundled reference playbooks, and workflow recipes.",
+        "Lists all 9 composable Hahlex/Millar web engineering, design, autonomous QA & root-cause hardening skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web, millar-autonomous-qa, millar-diagnose-and-harden), bundled reference playbooks, and workflow recipes.",
       inputSchema: {
-        query: z.string().optional().describe("Optional search keyword (e.g. 'workflow', 'build', 'verify', 'qa', 'animation', 'image', 'sync', 'research')."),
+        query: z.string().optional().describe("Optional search keyword (e.g. 'workflow', 'build', 'verify', 'qa', 'harden', 'security', 'debug', 'animation', 'image', 'sync', 'research')."),
       },
       annotations: READ_ONLY_ANNOTATIONS,
     },
@@ -959,7 +959,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Get Millar Agent Skill Playbook & References",
       description:
-        "Fetches the complete SKILL.md instructions and optional progressive-disclosure reference playbooks for any of the 8 Millar skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web, millar-autonomous-qa).",
+        "Fetches the complete SKILL.md instructions and optional progressive-disclosure reference playbooks for any of the 9 Millar skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web, millar-autonomous-qa, millar-diagnose-and-harden).",
       inputSchema: {
         name: z
           .enum([
@@ -971,6 +971,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
             "millar-build-web",
             "millar-verify-web",
             "millar-autonomous-qa",
+            "millar-diagnose-and-harden",
           ])
           .describe("Skill identifier to retrieve."),
         reference: z
@@ -1025,7 +1026,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
   );
 
   /* ==========================================================================
-   * 3. ELEVEN USER-CONTROLLED MCP PROMPTS (English Prompts · 3 Core + 8 Skills)
+   * 3. TWELVE USER-CONTROLLED MCP PROMPTS (English Prompts · 3 Core + 9 Skills)
    * ========================================================================== */
 
   const langArg = z
@@ -1313,7 +1314,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar End-to-End Web Engineering & Creative Workflow",
       description:
-        "Activates millar-web-workflow v0.3 to run Brand-First Research, classify Track S/M/L, run Creative Divergence, orchestrate all 8 skills, and gate on independent verification.",
+        "Activates millar-web-workflow v0.4 to run Brand-First Research, classify Track S/M/L, run Creative Divergence, orchestrate all 9 skills, and gate on independent verification.",
       argsSchema: {
         request: z.string().describe("Website, multi-page app, redesign, or UI feature request."),
         track: z.enum(["auto", "S", "M", "L"]).optional().describe("Optional explicit Track override (defaults to auto)."),
@@ -1443,6 +1444,44 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
               `Run millar-autonomous-qa against non-production target: "${targetUrl}".`,
               modes ? `Requested testing modes: ${modes}.` : "Run all applicable testing modes across configured roles and tenants.",
               "Enforce scripts/safety-guard.mjs before active traffic, keep target application repositories strictly read-only, isolate CWD/caches inside the skill workspace, separate confirmed_bug vs spec_gap vs runtime_degraded, verify real downstream outcomes beyond HTTP 200, clean up isolated test resources, and emit a self-contained HTML report.",
+              localeLine(lang),
+            ]
+              .filter(Boolean)
+              .join("\n"),
+          },
+        },
+      ],
+    }),
+  );
+
+  server.registerPrompt(
+    "millar-diagnose-and-harden",
+    {
+      title: "Millar Root-Cause Diagnosis, OWASP Security & Performance Hardening",
+      description:
+        "Activates millar-diagnose-and-harden v0.1: white-box 6-phase scientific debugging, OWASP Web/API/Agentic security hardening, Vercel Priority 1-3 performance & waterfall profiling, and minimal-diff remediation with real-seam regression tests (scripts/millar-harden-scan.mjs & scripts/triage-repro-loop.mjs).",
+      argsSchema: {
+        target: z.string().describe("Target repository path, failing bug/QA ledger, slow endpoint, or security audit scope."),
+        symptoms: z.string().optional().describe("Optional observed failure symptoms, error log, latency metric, or QA finding ID."),
+        mode: z
+          .enum(["diagnose", "harden", "perf", "qa-remediation"])
+          .optional()
+          .describe("Optional focus mode: 'diagnose', 'harden', 'perf', or 'qa-remediation'."),
+        lang: langArg,
+      },
+    },
+    async ({ target, symptoms, mode, lang }) => ({
+      messages: [
+        embedSkillMessage("millar-diagnose-and-harden"),
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: [
+              `Execute millar-diagnose-and-harden on: "${target}".`,
+              mode ? `Focus mode: ${mode}.` : "Run full root-cause diagnosis + security/performance hardening as applicable.",
+              symptoms ? `Observed symptoms / finding context: ${symptoms}` : "",
+              "Follow the 6-phase scientific loop: (1) build a fast red reproducer via scripts/triage-repro-loop.mjs (or import millar-autonomous-qa findings-ledger.json), (2) enumerate 3-5 competing hypotheses, (3) instrument and prove the root cause with evidence, (4) write a real-seam regression test, (5) apply a minimal-diff fix without unrelated refactors, (6) run scripts/millar-harden-scan.mjs + targeted tests until green.",
               localeLine(lang),
             ]
               .filter(Boolean)

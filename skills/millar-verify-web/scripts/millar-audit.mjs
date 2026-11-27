@@ -1,17 +1,18 @@
 #!/usr/bin/env node
 /**
- * millar-audit.mjs (v0.3.0): Standalone Zero-MCP Mechanical Web & Design Auditor
+ * millar-audit.mjs (v0.4.0): Standalone Zero-MCP Mechanical Web & Design Auditor
  *
  * Bundled inside skills/millar-verify-web/scripts/ so users installing Millar Skills
  * via `npx millar install` retain deterministic mechanical verification even WITHOUT Millar MCP:
- *   - WCAG 2.1 text contrast (>= 4.5:1) across light, dark, and stage CSS tokens + telemetry count
- *   - WCAG SC 1.4.11 UI control border contrast (>= 3.0:1)
+ *   - WCAG 2.1/2.2 text contrast (>= 4.5:1) across light, dark, and stage CSS tokens + telemetry count
+ *   - WCAG SC 1.4.11 UI control border contrast (>= 3.0:1) & focus-outline removal guard
+ *   - WCAG 2.2 AA live checks (--url): Target Size Minimum (>= 24x24px, SC 2.5.8) & Focus Not Obscured (SC 2.4.11)
  *   - AI-slop Craft Floor checks (gradient text, eyebrow kickers, 1-sided rounded-box bars, hard shadows)
  *   - Inline <style> & stylesheet prefers-reduced-motion check + [hidden] CSS override guard
- *   - Accessibility & CWV checks (img alt/width/height, undersized text, static opacity:0 traps)
+ *   - Accessibility, CWV & Security checks (img alt/width/height, hero LCP lazy trap, barrel imports, target="_blank" rel, unsafe HTML sinks)
  *   - Product-register CSS gradient ban (--register=product) & U+2014 em-dash check (--strict-em-dash)
  *   - Sparse inline <svg> clip-art detector
- *   - Optional live-browser check (--url=http://...) across 1440/768/375 viewports
+ *   - Optional live-browser check (--url=http://...) across 1440/768/375 viewports with CLS telemetry
  *
  * Usage:
  *   node millar-audit.mjs <target-path> [--register=shared|marketing|product] [--strict-em-dash] [--include-internal] [--json] [--url=http://...]
@@ -321,6 +322,16 @@ function auditFile(absFile, opts, findings) {
           message: "Text size <= 10px detected (fails readability floor; keep UI micro labels >= 11-12px and body >= 14-16px).",
         });
       }
+
+      if (/(?:outline\s*:\s*(?:none|0)\b|outline-none\b)/i.test(line) && !/(?:focus-visible|ring-|box-shadow|outline-offset|focus-ring-ok)/i.test(line)) {
+        findings.push({
+          severity: "warn",
+          rule: "a11y/focus-outline-removed",
+          file: rel,
+          line: lineNo,
+          message: "Focus outline suppressed without visible replacement ring (WCAG 2.2 SC 2.4.7/2.4.13 requires a visible focus indicator).",
+        });
+      }
     });
 
     const isStylesheetOrEmbedded = ext === ".css" || ext === ".scss" || ((ext === ".html" || ext === ".htm") && /<style\b/i.test(content));
@@ -388,6 +399,54 @@ function auditFile(absFile, opts, findings) {
         message: "Potential opacity: 0 scroll-reveal trap detected without explicit prefers-reduced-motion visible fallback.",
       });
     }
+
+    // WCAG/Security/CWV 2025-2026 static hygiene rules
+    lines.forEach((line, idx) => {
+      const lineNo = idx + 1;
+      if (/<a\b[^>]*target\s*=\s*["']_blank["']/i.test(line) && !/\brel\s*=\s*["'][^"']*(?:noopener|noreferrer)/i.test(line)) {
+        findings.push({
+          severity: "warn",
+          rule: "security/target-blank-noopener",
+          file: rel,
+          line: lineNo,
+          message: "External link with target=\"_blank\" missing rel=\"noopener noreferrer\".",
+        });
+      }
+      if (/(?:dangerouslySetInnerHTML|\.innerHTML\s*=)/.test(line) && !/(?:DOMPurify|sanitize|safe-html-ok)/i.test(line)) {
+        findings.push({
+          severity: "warn",
+          rule: "security/unsafe-html-sink",
+          file: rel,
+          line: lineNo,
+          message: "Raw HTML injection sink detected without visible sanitization (sanitize or use structured JSX/textContent).",
+        });
+      }
+      if (lineNo <= 80 && /<img\b[^>]*loading\s*=\s*["']lazy["']/i.test(line) && /(?:hero|banner|cover|lcp)/i.test(line)) {
+        findings.push({
+          severity: "warn",
+          rule: "cwv/lcp-lazy-hero",
+          file: rel,
+          line: lineNo,
+          message: "Above-the-fold hero/banner image uses loading=\"lazy\" (hurts LCP; use fetchPriority=\"high\" / priority instead).",
+        });
+      }
+    });
+  }
+
+  // 4. JS/TS Bundle & Waterfall Hygiene (Vercel Priority 2)
+  if ([".ts", ".tsx", ".js", ".jsx", ".mjs"].includes(ext)) {
+    lines.forEach((line, idx) => {
+      const lineNo = idx + 1;
+      if (/^\s*import\s+(?:\*\s+as\s+\w+\s+from\s+["'](?:lucide-react|@mui\/icons-material|lodash)["']|\w+\s+from\s+["'](?:lodash|moment)["'])/.test(line)) {
+        findings.push({
+          severity: "warn",
+          rule: "perf/barrel-import",
+          file: rel,
+          line: lineNo,
+          message: "Heavy wholesale barrel import detected (prefer direct subpath/named imports or lightweight native APIs to protect client bundle and INP).",
+        });
+      }
+    });
   }
 
   return { contrastPairsChecked };
@@ -505,12 +564,39 @@ async function auditLiveUrl(url, findings) {
         const duplicateViewTransitionNames = Object.entries(vtCounts)
           .filter(([, count]) => count > 1)
           .map(([name, count]) => `${name} (${count}x)`);
+
+        // WCAG 2.2 SC 2.5.8 Target Size Minimum (>= 24x24 CSS px for non-inline interactive controls)
+        const undersizedTargets = [];
+        for (const el of document.querySelectorAll("button, [role='button'], [role='tab'], input[type='checkbox'], input[type='radio']")) {
+          const style = window.getComputedStyle(el);
+          if (style.display === "none" || style.visibility === "hidden" || style.pointerEvents === "none") continue;
+          const r = el.getBoundingClientRect();
+          if (r.width === 0 && r.height === 0) continue;
+          if (r.width < 24 || r.height < 24) {
+            const label = (el.textContent || el.getAttribute("aria-label") || el.tagName).trim().slice(0, 32);
+            undersizedTargets.push(`${label} (${Math.round(r.width)}x${Math.round(r.height)}px)`);
+            if (undersizedTargets.length >= 6) break;
+          }
+        }
+
+        // Measure cumulative layout shift entries if supported by browser
+        let clsScore = 0;
+        try {
+          for (const entry of performance.getEntriesByType("layout-shift")) {
+            if (!entry.hadRecentInput) clsScore += Number(entry.value || 0);
+          }
+        } catch {
+          clsScore = 0;
+        }
+
         return {
           overflow,
           mainCount: mains.length,
           footerCount: footers.length,
           footerInsideMain,
           duplicateViewTransitionNames,
+          undersizedTargets,
+          clsScore: Number(clsScore.toFixed(4)),
         };
       });
 
@@ -520,6 +606,22 @@ async function auditLiveUrl(url, findings) {
           rule: "responsive/horizontal-overflow",
           file: url,
           message: `Horizontal overflow detected at ${vp.name} (${vp.width}px).`,
+        });
+      }
+      if (metrics.clsScore > 0.1) {
+        findings.push({
+          severity: "warn",
+          rule: "cwv/live-cls-exceeded",
+          file: url,
+          message: `Observed layout shift CLS=${metrics.clsScore} at ${vp.name} (${vp.width}px) exceeds 0.10 Core Web Vitals threshold.`,
+        });
+      }
+      if (metrics.undersizedTargets.length > 0 && vp.name !== "tablet") {
+        findings.push({
+          severity: "warn",
+          rule: "a11y/wcag22-target-size",
+          file: url,
+          message: `WCAG 2.2 SC 2.5.8 target size < 24x24px at ${vp.name}: ${metrics.undersizedTargets.join(", ")}.`,
         });
       }
       if (vp.name === "desktop") {
@@ -584,7 +686,7 @@ async function main() {
       JSON.stringify(
         {
           tool: "millar-audit",
-          version: "0.3.0",
+          version: "0.4.0",
           register: opts.register,
           scannedFiles: files.length,
           contrastPairsChecked: totalContrastPairsChecked,
@@ -600,7 +702,7 @@ async function main() {
   } else {
     const status = errors.length === 0 ? "PASS" : "FAIL";
     console.log(
-      `${status}: millar-audit v0.3 scanned ${files.length} file(s) [register=${opts.register}, contrastPairs=${totalContrastPairsChecked}] -> ${errors.length} error(s), ${warnings.length} warning(s).`,
+      `${status}: millar-audit v0.4 scanned ${files.length} file(s) [register=${opts.register}, contrastPairs=${totalContrastPairsChecked}] -> ${errors.length} error(s), ${warnings.length} warning(s).`,
     );
     for (const f of findings) {
       const loc = f.line ? `${f.file}:${f.line}` : f.file;

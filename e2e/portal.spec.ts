@@ -193,7 +193,7 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
     await page.getByRole("button", { name: "New proposal" }).click();
     await expect(page.getByRole("cell", { name: "Domain Proposal #1" })).toBeVisible();
 
-    // 8. Agent Skills Suite skills.sh-inspired InstallBar (Command | Prompt, MCP | Skills Only) & 8 skill tabs
+    // 8. Agent Skills Suite skills.sh-inspired InstallBar (Command | Prompt, MCP | Skills Only) & 9 skill tabs
     await page.goto("/millar/resources/skills/", { waitUntil: "networkidle" });
     await expect(page.getByText("npx -y @hahlex/millar-mcp@draft")).toBeVisible();
     await page.getByRole("button", { name: "Skills Only" }).click();
@@ -209,8 +209,11 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
     await page.getByRole("tab", { name: "millar-autonomous-qa" }).click();
     await expect(page.getByText("qa-loop-and-modes.md")).toBeVisible();
     await expect(page.getByRole("cell", { name: "scripts/run-qa-loop.mjs", exact: true })).toBeVisible();
+    await page.getByRole("tab", { name: "millar-diagnose-and-harden" }).click();
+    await expect(page.getByText("owasp-security-hardening.md")).toBeVisible();
+    await expect(page.getByRole("cell", { name: "scripts/millar-harden-scan.mjs", exact: true })).toBeVisible();
 
-    // 9. MCP page skills.sh-inspired InstallBar (Command | Prompt) + 11 MCP Prompts selector
+    // 9. MCP page skills.sh-inspired InstallBar (Command | Prompt) + 12 MCP Prompts selector
     await page.goto("/millar/resources/mcp/", { waitUntil: "networkidle" });
     await expect(page.getByText("npx -y @hahlex/millar-mcp@draft").first()).toBeVisible();
     await page.getByRole("button", { name: "Prompt", exact: true }).click();
@@ -219,5 +222,7 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
     await expect(page.getByText(/millar-design \(brief, existingAssets\?, lang\?\)/)).toBeVisible();
     await page.getByRole("button", { name: "millar-autonomous-qa", exact: true }).click();
     await expect(page.getByText(/millar-autonomous-qa \(targetUrl, modes\?, lang\?\)/)).toBeVisible();
+    await page.getByRole("button", { name: "millar-diagnose-and-harden", exact: true }).click();
+    await expect(page.getByText(/millar-diagnose-and-harden \(target, symptoms\?, mode\?, lang\?\)/)).toBeVisible();
   });
 });

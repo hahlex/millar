@@ -91,14 +91,14 @@ const SKILLS: SkillDocItem[] = [
   {
     id: "millar-verify-web",
     name: "millar-verify-web",
-    headline: "5-layer QA, Zero-MCP audit CLI, and fresh-context finish reviewer",
+    headline: "5-layer QA, Zero-MCP audit CLI v0.4 (WCAG 2.2 + security/CWV), and fresh-context finish reviewer",
     uri: "millar://skills/millar-verify-web",
     references: [
-      { file: "five-layer-qa-gate.md", purpose: "Playwright, axe-core, Layer 3B and reviewer packet" },
+      { file: "five-layer-qa-gate.md", purpose: "Playwright, axe-core, Layer 3B, WCAG 2.2 target size and reviewer packet" },
       { file: "two-axis-review-rubric.md", purpose: "Spec vs Standards review rubric" },
-      { file: "scripts/millar-audit.mjs", purpose: "Standalone Zero-MCP audit CLI (contrast, SC 1.4.11, anti-slop)" },
+      { file: "scripts/millar-audit.mjs", purpose: "Standalone Zero-MCP audit CLI v0.4 (contrast, SC 1.4.11, SC 2.5.8, CLS, security sinks)" },
     ],
-    promptExample: "Run millar-verify-web: execute scripts/millar-audit.mjs, verify 1440/768/375 & WCAG AA, and spawn a fresh finish reviewer.",
+    promptExample: "Run millar-verify-web: execute scripts/millar-audit.mjs, verify 1440/768/375 & WCAG 2.2 AA, and spawn a fresh finish reviewer.",
   },
   {
     id: "millar-autonomous-qa",
@@ -114,6 +114,21 @@ const SKILLS: SkillDocItem[] = [
       { file: "scripts/run-qa-loop.mjs", purpose: "Continuous QA loop CLI with HAR-to-OpenAPI, persona workflows & interactive HTML Report v2" },
     ],
     promptExample: "Run millar-autonomous-qa (--depth=deep-business) against http://localhost:5173: enforce safety-guard, expand UI frontier, run 4-axis auth matrix & causal outcome checks, and emit HTML Report v2.",
+  },
+  {
+    id: "millar-diagnose-and-harden",
+    name: "millar-diagnose-and-harden",
+    headline: "White-box root-cause debugging, OWASP Web/API/Agentic security hardening & minimal-diff fixes",
+    uri: "millar://skills/millar-diagnose-and-harden",
+    references: [
+      { file: "root-cause-protocol.md", purpose: "6-phase scientific loop: red reproducer, 3-5 hypotheses, instrumentation & proof" },
+      { file: "owasp-security-hardening.md", purpose: "OWASP Top 10, API Security & Agentic AI guardrails, CORS, headers & secret hygiene" },
+      { file: "performance-and-waterfall-diagnosis.md", purpose: "Vercel Priority 1-3 waterfall, N+1, bundle, INP/LoAF & Postgres EXPLAIN diagnosis" },
+      { file: "minimal-diff-and-seam-testing.md", purpose: "Real-seam regression tests, zero-scope-creep diffs & QA ledger remediation" },
+      { file: "scripts/millar-harden-scan.mjs", purpose: "Standalone Zero-MCP security, secret, perf & live HTTP header CLI (npx millar harden)" },
+      { file: "scripts/triage-repro-loop.mjs", purpose: "Multi-run flake/repro loop runner & millar-autonomous-qa findings-ledger importer" },
+    ],
+    promptExample: "Run millar-diagnose-and-harden on apps/api: triage findings-ledger.json, prove root cause with a red seam test, ship a minimal-diff fix, and pass npx millar harden.",
   },
 ];
 

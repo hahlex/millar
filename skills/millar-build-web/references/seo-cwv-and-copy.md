@@ -4,9 +4,9 @@
 
 | Metric | Target | Concrete Implementation Rules |
 |---|---|---|
-| **LCP (Largest Contentful Paint)** | `< 2.5s` | Never lazy-load hero images or primary headlines; set `priority` / `fetchPriority="high"` on LCP media; inline critical CSS tokens; stream slow secondary panels inside `<Suspense>`. |
-| **INP (Interaction to Next Paint)** | `< 200ms` | Keep client bundles lean via RSC; avoid long main-thread tasks (`> 50ms`); wrap heavy search/filter/tab updates in React `useTransition`; never animate layout-reflow properties (`width`, `height`, `top`, `left`). |
-| **CLS (Cumulative Layout Shift)** | `< 0.1` | Always declare explicit `width`/`height` or `aspect-ratio` on every image, SVG, canvas, and embed; host/preload fonts with `next/font` (`display: "swap"`); reserve `min-height` for dynamic banners or skeletons. |
+| **LCP (Largest Contentful Paint)** | `< 2.5s` | Never lazy-load hero images or primary headlines; set `priority` / `fetchPriority="high"` on LCP media; inline critical CSS tokens; stream slow secondary panels inside `<Suspense>`; use declarative **Speculation Rules API** (`prefetch`/`prerender` on moderate eagerness) for near-instant MPA/route navigations. |
+| **INP (Interaction to Next Paint)** | `< 200ms` | Keep client bundles lean via RSC; avoid long main-thread tasks (`> 50ms`); wrap heavy search/filter/tab updates in React 19 `useTransition` / `useActionState`; break up CPU loops with `scheduler.yield()`; attribute slow frames via the **Long Animation Frames (LoAF)** API; never animate layout-reflow properties (`width`, `height`, `top`, `left`). |
+| **CLS (Cumulative Layout Shift)** | `< 0.1` | Always declare explicit `width`/`height` or `aspect-ratio` on every image, SVG, canvas, and embed; host/preload fonts with `next/font` (`display: "swap"`); reserve `min-height` for dynamic banners or skeletons; add `scroll-margin-top` so sticky headers never obscure focused targets (WCAG 2.2 SC 2.4.11). |
 
 ## 2. Semantic HTML & Technical SEO Baseline
 

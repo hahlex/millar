@@ -29,4 +29,5 @@ When a web project requires server infrastructure beyond frontend UI, keep Milla
 - **Database schema / indexing / migrations:** `agency-database-optimizer`, `agency-database-reliability-engineer`
 - **Payments / billing / webhooks:** `agency-payments-billing-engineer`
 - **CI/CD, Cloudflare Workers, edge caching:** `agency-devops-automator`
-- **Complex debugging loop:** `diagnosing-bugs` (reproduce -> isolate -> fix -> regression test)
+- **Root-cause debugging, OWASP security hardening, performance bottlenecks & QA reproducer fixes:** `millar-diagnose-and-harden` (`scripts/millar-harden-scan.mjs` + `scripts/triage-repro-loop.mjs`)
+- **Live multi-role full-stack black-box QA exploration:** `millar-autonomous-qa` (`scripts/run-qa-loop.mjs`)

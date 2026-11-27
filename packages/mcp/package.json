@@ -1,7 +1,7 @@
 {
   "name": "@hahlex/millar-mcp",
-  "version": "0.2.0-draft.1",
-  "description": "Millar MCP Server (MCP 2026-07-28): millar:// Resources, 13 Tools, 11 Prompts, and 8 bundled Millar Agent Skills (v0.6.0, including millar-autonomous-qa) powered by Millar's Single Source of Truth.",
+  "version": "0.3.0-draft.1",
+  "description": "Millar MCP Server (MCP 2026-07-28): millar:// Resources, 13 Tools, 12 Prompts, and 9 bundled Millar Agent Skills (v0.7.0, including millar-autonomous-qa and millar-diagnose-and-harden) powered by Millar's Single Source of Truth.",
   "license": "MIT",
   "homepage": "https://hahlex.com/millar",
   "repository": {

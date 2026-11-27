@@ -1,7 +1,7 @@
 ---
 name: millar-build-web
-description: "Production frontend engineering and web architecture skill synthesizing Matt Pocock deep-module / TDD vertical-slice discipline, Agency Agents frontend-developer & minimal-change restraint, Millar MCP tokens/primitives, Core Web Vitals (LCP/INP/CLS), semantic HTML, and SEO hygiene. Use when implementing web pages, React/Next.js/Astro/Vite components, layouts, forms, tables, or refactors so code stays clean, responsive, genuinely interactive, and ready for millar-verify-web."
-version: 0.3.0-draft.1
+description: "Production frontend engineering and web architecture skill (v0.4.0) synthesizing Matt Pocock deep-module / TDD vertical-slice discipline, Vercel impact-ordered React 19 / Next.js performance hierarchy (zero waterfalls, lean bundles, useActionState, scheduler.yield, LoAF), modern native CSS (@container, Popover API, Anchor Positioning), Agency Agents minimal-change restraint, Millar MCP tokens/primitives, Core Web Vitals (LCP/INP/CLS), semantic HTML, and frontend security defaults. Use when implementing web pages, components, layouts, forms, tables, or refactors."
+version: 0.4.0-draft.1
 license: MIT
 ---
 
@@ -41,8 +41,9 @@ Implement every route and component against these non-negotiable engineering rul
 1. **Server by Default, Client at the Leaves:** In Next.js App Router / RSC stacks, keep layouts, pages, and data loaders as Server Components; push `"use client"` down to the smallest interactive leaves and pass server subtrees via `children` slots.
 2. **Real Interactivity & 5 Mandatory UI States:** Every button, filter, tab, form, search box, and dialog MUST actually work (zero `() => {}` no-op handlers on published controls). Handle `default`, `loading` (solid zero-gradient skeleton on Hahlex Product UI), `empty` (with clear recovery CTA), `error` (`role="alert"` + retry path), and `disabled` states.
 3. **Async Safety & Keyboard Contracts:** Guard async submissions with `aria-busy` double-click locking; honor WAI-ARIA APG keyboard contracts (`Tab`, `Enter`/`Space`, `Escape` closing overlays with focus restore, Arrow/Home/End on tabs).
-4. **Core Web Vitals & SEO Built In:** Read [references/seo-cwv-and-copy.md](references/seo-cwv-and-copy.md). Always set explicit `width`/`height` or `aspect-ratio` (prevent CLS), prioritize above-the-fold LCP media (never lazy-load hero LCP), wrap non-urgent filter/tab work in `useTransition` (keep INP `< 200ms`), and ship real semantic headings, `<title>`, meta description, and OpenGraph tags.
+4. **Impact-Ordered Performance, Modern CSS & Security Built In:** Read [references/seo-cwv-and-copy.md](references/seo-cwv-and-copy.md). Eliminate async waterfalls (`Promise.all()`, `<Suspense>` streaming) and wholesale barrel imports before micro-tuning; prefer native `@container`, `[popover]`, `<dialog>`, and CSS Anchor Positioning over heavy JS layout libraries; use React 19 `useActionState`/`useTransition` and `scheduler.yield()` to hold INP `< 200ms`; set explicit media dimensions (prevent CLS) and `fetchPriority="high"` on LCP media; enforce `rel="noopener noreferrer"`, zero unsanitized HTML sinks, and zero secrets in `NEXT_PUBLIC_*`/`VITE_*`.
 5. **TDD for Domain Logic:** For pricing calculators, validators, filter engines, parsers, or formatters, write failing unit tests first (red -> green -> refactor) through the module's public interface.
+6. **Hardening Handoff:** When touching auth, API integrations, or performance-critical paths, pair with `millar-diagnose-and-harden` (`npx millar harden <path>`) before shipping.
 
 **Completion criterion:** All planned routes and interactive controls work end-to-end with zero placeholder copy, zero hardcoded hex overrides (when token system exists), and passing unit tests.
 

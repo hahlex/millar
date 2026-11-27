@@ -1,7 +1,7 @@
 ---
 name: millar-autonomous-qa
 description: "Autonomous end-to-end QA skill executing a continuous 8-stage testing loop (discover, plan, execute, observe, verify, reproduce, report, explore further) with hybrid depth modes (smoke, standard, deep-business), origin-scoped multi-role/multi-tenant browser sessions, frontier-based UI/ARIA/occlusion/i18n exploration, passive HAR-to-OpenAPI synthesis for Schemathesis, 4-axis differential authorization matrices, concurrency/resilience/AI evaluation, multi-channel causal outcome verification, and self-contained interactive HTML reporting."
-version: 0.4.0-draft.1
+version: 0.4.1-draft.1
 license: MIT
 ---
 
@@ -81,6 +81,10 @@ Run once from the installed `millar-autonomous-qa` skill folder before executing
 - **`confirmed_bug`**: Reproducible unhandled 5xx, broken JSON on HTTP 200, cross-tenant/RBAC authorization leak, silent downstream drop (API 200/201 with missing DB row or expected Mailpit email), race duplicate commit, or uncaught browser/container exception.
 - **`spec_gap`**: Missing `/openapi.json` or schema mismatch without server crash, undocumented query/response fields, ambiguous role behavior not specified in contracts, or missing idempotency contract.
 - **`runtime_degraded`**: Optional dependency timeout or closed port (for example an unstarted local AI service or stopped worker) handled gracefully without corrupting state.
+
+## Closed-Loop Remediation Handoff (`millar-diagnose-and-harden`)
+
+Remember `millar-autonomous-qa` is strictly read-only on target application source code. Once `memory/findings-ledger.json` and standalone reproducers in `memory/regressions/` are generated, hand off confirmed defects directly to **`millar-diagnose-and-harden`** (`node <harden-skill-dir>/scripts/triage-repro-loop.mjs --from-qa-ledger <path-to-findings-ledger.json>`) to isolate root causes, apply minimal-diff fixes, lock permanent regression tests, and re-run the generated reproducers until exit `0` (`RESOLVED`).
 
 ## Reference Guides
 

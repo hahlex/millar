@@ -1,11 +1,11 @@
 ---
 name: millar-web-workflow
-description: "Master end-to-end web engineering conductor and creative workflow router (v0.3.0) uniting the 8 Millar skills (including millar-autonomous-qa) with Matt Pocock engineering discipline, Agency Agents studio roles, Anthropic canvas-design craft, and Impeccable anti-slop rigor. Always researches any named brand first (zero hardcoded palettes), authors all prompts in English, routes Track S/M/L cleanly, and gates completion on Zero-MCP mechanical auditing plus fresh-context independent review."
-version: 0.3.0-draft.1
+description: "Master end-to-end web engineering conductor and creative workflow router (v0.4.0) uniting all 9 Millar skills (including millar-autonomous-qa and millar-diagnose-and-harden) with Matt Pocock engineering discipline, Vercel impact-ordered performance, OWASP security hardening, Agency Agents studio roles, Anthropic canvas-design craft, and Impeccable anti-slop rigor. Always researches any named brand first (zero hardcoded palettes), authors all prompts in English, routes Track S/M/L cleanly, and gates completion on Zero-MCP mechanical auditing plus fresh-context independent review."
+version: 0.4.0-draft.1
 license: MIT
 ---
 
-# Millar Web Workflow v0.3: End-to-End 5-Role Creative & Engineering Conductor
+# Millar Web Workflow v0.4: End-to-End 5-Role Creative, Engineering & Hardening Conductor
 
 Orchestrate every web build as one continuous, gated pipeline from user intent and **Brand-First Research** through **Dual-Soul Creative Art Direction** (`canvas-design` engraving discipline + `Impeccable` craft-floor & storytelling rigor), clean Server-First frontend engineering, and zero-mercy independent verification. Choose the lightest track that fits the job so small edits stay surgical while multi-page sites achieve unforgettable `>= 9.0/10` craft with zero bureaucratic bloat.
 
@@ -25,9 +25,9 @@ Read [references/track-routing-and-gates.md](references/track-routing-and-gates.
 
 | Track | Scope | Required Pipeline |
 |---|---|---|
-| **Track S (Surgical Fix / Single Component)** | Bug fix, single control update, isolated refactor | `diagnosing-bugs` (if bug) -> `millar-build-web` (minimal-change mode) -> `millar-verify-web` (Layer 1 + `millar-audit.mjs` + Layer 2 + Layer 5 diff review) |
-| **Track M (Secondary Pages Synced to Existing Site / Hero Assets)** | Adding `/features`, `/pricing`, `/about`, `/docs`, `/app` to a styled hero, named brand, or user-supplied imagery/animations | `millar-deep-research` (Brand Research + Visual/Motion DNA) -> `millar-design` (`.millar/style-dna.md`) -> `millar-create-image` + `millar-animation` -> `millar-build-web` -> `millar-verify-web` (All 5 Layers + Independent Finish Review) |
-| **Track L (Full Website / Multi-Page App / Redesign)** | Greenfield website, landing + app suite, or visual overhaul | `grilling` (only if critical product tradeoffs are ambiguous) -> `millar-deep-research` -> Creative Divergence -> `millar-design` -> `millar-create-image` + `millar-animation` -> `millar-build-web` (vertical slices) -> `millar-verify-web` (All 5 Layers + Independent Finish Review) |
+| **Track S (Surgical Fix / Bug / Security / Perf Patch)** | Bug fix, QA reproducer remediation, OWASP/perf hardening, single control update | `millar-diagnose-and-harden` (if bug/regression/security/perf) -> `millar-build-web` (minimal-change mode) -> `millar-verify-web` (Layer 1 + `millar-audit.mjs` + Layer 2 + Layer 5 diff review) |
+| **Track M (Secondary Pages Synced to Existing Site / Hero Assets)** | Adding `/features`, `/pricing`, `/about`, `/docs`, `/app` to a styled hero, named brand, or user-supplied imagery/animations | `millar-deep-research` (Brand Research + Visual/Motion DNA) -> `millar-design` (`.millar/style-dna.md`) -> `millar-create-image` + `millar-animation` -> `millar-build-web` -> `millar-verify-web` (All 5 Layers + Independent Finish Review) + `millar-diagnose-and-harden` (diff scan) |
+| **Track L (Full Website / Multi-Page App / Redesign)** | Greenfield website, landing + app suite, or visual overhaul | `grilling` (only if critical product tradeoffs are ambiguous) -> `millar-deep-research` -> Creative Divergence -> `millar-design` -> `millar-create-image` + `millar-animation` -> `millar-build-web` (vertical slices) -> `millar-verify-web` (All 5 Layers) -> `millar-autonomous-qa` (live app loop) -> `millar-diagnose-and-harden` (fix confirmed defects + OWASP/perf gate) |
 
 **Completion criterion:** Track (`S`, `M`, or `L`), named brand research path, affected routes, and Visitor Modes (`Persuade` / `Experience` / `Operate` / `Read`) declared before editing.
 
@@ -45,7 +45,8 @@ Before locking `.millar/style-dna.md`, read [references/creative-divergence-prot
 
 - **Ambiguous architecture or product tradeoffs:** invoke `grilling` before coding.
 - **Module boundaries, seams, and testability:** apply `codebase-design` (deep modules) and `tdd` (vertical slices) inside `millar-build-web`.
-- **Hard bugs or regressions:** invoke `diagnosing-bugs` before patching.
+- **Hard bugs, QA reproducers, OWASP security audits, or performance regressions:** invoke **`millar-diagnose-and-harden`** (tight red loop, `millar-harden-scan.mjs`, surgical minimal-diff fix, real-seam regression test).
+- **Live multi-role full-stack QA exploration:** invoke **`millar-autonomous-qa`** (read-only on target repos; hands confirmed bugs back to `millar-diagnose-and-harden`).
 - **Backend APIs, schemas, auth, or deployment:** invoke the matching specialist (`agency-backend-architect`, `agency-database-optimizer`, `agency-identity-access-engineer`, `agency-devops-automator`).
 - **Hahlex ecosystem projects:** query live canonical tokens, UI primitives, sections, and compliance checks from Millar MCP (`get_design_guidelines`, `get_design_tokens`, `get_component`, `get_visual_assets`, `validate_design`).
 

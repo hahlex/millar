@@ -1,11 +1,11 @@
 ---
 name: millar-design
-description: "Flagship design director, structured 5-role Agency design studio, and cross-page aesthetic continuity skill (v0.3.0). Never hardcodes brand palettes: researches any named brand (local DESIGN.md, live MCP tokens, or web research) first, enforces Impeccable craft-floor & anti-slop calibration, canvas-design visual depth, and 12-axis cross-page continuity so secondary pages match flagship craft instead of collapsing into flat industrial cards."
-version: 0.3.0-draft.1
+description: "Flagship design director, structured 5-role Agency design studio, and cross-page aesthetic continuity skill (v0.4.0). Never hardcodes brand palettes: researches any named brand (local DESIGN.md, live MCP tokens, or web research) first, enforces Impeccable craft-floor & anti-slop calibration, WCAG 2.2 AA ergonomics, container-query responsiveness, canvas-design visual depth, and 12-axis cross-page continuity so secondary pages match flagship craft instead of collapsing into flat industrial cards."
+version: 0.4.0-draft.1
 license: MIT
 ---
 
-# Millar Design v0.3: 5-Role Design Studio & Cross-Page Continuity
+# Millar Design v0.4: 5-Role Design Studio & Cross-Page Continuity
 
 Operate as a structured five-role design studio with explicit responsibilities and binding veto power, uniting **brand-researched system discipline**, **`canvas-design` museum-grade craft**, and **`Impeccable` craft-floor rigor & human storytelling** without bureaucratic ceremony.
 
@@ -24,7 +24,7 @@ Operate as a structured five-role design studio with explicit responsibilities a
 | **1. Visual Storyteller** | Authors 4-6 paragraph English Visual Philosophy Manifesto + 1-second emotional visual hook + ONE unforgettable authored signature moment per `Persuade`/`Experience` page. | Vetoes dry abstract diagrams, generic SaaS layouts, or pages lacking immediate narrative clarity. |
 | **2. Brand Guardian** | Locks researched brand palette, color strategy (`Restrained` / `Committed` / `Full Palette` / `Drenched`), light/dark surface polarity cadence, accent budget ceiling, typography, and locale diacritics (`:lang(vi)`). | Vetoes hardcoded foreign palettes, accidental 4/4 dark drift on light-first brands, raw gray on tinted surfaces, or clipped diacritics. |
 | **3. UI Designer & Master Illustrator** | Owns tokens, single-elevation surfaces (1px hairline OR lifted offset shadow), browser surface theming (`::selection`, focus rings, scrollbars, `tabular-nums`), AND `>= 9.0/10` visual assets via `millar-create-image`. | Vetoes flat clip-art, AI wax-skin stock clichés, PowerPoint slide boxes, sparse SVGs, or visual overlaps. |
-| **4. UX Architect** | Owns Visitor Mode (`Persuade` / `Experience` / `Operate` / `Read`), 6 non-repeating composition grammars, Craft Floor bans, responsive `375`/`768`/`1440` layouts, and WCAG 2.1 AA / APG keyboard contracts. | Vetoes equal 3-card icon grids, nested cards, eyebrow kickers above headings, gradient text, 1-sided rounded-box bars, or mobile overflow. |
+| **4. UX Architect** | Owns Visitor Mode (`Persuade` / `Experience` / `Operate` / `Read`), 6 non-repeating composition grammars, Craft Floor bans, `@container` component-first fluid responsiveness (`375`/`768`/`1440`), and WCAG 2.2 AA (`>= 24x24px` target size SC 2.5.8, `scroll-margin-top` Focus Not Obscured SC 2.4.11, APG keyboard contracts). | Vetoes equal 3-card icon grids, nested cards, eyebrow kickers above headings, gradient text, 1-sided rounded-box bars, undersized hit targets, or mobile overflow. |
 | **5. Motion Choreographer & Independent Critic** | Unifies tactile micro-interactions, interruptible springs, View Transitions, and delegates final inspection to a fresh-context finish reviewer (`millar-verify-web`). | Vetoes secondary pages scoring `< 4/5` on cross-page continuity OR any artwork scoring `< 9.0/10`. |
 
 ## Craft Floor & Anti-Slop Bans (`Impeccable` Distilled)
@@ -45,6 +45,8 @@ Reject these lazy defaults unless explicitly required by a pinned brief:
 | Research & implement compositor-safe springs, View Transitions, reduced motion | `millar-animation` |
 | Implement Server-First architecture, deep modules, 5 UI states, CWV & SEO | `millar-build-web` |
 | Run standalone Zero-MCP audit (`millar-audit.mjs`), 5-layer QA & fresh-context finish review | `millar-verify-web` |
+| Run live multi-role full-stack QA exploration & outcome verification | `millar-autonomous-qa` |
+| Diagnose root causes, harden OWASP security / performance, & apply minimal-diff fixes | `millar-diagnose-and-harden` |
 | Fetch live Hahlex tokens, UI primitives, sections, or automated validation (Hahlex projects) | Millar MCP: `get_design_guidelines`, `get_design_tokens`, `get_component`, `get_visual_assets`, `validate_design` |
 
 ## Execution Sequence

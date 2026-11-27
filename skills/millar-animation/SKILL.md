@@ -1,7 +1,7 @@
 ---
 name: millar-animation
-description: "Motion research, choreography, and engineering skill for websites and product UI. Use when researching reference animations matching user intent, syncing secondary pages to existing hero animations, implementing purposeful micro-interactions, interruptible spring physics, CSS View Transitions, scroll-driven choreography, or Millar Productive/Expressive motion presets with static-first prefers-reduced-motion safety."
-version: 0.3.0-draft.1
+description: "Motion research, choreography, and engineering skill (v0.4.0) for websites and product UI. Use when researching reference animations matching user intent, syncing secondary pages to existing hero animations, implementing purposeful micro-interactions, interruptible spring physics, CSS View Transitions Level 2, @starting-style / interpolate-size native CSS overlays, scroll-driven choreography, or Millar Productive/Expressive motion presets with static-first prefers-reduced-motion safety."
+version: 0.4.0-draft.1
 license: MIT
 ---
 
@@ -47,7 +47,9 @@ Read [references/motion-choreography.md](references/motion-choreography.md) and 
 2. **Respect hover stability:** Keep the pointer target container stationary on `:hover` and translate an inner child surface so edges never flicker under the cursor.
 3. **Use native browser primitives first:**
    - Declarative CSS transitions/keyframes for routine feedback and states.
-   - CSS View Transitions API (`view-transition-name`) for seamless cross-page / state morphing.
+   - **`@starting-style` + `transition-behavior: allow-discrete`** for entry/exit animations on native `[popover]` and `<dialog>` top-layer surfaces (zero JS mount wrappers).
+   - **`interpolate-size: allow-keywords`** (progressive enhancement) for smooth `height: 0 -> auto` accordions and expandable disclosures.
+   - CSS View Transitions Level 2 (`@view-transition { navigation: auto; }`, unique visible `view-transition-name`, and `view-transition-class`) for seamless cross-page / state morphing.
    - CSS Scroll-Driven Animations (`animation-timeline: view()` / `scroll()`) wrapped in `@supports (animation-timeline: view())` so unsupported browsers stay static-first cleanly.
    - Existing project animation library (`motion` / `framer-motion` / `gsap` / WAAPI) only for gesture physics, velocity inheritance, and interruptible layout springs.
 4. **Ship the `prefers-reduced-motion: reduce` branch in the same edit** (never as a later TODO).

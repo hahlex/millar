@@ -18,7 +18,7 @@ const tools = await client.listTools();
 const resources = await client.listResources();
 const prompts = await client.listPrompts();
 
-if (tools.tools.length !== 13 || prompts.prompts.length !== 11 || resources.resources.length < 95) {
+if (tools.tools.length !== 13 || prompts.prompts.length !== 12 || resources.resources.length < 100) {
   console.error("FAIL: Unexpected MCP surface counts", {
     tools: tools.tools.length,
     resources: resources.resources.length,
@@ -29,6 +29,7 @@ if (tools.tools.length !== 13 || prompts.prompts.length !== 11 || resources.reso
 
 const comp = await client.callTool({ name: "get_component", arguments: { id: "button", includeSource: true } });
 const qaSkill = await client.callTool({ name: "get_skill", arguments: { name: "millar-autonomous-qa" } });
+const hardenSkill = await client.callTool({ name: "get_skill", arguments: { name: "millar-diagnose-and-harden" } });
 const buildPrompt = await client.getPrompt({
   name: "millar-build-web",
   arguments: { scope: "DataTable", minimalChange: "true" },
@@ -37,14 +38,20 @@ const qaPrompt = await client.getPrompt({
   name: "millar-autonomous-qa",
   arguments: { targetUrl: "http://localhost:5173" },
 });
+const hardenPrompt = await client.getPrompt({
+  name: "millar-diagnose-and-harden",
+  arguments: { target: "packages/cli/src", mode: "harden" },
+});
 if (
   typeof comp.structuredContent?.sourceCode !== "string" ||
   !comp.structuredContent.sourceCode.includes("export const Button") ||
   qaSkill.structuredContent?.id !== "millar-autonomous-qa" ||
+  hardenSkill.structuredContent?.id !== "millar-diagnose-and-harden" ||
   !JSON.stringify(buildPrompt.messages).includes("Minimal-Change Track S") ||
-  !JSON.stringify(qaPrompt.messages).includes("millar://skills/millar-autonomous-qa")
+  !JSON.stringify(qaPrompt.messages).includes("millar://skills/millar-autonomous-qa") ||
+  !JSON.stringify(hardenPrompt.messages).includes("millar://skills/millar-diagnose-and-harden")
 ) {
-  console.error("FAIL: Standalone includeSource, millar-autonomous-qa skill, or prompt check failed.");
+  console.error("FAIL: Standalone includeSource, millar-autonomous-qa, millar-diagnose-and-harden skill, or prompt check failed.");
   process.exit(1);
 }
 await client.close();

@@ -25,6 +25,24 @@ export default function ChangelogResourcePage() {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <strong style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-section-title)" }}>
+              Skills v0.7.0-draft.1 · MCP v0.3.0-draft.1
+            </strong>
+            <LifecycleBadge status="draft" />
+          </div>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro)", color: "var(--fg-subtle)" }}>2026-11-28</span>
+        </div>
+        <ul style={{ margin: 0, paddingLeft: 18, fontSize: "var(--text-body-sm)", color: "var(--fg-muted)", lineHeight: 1.7 }}>
+          <li>Added <code>millar-diagnose-and-harden</code> (<code>v0.1.0-draft.1</code>, 9th Millar skill): white-box 6-phase scientific root-cause diagnosis, OWASP Web/API/Agentic security hardening, Vercel Priority 1-3 waterfall &amp; N+1 performance profiling, minimal-diff remediation with real-seam regression tests, plus two zero-dependency CLIs (<code>scripts/millar-harden-scan.mjs</code> and <code>scripts/triage-repro-loop.mjs</code> importing <code>millar-autonomous-qa</code> findings ledgers).</li>
+          <li>Upgraded all 8 existing Millar skills with 2025-2026 SOTA craft: <code>millar-audit.mjs v0.4.0</code> (WCAG 2.2 SC 2.5.8 target size, focus-outline checks, security sinks, live CLS, LCP lazy-hero &amp; barrel imports), Vercel impact hierarchy, React 19 <code>useActionState</code>, <code>scheduler.yield()</code>/LoAF, CSS <code>@starting-style</code>, <code>interpolate-size</code>, View Transitions Level 2, and <code>@container</code> / <code>[popover]</code> / Anchor Positioning defaults.</li>
+          <li>Updated <code>@hahlex/millar-mcp@0.3.0-draft.1</code> to expose all 9 skills, 28 reference playbooks, 6 combination recipes (adding <code>qa-to-fix-hardening-loop</code>), and 12 MCP Prompts.</li>
+          <li>Updated <code>millar@0.7.0-draft.1</code> CLI with <code>npx millar harden &lt;path&gt;</code> alongside <code>install</code>, <code>update</code>, <code>audit</code>, <code>mcp</code>, and <code>--version</code> shipping all 9 skills.</li>
+        </ul>
+      </Card>
+
+      <Card surface="base" padding="default">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <strong style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-section-title)" }}>
               Skills v0.6.0-draft.1 · MCP v0.2.0-draft.1
             </strong>
             <LifecycleBadge status="draft" />

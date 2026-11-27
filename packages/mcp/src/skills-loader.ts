@@ -41,6 +41,7 @@ const SKILL_META: Record<string, SkillCuratedMeta> = {
       "millar-build-web",
       "millar-verify-web",
       "millar-autonomous-qa",
+      "millar-diagnose-and-harden",
     ],
     mcpToolsUsed: ["list_skills", "get_skill", "get_design_guidelines", "validate_design"],
     solves:
@@ -100,17 +101,36 @@ const SKILL_META: Record<string, SkillCuratedMeta> = {
   },
   "millar-verify-web": {
     roleLens: ["QA Engineer", "Harsh Art Critic", "Section 508 Accessibility Specialist", "Code Reviewer"],
-    recommendedWith: ["millar-web-workflow", "millar-build-web", "millar-design", "millar-animation", "millar-autonomous-qa"],
+    recommendedWith: [
+      "millar-web-workflow",
+      "millar-build-web",
+      "millar-design",
+      "millar-animation",
+      "millar-autonomous-qa",
+      "millar-diagnose-and-harden",
+    ],
     mcpToolsUsed: ["validate_design", "get_design_guidelines"],
     solves:
-      "Five-layer ship-readiness QA gate with bundled Zero-MCP standalone CLI (scripts/millar-audit.mjs), Playwright interactive E2E, anti-clip-art/anti-wax-skin Layer 3B critique, axe-core WCAG 2.1 AA, and Fresh-Context Independent Finish Reviewer.",
+      "Five-layer ship-readiness QA gate with bundled Zero-MCP standalone CLI (scripts/millar-audit.mjs v0.4.0 covering WCAG 2.2 SC 2.5.8 target size, focus rings, security sinks, CWV CLS/LCP, and barrel imports), Playwright interactive E2E, anti-clip-art/anti-wax-skin Layer 3B critique, axe-core WCAG 2.1/2.2 AA, and Fresh-Context Independent Finish Reviewer.",
   },
   "millar-autonomous-qa": {
     roleLens: ["Autonomous QA Engineer", "Security & RBAC Tester", "Resilience Engineer", "AI Evaluator"],
-    recommendedWith: ["millar-verify-web", "millar-web-workflow", "millar-build-web"],
+    recommendedWith: ["millar-diagnose-and-harden", "millar-verify-web", "millar-web-workflow", "millar-build-web"],
     mcpToolsUsed: ["list_skills", "get_skill"],
     solves:
       "Continuous 8-stage autonomous QA loop (discover -> plan -> execute -> observe -> verify -> reproduce -> report -> explore further) across multi-role/multi-tenant sessions and 9 testing modes (exploratory, stateful, property, negative, concurrency, authorization, resilience, AI eval, multi-channel outcome verification) with non-production safety guards, budget caps, persistent memory, regression script generation, and self-contained HTML reports.",
+  },
+  "millar-diagnose-and-harden": {
+    roleLens: [
+      "Root-Cause Debugger",
+      "Application Security Engineer",
+      "Performance Profiler",
+      "Minimal-Change Remediation Engineer",
+    ],
+    recommendedWith: ["millar-autonomous-qa", "millar-verify-web", "millar-build-web", "millar-web-workflow"],
+    mcpToolsUsed: ["list_skills", "get_skill", "validate_design"],
+    solves:
+      "White-box scientific root-cause diagnosis, OWASP Web/API/Agentic security hardening, Vercel Priority 1-3 performance & waterfall profiling, and surgical minimal-diff remediation with real-seam regression tests, backed by zero-dep CLIs (scripts/millar-harden-scan.mjs & scripts/triage-repro-loop.mjs).",
   },
 };
 
@@ -165,6 +185,13 @@ export const SKILL_COMBINATION_RECIPES = [
     when: "Testing a running non-production web app across roles, tenants, APIs, databases, queues, email, fault injection, concurrency, and AI endpoints with reproducible evidence and an HTML report.",
     chain: ["millar-autonomous-qa", "millar-verify-web"],
     mcpCalls: ["list_skills", "get_skill"],
+  },
+  {
+    id: "qa-to-fix-hardening-loop",
+    title: "Closed-Loop QA -> Root-Cause Fix & OWASP/Perf Hardening -> Ship Gate",
+    when: "Turning confirmed bugs from millar-autonomous-qa (or production incidents, slow APIs, and security findings) into minimal-diff root-cause fixes backed by real-seam regression tests and static/live security scans.",
+    chain: ["millar-autonomous-qa", "millar-diagnose-and-harden", "millar-verify-web"],
+    mcpCalls: ["list_skills", "get_skill", "validate_design"],
   },
 ] as const;
 

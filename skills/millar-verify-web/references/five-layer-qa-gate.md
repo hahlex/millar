@@ -17,11 +17,12 @@ node <skill-dir>/scripts/millar-audit.mjs ./src --register=product --strict-em-d
 node <skill-dir>/scripts/millar-audit.mjs ./src --json --url=http://127.0.0.1:4173/
 ```
 
-Checks enforced deterministically (`v0.3.0`):
-- **WCAG 2.1 Text & SC 1.4.11 Border Contrast:** Evaluates light, dark, and stage CSS token pairs (`>= 4.5:1` text, `>= 3.0:1` UI borders) and reports exact `contrastPairsChecked` telemetry so zero-pair silent passes never slip through.
+Checks enforced deterministically (`v0.4.0`):
+- **WCAG 2.1/2.2 Text, Border & Focus Contrast:** Evaluates light, dark, and stage CSS token pairs (`>= 4.5:1` text, `>= 3.0:1` UI borders) with exact `contrastPairsChecked` telemetry, and flags suppressed focus rings (`a11y/focus-outline-removed`).
 - **AI-Slop Craft Floor:** Gradient text, eyebrow kickers above `<h1>`/`<h2>` (`craft/eyebrow-kicker`), 1-sided colored border strips on rounded containers, hard offset shadows, static `opacity: 0` scroll traps, missing `prefers-reduced-motion` (in BOTH `.css` AND inline HTML `<style>`!), `[hidden]` CSS override guard, undersized `< 12px` text, missing `img` `alt` or `width`/`height`.
+- **CWV, Bundle & Security Hygiene:** Flags hero/banner `loading="lazy"` LCP traps (`cwv/lcp-lazy-hero`), wholesale barrel imports (`perf/barrel-import`: `lodash`, `moment`, `* as Icons`), missing `rel="noopener noreferrer"` on `target="_blank"`, and unsanitized HTML injection sinks (`security/unsafe-html-sink`).
 - **Register & Copy Rules:** Product-mode CSS gradients (`--register=product`), U+2014 em-dash (`--strict-em-dash`), and sparse inline `<svg>` clip-art heuristic.
-- **Live Browser Pass (`--url`):** Resolves `playwright` / `@playwright/test` via `MILLAR_PLAYWRIGHT_PATH`, `cwd`, or ancestor workspaces with `{ channel: "chrome" | "msedge" }` fallback, and flags horizontal overflow, landmark defects, console/HTTP 4xx-5xx errors, and duplicate visible `view-transition-name` declarations (which silently abort CSS View Transitions).
+- **Live Browser Pass (`--url`):** Resolves `playwright` / `@playwright/test` via `MILLAR_PLAYWRIGHT_PATH`, `cwd`, or ancestor workspaces with `{ channel: "chrome" | "msedge" }` fallback, and flags horizontal overflow, live CLS `> 0.10` (`cwv/live-cls-exceeded`), WCAG 2.2 SC 2.5.8 target size `< 24x24px` (`a11y/wcag22-target-size`), landmark defects, console/HTTP 4xx-5xx errors, and duplicate visible `view-transition-name` declarations (which silently abort CSS View Transitions).
 
 ## 2. Hang-Free Playwright + `@axe-core/playwright` Harness Pattern
 
