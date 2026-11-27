@@ -12,3 +12,4 @@ e2e/screenshots/
 .DS_Store
 .env
 .env.local
+staging/

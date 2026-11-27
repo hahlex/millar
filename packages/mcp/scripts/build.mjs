@@ -40,9 +40,13 @@ for (const docFile of ["GLOSSARY.md", "CHANGELOG.md"]) {
 
 const skillsSrc = path.join(repoRoot, "skills");
 const skillsOut = path.join(pkgDir, "dist/skills");
+let bundledSkillCount = 0;
 if (fs.existsSync(skillsSrc)) {
   fs.rmSync(skillsOut, { recursive: true, force: true });
   fs.cpSync(skillsSrc, skillsOut, { recursive: true });
+  bundledSkillCount = fs
+    .readdirSync(skillsOut, { withFileTypes: true })
+    .filter((d) => d.isDirectory() && fs.existsSync(path.join(skillsOut, d.name, "SKILL.md"))).length;
 }
 
 // Bundle registry source files so get_component / get_section / get_template / get_visual_assets(includeSource: true)
@@ -75,5 +79,5 @@ if (fs.existsSync(registryPath)) {
 }
 
 console.log(
-  `PASS: Bundled @hahlex/millar-mcp dist/stdio.js, dist/http.js, standalone docs, ${bundledSourceCount} source files, and 7 Millar Skills`,
+  `PASS: Bundled @hahlex/millar-mcp dist/stdio.js, dist/http.js, standalone docs, ${bundledSourceCount} source files, and ${bundledSkillCount} Millar Skills`,
 );

@@ -100,6 +100,21 @@ const SKILLS: SkillDocItem[] = [
     ],
     promptExample: "Run millar-verify-web: execute scripts/millar-audit.mjs, verify 1440/768/375 & WCAG AA, and spawn a fresh finish reviewer.",
   },
+  {
+    id: "millar-autonomous-qa",
+    name: "millar-autonomous-qa",
+    headline: "Continuous 8-stage autonomous QA loop across 9 full-stack modes & HTML reports",
+    uri: "millar://skills/millar-autonomous-qa",
+    references: [
+      { file: "tool-selection.md", purpose: "Non-redundant 7-tool stack (Playwright, CDP MCP, Schemathesis, Hypothesis, k6, Toxiproxy, Promptfoo)" },
+      { file: "qa-loop-and-modes.md", purpose: "8-stage continuous loop, 9 testing modes, triage rubric & regression promotion" },
+      { file: "safety-and-guardrails.md", purpose: "Non-prod target verification, budget caps, CWD/cache isolation & cleanup rules" },
+      { file: "outcome-verification.md", purpose: "Multi-channel correlation across X-Request-Id, Postgres, Redis/RQ, Mailpit, Docker & Langfuse" },
+      { file: "self-validation-log.md", purpose: "Empirical validation log & 166/166 strict E2E adversarial hardening audit" },
+      { file: "scripts/run-qa-loop.mjs", purpose: "Continuous QA loop runner with persistent memory ledgers & HTML report export" },
+    ],
+    promptExample: "Run millar-autonomous-qa against http://localhost:5173: enforce safety-guard, test multi-role UI/API/RBAC/resilience/outcomes, and emit an HTML report.",
+  },
 ];
 
 const MICRO_HEADING_STYLE: React.CSSProperties = {

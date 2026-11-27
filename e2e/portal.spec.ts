@@ -193,7 +193,7 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
     await page.getByRole("button", { name: "New proposal" }).click();
     await expect(page.getByRole("cell", { name: "Domain Proposal #1" })).toBeVisible();
 
-    // 8. Agent Skills Suite skills.sh-inspired InstallBar (Command | Prompt, MCP | Skills Only) & 7 skill tabs
+    // 8. Agent Skills Suite skills.sh-inspired InstallBar (Command | Prompt, MCP | Skills Only) & 8 skill tabs
     await page.goto("/millar/resources/skills/", { waitUntil: "networkidle" });
     await expect(page.getByText("npx -y @hahlex/millar-mcp@draft")).toBeVisible();
     await page.getByRole("button", { name: "Skills Only" }).click();
@@ -206,13 +206,18 @@ test.describe("Millar Portal E2E (Geist-Style Sidebar IA), Real-Browser WCAG AA 
     await page.getByRole("tab", { name: "millar-verify-web" }).click();
     await expect(page.getByText("five-layer-qa-gate.md")).toBeVisible();
     await expect(page.getByRole("cell", { name: "scripts/millar-audit.mjs", exact: true })).toBeVisible();
+    await page.getByRole("tab", { name: "millar-autonomous-qa" }).click();
+    await expect(page.getByText("qa-loop-and-modes.md")).toBeVisible();
+    await expect(page.getByRole("cell", { name: "scripts/run-qa-loop.mjs", exact: true })).toBeVisible();
 
-    // 9. MCP page skills.sh-inspired InstallBar (Command | Prompt) + 10 MCP Prompts selector
+    // 9. MCP page skills.sh-inspired InstallBar (Command | Prompt) + 11 MCP Prompts selector
     await page.goto("/millar/resources/mcp/", { waitUntil: "networkidle" });
     await expect(page.getByText("npx -y @hahlex/millar-mcp@draft").first()).toBeVisible();
     await page.getByRole("button", { name: "Prompt", exact: true }).click();
     await expect(page.getByText(/Add Millar MCP/)).toBeVisible();
     await page.getByRole("button", { name: "millar-design", exact: true }).click();
     await expect(page.getByText(/millar-design \(brief, existingAssets\?, lang\?\)/)).toBeVisible();
+    await page.getByRole("button", { name: "millar-autonomous-qa", exact: true }).click();
+    await expect(page.getByText(/millar-autonomous-qa \(targetUrl, modes\?, lang\?\)/)).toBeVisible();
   });
 });

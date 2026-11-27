@@ -1,6 +1,6 @@
 ---
 name: millar-web-workflow
-description: "Master end-to-end web engineering conductor and creative workflow router (v0.3.0) uniting the 7 Millar skills with Matt Pocock engineering discipline, Agency Agents studio roles, Anthropic canvas-design craft, and Impeccable anti-slop rigor. Always researches any named brand first (zero hardcoded palettes), authors all prompts in English, routes Track S/M/L cleanly, and gates completion on Zero-MCP mechanical auditing plus fresh-context independent review."
+description: "Master end-to-end web engineering conductor and creative workflow router (v0.3.0) uniting the 8 Millar skills (including millar-autonomous-qa) with Matt Pocock engineering discipline, Agency Agents studio roles, Anthropic canvas-design craft, and Impeccable anti-slop rigor. Always researches any named brand first (zero hardcoded palettes), authors all prompts in English, routes Track S/M/L cleanly, and gates completion on Zero-MCP mechanical auditing plus fresh-context independent review."
 version: 0.3.0-draft.1
 license: MIT
 ---

@@ -24,6 +24,23 @@ export default function ChangelogResourcePage() {
       <Card surface="base" padding="default">
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <strong style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-section-title)" }}>
+              Skills v0.6.0-draft.1 · MCP v0.2.0-draft.1
+            </strong>
+            <LifecycleBadge status="draft" />
+          </div>
+          <span style={{ fontFamily: "var(--font-mono)", fontSize: "var(--text-micro)", color: "var(--fg-subtle)" }}>2026-11-28</span>
+        </div>
+        <ul style={{ margin: 0, paddingLeft: 18, fontSize: "var(--text-body-sm)", color: "var(--fg-muted)", lineHeight: 1.7 }}>
+          <li>Added <code>millar-autonomous-qa</code> (8th Millar skill): continuous 8-stage QA loop across multi-role/multi-tenant sessions and 9 full-stack testing modes (Playwright, Chrome DevTools MCP, Schemathesis, Hypothesis, k6, Toxiproxy, Promptfoo, Postgres/Redis/Mailpit/Langfuse outcome checks) with non-production safety guards, budget caps, regression generation, and self-contained HTML reports.</li>
+          <li>Updated <code>@hahlex/millar-mcp@0.2.0-draft.1</code> to expose all 8 skills, 24 reference playbooks, <code>millar://skills/millar-autonomous-qa</code>, and 11 MCP Prompts.</li>
+          <li>Updated <code>millar@0.6.0-draft.1</code> CLI with <code>npx millar install</code> / <code>npx millar update</code> and <code>--version</code> shipping all 8 skills.</li>
+        </ul>
+      </Card>
+
+      <Card surface="base" padding="default">
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <strong style={{ fontFamily: "var(--font-display)", fontSize: "var(--text-section-title)" }}>v{registry.version}</strong>
             <LifecycleBadge status="draft" />
           </div>

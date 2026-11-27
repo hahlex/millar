@@ -1,0 +1,19 @@
+{
+  "name": "@hahlex/millar-autonomous-qa-runtime",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Runtime QA tooling dependencies for the millar-autonomous-qa Millar skill",
+  "engines": {
+    "node": ">=22.22.0"
+  },
+  "scripts": {
+    "smoke:node": "playwright --version && chrome-devtools-mcp --help && promptfoo --version && node scripts/python-env.mjs"
+  },
+  "dependencies": {
+    "@playwright/test": "1.65.1",
+    "chrome-devtools-mcp": "^1.14.0",
+    "playwright": "1.65.1",
+    "promptfoo": "^0.126.0"
+  }
+}

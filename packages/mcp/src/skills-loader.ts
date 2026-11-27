@@ -40,6 +40,7 @@ const SKILL_META: Record<string, SkillCuratedMeta> = {
       "millar-animation",
       "millar-build-web",
       "millar-verify-web",
+      "millar-autonomous-qa",
     ],
     mcpToolsUsed: ["list_skills", "get_skill", "get_design_guidelines", "validate_design"],
     solves:
@@ -99,10 +100,17 @@ const SKILL_META: Record<string, SkillCuratedMeta> = {
   },
   "millar-verify-web": {
     roleLens: ["QA Engineer", "Harsh Art Critic", "Section 508 Accessibility Specialist", "Code Reviewer"],
-    recommendedWith: ["millar-web-workflow", "millar-build-web", "millar-design", "millar-animation"],
+    recommendedWith: ["millar-web-workflow", "millar-build-web", "millar-design", "millar-animation", "millar-autonomous-qa"],
     mcpToolsUsed: ["validate_design", "get_design_guidelines"],
     solves:
       "Five-layer ship-readiness QA gate with bundled Zero-MCP standalone CLI (scripts/millar-audit.mjs), Playwright interactive E2E, anti-clip-art/anti-wax-skin Layer 3B critique, axe-core WCAG 2.1 AA, and Fresh-Context Independent Finish Reviewer.",
+  },
+  "millar-autonomous-qa": {
+    roleLens: ["Autonomous QA Engineer", "Security & RBAC Tester", "Resilience Engineer", "AI Evaluator"],
+    recommendedWith: ["millar-verify-web", "millar-web-workflow", "millar-build-web"],
+    mcpToolsUsed: ["list_skills", "get_skill"],
+    solves:
+      "Continuous 8-stage autonomous QA loop (discover -> plan -> execute -> observe -> verify -> reproduce -> report -> explore further) across multi-role/multi-tenant sessions and 9 testing modes (exploratory, stateful, property, negative, concurrency, authorization, resilience, AI eval, multi-channel outcome verification) with non-production safety guards, budget caps, persistent memory, regression script generation, and self-contained HTML reports.",
   },
 };
 
@@ -150,6 +158,13 @@ export const SKILL_COMBINATION_RECIPES = [
     when: "Fixing a UI bug, refining one component, or shipping a dense zero-gradient Product/App screen with minimal diff and strict WCAG/E2E verification.",
     chain: ["millar-web-workflow", "millar-build-web", "millar-verify-web"],
     mcpCalls: ["get_design_guidelines", "search_components", "get_component", "validate_design"],
+  },
+  {
+    id: "autonomous-qa-live-verification",
+    title: "Autonomous Full-Stack QA: Multi-Role Live App Exploration & Outcome Verification",
+    when: "Testing a running non-production web app across roles, tenants, APIs, databases, queues, email, fault injection, concurrency, and AI endpoints with reproducible evidence and an HTML report.",
+    chain: ["millar-autonomous-qa", "millar-verify-web"],
+    mcpCalls: ["list_skills", "get_skill"],
   },
 ] as const;
 

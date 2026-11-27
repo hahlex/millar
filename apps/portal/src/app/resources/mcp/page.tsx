@@ -14,6 +14,7 @@ const MCP_PROMPTS_CATALOG = [
   { name: "millar-animation", args: "target, motionFeel?, lang?", prompt: "Run millar-animation: lock 4-line Motion Thesis, compositor springs, View Transitions, and prefers-reduced-motion." },
   { name: "millar-build-web", args: "scope, minimalChange?, lang?", prompt: "Run millar-build-web: Server-First slices, deep modules, 5 UI states, browser surface theming, and CWV/SEO." },
   { name: "millar-verify-web", args: "target, lang?", prompt: "Run millar-verify-web: scripts/millar-audit.mjs, Playwright E2E, axe-core WCAG AA, and fresh-context finish reviewer." },
+  { name: "millar-autonomous-qa", args: "targetUrl, modes?, lang?", prompt: "Run millar-autonomous-qa on http://localhost:5173: non-prod safety-guard, multi-role/tenant exploration, API/DB/Mailpit/Langfuse outcome verification, and HTML report." },
   { name: "millar-build-marketing", args: "feature, lang?", prompt: "Run millar-build-marketing: query live Millar MCP tokens, >= 3 Composition Patterns, and validate_design." },
   { name: "millar-build-product", args: "screen, lang?", prompt: "Run millar-build-product: zero-gradient WCAG AA @hahlex/millar-ui screen verified via validate_design." },
   { name: "millar-audit-code", args: "register, lang?", prompt: "Run millar-audit-code: validate_design + scripts/millar-audit.mjs separating automated checks from human review." },
@@ -31,8 +32,8 @@ const MCP_TOOLS = [
   { name: "get_visual_assets", kind: "Visual System", desc: "CSS/SVG/Canvas assets & gradientPolicy" },
   { name: "get_motion_presets", kind: "Motion", desc: "Productive & Expressive curves + reduced-motion" },
   { name: "validate_design", kind: "Compliance", desc: "Automated checks + human review criteria" },
-  { name: "list_skills", kind: "Skills", desc: "All 7 bundled Millar skills & Track recipes" },
-  { name: "get_skill", kind: "Skills", desc: "Full SKILL.md & 17 reference playbooks" },
+  { name: "list_skills", kind: "Skills", desc: "All 8 bundled Millar skills & workflow recipes" },
+  { name: "get_skill", kind: "Skills", desc: "Full SKILL.md & 24 reference playbooks" },
 ];
 
 const MCP_RESOURCES = [
@@ -46,9 +47,9 @@ const MCP_RESOURCES = [
   { uri: "millar://visual-assets/{id}", mime: "application/json", purpose: "Code-native visual asset spec" },
   { uri: "millar://sections/{id}", mime: "application/json", purpose: "Marketing section spec" },
   { uri: "millar://templates/{id}", mime: "application/json", purpose: "Page or App template spec" },
-  { uri: "millar://skills", mime: "application/json", purpose: "7 bundled Millar skills index" },
+  { uri: "millar://skills", mime: "application/json", purpose: "8 bundled Millar skills index" },
   { uri: "millar://skills/{name}", mime: "text/markdown", purpose: "Full SKILL.md playbook" },
-  { uri: "millar://skills/{name}/references/{ref}", mime: "text/markdown", purpose: "17 bundled reference playbooks" },
+  { uri: "millar://skills/{name}/references/{ref}", mime: "text/markdown", purpose: "24 bundled reference playbooks" },
 ];
 
 const MICRO_HEADING_STYLE: React.CSSProperties = {
@@ -72,7 +73,7 @@ export default function McpResourcePage() {
     <div style={{ display: "flex", flexDirection: "column", gap: 36 }}>
       <DocHeader section="Resources" title="Millar MCP Server" importPath="@hahlex/millar-mcp" />
 
-      {/* skills.sh-inspired single-line INSTALLATION bar (MCP includes all 7 skills) */}
+      {/* skills.sh-inspired single-line INSTALLATION bar (MCP includes all 8 skills) */}
       <InstallBar label="Installation" defaultTarget="mcp" />
 
       <section aria-labelledby="mcp-config-heading" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -98,7 +99,7 @@ export default function McpResourcePage() {
 
       <section aria-labelledby="mcp-prompts-heading" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
         <h2 id="mcp-prompts-heading" style={MICRO_HEADING_STYLE}>
-          10 MCP Prompts
+          11 MCP Prompts
         </h2>
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
           {MCP_PROMPTS_CATALOG.map((item) => (

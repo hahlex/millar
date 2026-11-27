@@ -1,7 +1,7 @@
 {
   "name": "millar",
-  "version": "0.5.0-draft.1",
-  "description": "Zero-GitHub CLI to install Millar Agent Skills, run standalone Zero-MCP audits, and connect Millar MCP.",
+  "version": "0.6.0-draft.1",
+  "description": "Zero-GitHub CLI to install all 8 Millar Agent Skills (including millar-autonomous-qa), run standalone Zero-MCP audits, and connect Millar MCP.",
   "license": "MIT",
   "homepage": "https://millar.hahlex.com",
   "repository": {

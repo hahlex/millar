@@ -3,9 +3,11 @@
  * millar CLI: Zero-GitHub installer for Millar Agent Skills + standalone audit runner.
  *
  * Commands:
- *   npx millar install [--target=<dir>] [--dry-run]   Install all 7 Millar Skills locally
+ *   npx millar install [--target=<dir>] [--dry-run]   Install or update all 8 Millar Skills locally
+ *   npx millar update  [--target=<dir>] [--dry-run]   Alias for install (overwrites with latest bundled skills)
  *   npx millar audit <path> [audit-flags]             Run bundled Zero-MCP millar-audit.mjs
  *   npx millar mcp                                    Print MCP config / launch stdio server
+ *   npx millar --version                              Print bundled CLI version
  */
 
 import fs from "node:fs";
@@ -15,6 +17,24 @@ import { spawnSync } from "node:child_process";
 
 const args = process.argv.slice(2);
 const cmd = args[0] ?? "install";
+
+function readCliVersion() {
+  const pkgCandidates = [
+    path.resolve(import.meta.dirname, "../package.json"),
+    path.resolve(import.meta.dirname, "../../package.json"),
+  ];
+  for (const p of pkgCandidates) {
+    if (fs.existsSync(p)) {
+      try {
+        const parsed = JSON.parse(fs.readFileSync(p, "utf8"));
+        if (parsed?.name === "millar" && parsed?.version) return parsed.version;
+      } catch {
+        // ignore
+      }
+    }
+  }
+  return "0.6.0-draft.1";
+}
 
 function resolveSkillsDir() {
   const candidates = [
@@ -62,7 +82,7 @@ function runInstall(flags) {
         fs.cpSync(from, to, { recursive: true });
       }
     }
-    console.log(`${dryRun ? "[DRY-RUN] " : ""}Installed ${skillNames.length} Millar skills -> ${root}`);
+    console.log(`${dryRun ? "[DRY-RUN] " : ""}Installed ${skillNames.length} Millar skills (v${readCliVersion()}) -> ${root}`);
   }
   console.log(`Skills: ${skillNames.join(", ")}`);
 }
@@ -74,7 +94,7 @@ function runAudit(auditArgs) {
   process.exit(res.status ?? 0);
 }
 
-if (cmd === "install" || cmd === "install-skills" || cmd === "skills") {
+if (cmd === "install" || cmd === "update" || cmd === "upgrade" || cmd === "install-skills" || cmd === "skills") {
   runInstall(args.slice(1));
 } else if (cmd === "audit") {
   runAudit(args.slice(1));
@@ -93,8 +113,12 @@ if (cmd === "install" || cmd === "install-skills" || cmd === "skills") {
       2,
     ),
   );
+} else if (cmd === "--version" || cmd === "-v" || cmd === "version") {
+  console.log(`millar v${readCliVersion()}`);
 } else if (cmd === "--help" || cmd === "-h" || cmd === "help") {
-  console.log("Usage:\n  npx millar install [--target=<dir>] [--dry-run]\n  npx millar audit <path> [flags]\n  npx millar mcp");
+  console.log(
+    `millar v${readCliVersion()}\nUsage:\n  npx millar install [--target=<dir>] [--dry-run]\n  npx millar update  [--target=<dir>] [--dry-run]\n  npx millar audit <path> [flags]\n  npx millar mcp\n  npx millar --version`,
+  );
 } else {
   console.error(`Unknown command: ${cmd}. Try: npx millar install`);
   process.exit(1);

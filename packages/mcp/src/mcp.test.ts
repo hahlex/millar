@@ -6,7 +6,7 @@ import { createMillarMcpServer } from "./server.js";
 
 const REPO_ROOT = path.resolve(import.meta.dirname, "../../..");
 
-describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skills Suite", () => {
+describe("@hahlex/millar-mcp: Resources, 13 Tools, 11 Prompts & 8 Millar Agent Skills Suite", () => {
   let closePair: (() => Promise<void>) | null = null;
 
   async function connectClient() {
@@ -73,6 +73,9 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
     expect(uris).toContain("millar://skills/millar-web-workflow");
     expect(uris).toContain("millar://skills/millar-build-web");
     expect(uris).toContain("millar://skills/millar-verify-web");
+    expect(uris).toContain("millar://skills/millar-autonomous-qa");
+    expect(uris).toContain("millar://skills/millar-autonomous-qa/references/qa-loop-and-modes.md");
+    expect(uris).toContain("millar://skills/millar-autonomous-qa/references/safety-and-guardrails.md");
     expect(uris).toContain("millar://skills/millar-design/references/style-dna-contract.md");
     expect(uris).toContain("millar://skills/millar-web-workflow/references/creative-divergence-protocol.md");
     expect(uris).toContain("millar://skills/millar-verify-web/references/five-layer-qa-gate.md");
@@ -173,9 +176,10 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
 
     const skillList = await client.callTool({ name: "list_skills", arguments: {} });
     const sListData = skillList.structuredContent as { count: number; skills: Array<{ id: string }>; recipes: unknown[] };
-    expect(sListData.count).toBe(7);
+    expect(sListData.count).toBe(8);
     expect(sListData.skills.map((s) => s.id).sort()).toEqual([
       "millar-animation",
+      "millar-autonomous-qa",
       "millar-build-web",
       "millar-create-image",
       "millar-deep-research",
@@ -183,7 +187,26 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
       "millar-verify-web",
       "millar-web-workflow",
     ]);
-    expect(sListData.recipes.length).toBeGreaterThanOrEqual(4);
+    expect(sListData.recipes.length).toBeGreaterThanOrEqual(5);
+
+    const qaSkillDetail = await client.callTool({
+      name: "get_skill",
+      arguments: { name: "millar-autonomous-qa", includeAllReferences: true },
+    });
+    const qaSkillData = qaSkillDetail.structuredContent as {
+      id: string;
+      skillMarkdown: string;
+      includedReferences: Array<{ file: string; content: string }>;
+    };
+    expect(qaSkillData.id).toBe("millar-autonomous-qa");
+    expect(qaSkillData.skillMarkdown).toContain("Continuous 8-Stage QA Loop");
+    expect(qaSkillData.includedReferences.map((r) => r.file).sort()).toEqual([
+      "outcome-verification.md",
+      "qa-loop-and-modes.md",
+      "safety-and-guardrails.md",
+      "self-validation-log.md",
+      "tool-selection.md",
+    ]);
 
     const skillDetail = await client.callTool({
       name: "get_skill",
@@ -211,12 +234,13 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
     expect(wfData.includedReferences[0]?.content).toContain("Three-Family Cultural Derivation");
   });
 
-  it("exposes all 10 user-controlled MCP Prompts (3 core workflows + 7 composable Millar Skills)", async () => {
+  it("exposes all 11 user-controlled MCP Prompts (3 core workflows + 8 composable Millar Skills)", async () => {
     const client = await connectClient();
     const { prompts } = await client.listPrompts();
     expect(prompts.map((p) => p.name).sort()).toEqual([
       "millar-animation",
       "millar-audit-code",
+      "millar-autonomous-qa",
       "millar-build-marketing",
       "millar-build-product",
       "millar-build-web",
@@ -226,6 +250,15 @@ describe("@hahlex/millar-mcp: Resources, 13 Tools, 7 Prompts & Millar Agent Skil
       "millar-verify-web",
       "millar-web-workflow",
     ]);
+
+    const autoQaPrompt = await client.getPrompt({
+      name: "millar-autonomous-qa",
+      arguments: { targetUrl: "http://localhost:5173", modes: "exploratory,authorization", lang: "vi" },
+    });
+    expect(autoQaPrompt.messages.length).toBe(2);
+    expect(JSON.stringify(autoQaPrompt.messages)).toContain("millar://skills/millar-autonomous-qa");
+    expect(JSON.stringify(autoQaPrompt.messages)).toContain("http://localhost:5173");
+    expect(JSON.stringify(autoQaPrompt.messages)).toContain("Vietnamese");
 
     const res = await client.getPrompt({
       name: "millar-build-marketing",

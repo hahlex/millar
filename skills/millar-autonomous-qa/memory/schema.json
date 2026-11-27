@@ -1,0 +1,181 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://millar.hahlex.local/schemas/autonomous-qa-memory.json",
+  "title": "Autonomous QA Persistent Memory Schema",
+  "type": "object",
+  "$defs": {
+    "runBudget": {
+      "type": "object",
+      "required": ["startTime", "maxMinutes", "maxRequests", "maxAiCalls", "requestsUsed", "aiCallsUsed"],
+      "properties": {
+        "startTime": { "type": "string", "format": "date-time" },
+        "maxMinutes": { "type": "number", "minimum": 0 },
+        "maxRequests": { "type": "integer", "minimum": 0 },
+        "maxAiCalls": { "type": "integer", "minimum": 0 },
+        "requestsUsed": { "type": "integer", "minimum": 0 },
+        "aiCallsUsed": { "type": "integer", "minimum": 0 },
+        "status": { "type": "string", "enum": ["active", "ok", "budget_exceeded", "safety_violation"] }
+      },
+      "additionalProperties": true
+    },
+    "loopStageRecord": {
+      "type": "object",
+      "required": ["timestamp", "status"],
+      "properties": {
+        "timestamp": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["completed", "degraded", "skipped", "failed", "stopped_budget_exhausted"] },
+        "summary": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "coverageIteration": {
+      "type": "object",
+      "required": ["iteration", "startedAt", "completedAt", "phases", "toolsRun", "routes", "endpoints", "roles", "modes"],
+      "properties": {
+        "iteration": { "type": "integer", "minimum": 1 },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "completedAt": { "type": "string", "format": "date-time" },
+        "phases": {
+          "type": "object",
+          "required": ["discover", "plan", "execute", "observe", "verify", "reproduce", "report", "explore_further"],
+          "properties": {
+            "discover": { "$ref": "#/$defs/loopStageRecord" },
+            "plan": { "$ref": "#/$defs/loopStageRecord" },
+            "execute": { "$ref": "#/$defs/loopStageRecord" },
+            "observe": { "$ref": "#/$defs/loopStageRecord" },
+            "verify": { "$ref": "#/$defs/loopStageRecord" },
+            "reproduce": { "$ref": "#/$defs/loopStageRecord" },
+            "report": { "$ref": "#/$defs/loopStageRecord" },
+            "explore_further": { "$ref": "#/$defs/loopStageRecord" }
+          },
+          "additionalProperties": false
+        },
+        "toolsRun": { "type": "array", "items": { "type": "string" } },
+        "routes": { "type": "array", "items": { "type": "string" } },
+        "endpoints": { "type": "array", "items": { "type": "string" } },
+        "roles": { "type": "array", "items": { "type": "string" } },
+        "modes": { "type": "array", "items": { "type": "string" } },
+        "budgetSnapshot": { "$ref": "#/$defs/runBudget" }
+      },
+      "additionalProperties": true
+    },
+    "finding": {
+      "type": "object",
+      "required": ["id", "classification", "severity", "title", "evidencePaths", "verifiedOutcome"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "fingerprint": { "type": "string" },
+        "classification": { "type": "string", "enum": ["confirmed_bug", "spec_gap", "runtime_degraded"] },
+        "severity": { "type": "string", "enum": ["critical", "high", "medium", "low"] },
+        "title": { "type": "string", "minLength": 1 },
+        "endpointOrRoute": { "type": "string" },
+        "reproCommand": { "type": "string" },
+        "reproScript": { "type": "string" },
+        "evidencePaths": { "type": "array", "items": { "type": "string" } },
+        "verifiedOutcome": { "type": "string", "minLength": 1 },
+        "firstSeenAt": { "type": "string", "format": "date-time" },
+        "lastSeenAt": { "type": "string", "format": "date-time" },
+        "occurrences": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": true
+    },
+    "runnerOutput": {
+      "type": "object",
+      "required": ["tool", "mode", "status", "startedAt", "durationMs", "budgetConsumed", "coverage", "findings", "artifacts", "notes"],
+      "properties": {
+        "tool": {
+          "type": "string",
+          "enum": ["playwright", "chrome-devtools-mcp", "schemathesis", "hypothesis", "k6", "toxiproxy", "promptfoo", "discover", "discover-surface", "verify-outcomes", "node"]
+        },
+        "mode": {
+          "type": "string",
+          "enum": ["exploratory", "stateful", "property", "negative", "concurrency", "authorization", "resilience", "ai", "outcome_verification", "discovery"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["passed", "failed", "degraded", "skipped_non_applicable"]
+        },
+        "startedAt": { "type": "string", "format": "date-time" },
+        "durationMs": { "type": "number", "minimum": 0 },
+        "budgetConsumed": {
+          "type": "object",
+          "required": ["requests", "aiCalls"],
+          "properties": {
+            "requests": { "type": "integer", "minimum": 0 },
+            "aiCalls": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "coverage": {
+          "type": "object",
+          "required": ["routes", "endpoints", "roles", "assertions"],
+          "properties": {
+            "routes": { "type": "array", "items": { "type": "string" } },
+            "endpoints": { "type": "array", "items": { "type": "string" } },
+            "roles": { "type": "array", "items": { "type": "string" } },
+            "assertions": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": true
+        },
+        "findings": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/finding" }
+        },
+        "artifacts": {
+          "type": "object",
+          "required": ["traces", "screenshots", "regressionTests"],
+          "properties": {
+            "traces": { "type": "array", "items": { "type": "string" } },
+            "screenshots": { "type": "array", "items": { "type": "string" } },
+            "regressionTests": { "type": "array", "items": { "type": "string" } }
+          },
+          "additionalProperties": false
+        },
+        "notes": { "type": "string" }
+      },
+      "additionalProperties": true
+    },
+    "targetConfig": {
+      "type": "object",
+      "required": ["targetUrl"],
+      "properties": {
+        "targetUrl": { "type": "string", "format": "uri" },
+        "apiUrl": { "type": "string", "format": "uri" },
+        "aiUrl": { "type": "string", "format": "uri" },
+        "mailpitUrl": { "type": "string", "format": "uri" },
+        "langfuseUrl": { "type": "string", "format": "uri" },
+        "oidcUrl": { "type": "string", "format": "uri" },
+        "openapiUrl": { "type": "string", "format": "uri" },
+        "repoPaths": { "type": "array", "items": { "type": "string" } },
+        "frontendRegistryPath": { "type": "string" },
+        "routeCatalogPath": { "type": "string" },
+        "pgDsn": { "type": "string" },
+        "pgDsnEnv": { "type": "string" },
+        "redisUrl": { "type": "string" },
+        "redisUrlEnv": { "type": "string" },
+        "dockerContainers": { "type": "array", "items": { "type": "string" } },
+        "allowPrivateIp": { "type": "boolean" },
+        "limits": {
+          "type": "object",
+          "properties": {
+            "maxMinutes": { "type": "number", "minimum": 0 },
+            "maxRequests": { "type": "integer", "minimum": 0 },
+            "maxAiCalls": { "type": "integer", "minimum": 0 }
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  },
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "iterations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/coverageIteration" }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/finding" }
+    }
+  }
+}

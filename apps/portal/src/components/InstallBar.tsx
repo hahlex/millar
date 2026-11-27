@@ -23,11 +23,11 @@ const SNIPPETS = {
   prompt: {
     mcp: {
       prefix: ">",
-      text: 'Add Millar MCP ("millar") with `npx -y @hahlex/millar-mcp@draft` (includes all 7 skills) and verify via list_skills().',
+      text: 'Add Millar MCP ("millar") with `npx -y @hahlex/millar-mcp@draft` (includes all 8 skills) and verify via list_skills().',
     },
     skills: {
       prefix: ">",
-      text: "Run `npx millar install` and verify all 7 Millar skills are loaded.",
+      text: "Run `npx millar install` and verify all 8 Millar skills are loaded.",
     },
   },
 } as const;

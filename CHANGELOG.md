@@ -2,6 +2,13 @@
 
 All notable changes to **Millar** (Hahlex Design System) are documented here following [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/).
 
+## [0.6.0-draft.1 / MCP 0.2.0-draft.1] - 2026-11-28 (Millar Autonomous QA Skill Release)
+
+### Added
+- **`millar-autonomous-qa` (`skills/millar-autonomous-qa/`)**: Eighth open-standard Millar skill implementing a continuous 8-stage autonomous QA loop (`discover -> plan -> execute -> observe -> verify -> reproduce -> report -> explore further`) across multi-role/multi-tenant sessions and 9 testing modes (`exploratory`, `stateful`, `property`, `negative`, `concurrency`, `authorization`, `resilience`, `ai`, `outcome_verification`), backed by 7 non-redundant tools (`Playwright`, `Chrome DevTools MCP`, `Schemathesis`, `Hypothesis`, `k6`, `Toxiproxy`, `Promptfoo`), non-production safety guards, budget enforcement, persistent memory schema, standalone regression script generation, and self-contained HTML reports (empirically validated and hardened across `166/166` strict E2E tests).
+- **`@hahlex/millar-mcp@0.2.0-draft.1`**: Bundles all 8 Millar skills, 24 progressive-disclosure reference playbooks, `millar://skills/millar-autonomous-qa` resources, `get_skill(name="millar-autonomous-qa")`, the `autonomous-qa-live-verification` recipe, and the 11th MCP Prompt `millar-autonomous-qa`.
+- **`millar@0.6.0-draft.1` CLI**: Ships all 8 Millar skills via `npx millar install` / `npx millar update` and adds `--version` output.
+
 ## [0.1.0] - 2026-11-25 (Draft Foundation Release)
 
 > All v0.1.0 tokens, components, visual assets, composition patterns, sections, and templates are authored in `draft` status awaiting human sign-off for promotion to `approved`.

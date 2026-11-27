@@ -1,0 +1,19 @@
+[project]
+name = "millar-autonomous-qa-runtime"
+version = "0.1.0"
+description = "Isolated Python QA environment for the millar-autonomous-qa Millar skill"
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "schemathesis>=4.34.0",
+  "hypothesis>=6.170.0",
+  "pytest>=9.0.0",
+  "httpx>=0.28.0",
+  "psycopg[binary]>=3.3.0",
+  "redis>=7.0.0",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+cache_dir = "test-results/.pytest_cache"

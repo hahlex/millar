@@ -7,6 +7,7 @@
  * Usage:
  *   node scripts/publish-npm.mjs --tag=draft --dry-run
  *   node scripts/publish-npm.mjs --tag=draft
+ *   node scripts/publish-npm.mjs --tag=draft --also-tag=latest --only=mcp,cli
  *   node scripts/publish-npm.mjs --tag=draft --otp=123456
  *   node scripts/publish-npm.mjs --tag=draft --only=validator,mcp,cli
  */
@@ -18,6 +19,14 @@ const args = process.argv.slice(2);
 const dryRun = args.includes("--dry-run");
 const tagArg = args.find((a) => a.startsWith("--tag="));
 const distTag = tagArg ? tagArg.slice("--tag=".length) : "draft";
+const alsoTagArg = args.find((a) => a.startsWith("--also-tag="));
+const alsoTags = alsoTagArg
+  ? alsoTagArg
+      .slice("--also-tag=".length)
+      .split(",")
+      .map((s) => s.trim())
+      .filter((s) => s && s !== distTag)
+  : [];
 const otpArg = args.find((a) => a.startsWith("--otp="));
 const otp = otpArg ? otpArg.slice("--otp=".length) : "";
 const onlyArg = args.find((a) => a.startsWith("--only="));
@@ -34,6 +43,12 @@ const onlySet = onlyArg
 if (!/^[a-z0-9][a-z0-9.-]*$/i.test(distTag)) {
   console.error(`Invalid dist-tag: ${distTag}`);
   process.exit(1);
+}
+for (const extra of alsoTags) {
+  if (!/^[a-z0-9][a-z0-9.-]*$/i.test(extra)) {
+    console.error(`Invalid --also-tag value: ${extra}`);
+    process.exit(1);
+  }
 }
 if (otp && !/^\d{6,8}$/.test(otp)) {
   console.error("Invalid --otp value (expected 6-8 digits).");
@@ -92,6 +107,15 @@ for (const rel of PACKAGES_IN_ORDER) {
   console.log(`\n---> ${dryRun ? "[DRY-RUN] " : ""}Publishing ${spec} (${rel})...`);
   execSync(cmd, { cwd: pkgDir, stdio: "inherit" });
   publishedCount++;
+
+  for (const extra of alsoTags) {
+    if (dryRun) {
+      console.log(`---> [DRY-RUN] Would update dist-tag ${extra} -> ${spec}`);
+    } else {
+      console.log(`---> Updating dist-tag ${extra} -> ${spec}...`);
+      execSync(`npm dist-tag add ${spec} ${extra}${otpFlag}`, { cwd: pkgDir, stdio: "inherit" });
+    }
+  }
 }
 
 console.log(

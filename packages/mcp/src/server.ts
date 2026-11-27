@@ -425,7 +425,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Agent Skills Suite Index",
       description:
-        "Catalog of all 7 composable Millar web & design agent skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web) with 17 progressive-disclosure references and standalone Zero-MCP audit CLI.",
+        "Catalog of all 8 composable Millar web, design & autonomous QA agent skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web, millar-autonomous-qa) with 24 progressive-disclosure references and standalone Zero-MCP CLIs.",
       mimeType: "application/json",
     },
     async (uri) => ({
@@ -473,7 +473,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar Agent Skill Definition (SKILL.md)",
       description:
-        "Full SKILL.md playbook for millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, or millar-verify-web.",
+        "Full SKILL.md playbook for millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web, or millar-autonomous-qa.",
       mimeType: "text/markdown",
     },
     async (uri, vars) => {
@@ -913,9 +913,9 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "List Millar Agent Skills Suite",
       description:
-        "Lists all 7 composable Hahlex/Millar web engineering & design skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web), bundled reference playbooks, and Track S/M/L recipes.",
+        "Lists all 8 composable Hahlex/Millar web engineering, design & autonomous QA skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web, millar-autonomous-qa), bundled reference playbooks, and workflow recipes.",
       inputSchema: {
-        query: z.string().optional().describe("Optional search keyword (e.g. 'workflow', 'build', 'verify', 'animation', 'image', 'sync', 'research')."),
+        query: z.string().optional().describe("Optional search keyword (e.g. 'workflow', 'build', 'verify', 'qa', 'animation', 'image', 'sync', 'research')."),
       },
       annotations: READ_ONLY_ANNOTATIONS,
     },
@@ -959,7 +959,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Get Millar Agent Skill Playbook & References",
       description:
-        "Fetches the complete SKILL.md instructions and optional progressive-disclosure reference playbooks for any of the 7 Millar skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web).",
+        "Fetches the complete SKILL.md instructions and optional progressive-disclosure reference playbooks for any of the 8 Millar skills (millar-web-workflow, millar-deep-research, millar-design, millar-create-image, millar-animation, millar-build-web, millar-verify-web, millar-autonomous-qa).",
       inputSchema: {
         name: z
           .enum([
@@ -970,6 +970,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
             "millar-animation",
             "millar-build-web",
             "millar-verify-web",
+            "millar-autonomous-qa",
           ])
           .describe("Skill identifier to retrieve."),
         reference: z
@@ -1024,7 +1025,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
   );
 
   /* ==========================================================================
-   * 3. TEN USER-CONTROLLED MCP PROMPTS (English Prompts · 3 Core + 7 Skills)
+   * 3. ELEVEN USER-CONTROLLED MCP PROMPTS (English Prompts · 3 Core + 8 Skills)
    * ========================================================================== */
 
   const langArg = z
@@ -1312,7 +1313,7 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
     {
       title: "Millar End-to-End Web Engineering & Creative Workflow",
       description:
-        "Activates millar-web-workflow v0.3 to run Brand-First Research, classify Track S/M/L, run Creative Divergence, orchestrate all 7 skills, and gate on independent verification.",
+        "Activates millar-web-workflow v0.3 to run Brand-First Research, classify Track S/M/L, run Creative Divergence, orchestrate all 8 skills, and gate on independent verification.",
       argsSchema: {
         request: z.string().describe("Website, multi-page app, redesign, or UI feature request."),
         track: z.enum(["auto", "S", "M", "L"]).optional().describe("Optional explicit Track override (defaults to auto)."),
@@ -1406,6 +1407,42 @@ export function createMillarMcpServer(options: MillarMcpServerOptions = {}): Mcp
             text: [
               `Execute millar-verify-web v0.3 5-layer QA gate on: "${target}".`,
               "Run standalone scripts/millar-audit.mjs v0.3 (+ validate_design if Millar MCP is active), verify interactive Playwright flows & axe-core WCAG AA, inspect 1440/768/375 Light & Dark full-page visuals against clip-art/faux-3D/wax-skin bans, and delegate final Layer 3B + Layer 5 review to a fresh-context subagent.",
+              localeLine(lang),
+            ]
+              .filter(Boolean)
+              .join("\n"),
+          },
+        },
+      ],
+    }),
+  );
+
+  server.registerPrompt(
+    "millar-autonomous-qa",
+    {
+      title: "Millar Autonomous End-to-End QA & Outcome Verification",
+      description:
+        "Activates millar-autonomous-qa v0.1: continuous 8-stage QA loop across multi-role/multi-tenant sessions and 9 testing modes (Playwright, Chrome DevTools MCP, Schemathesis, Hypothesis, k6, Toxiproxy, Promptfoo, Postgres/Redis/Mailpit/Langfuse outcome checks) with non-prod safety guards and self-contained HTML reporting.",
+      argsSchema: {
+        targetUrl: z.string().describe("Non-production frontend or application URL to validate (e.g. 'http://localhost:5173')."),
+        modes: z
+          .string()
+          .optional()
+          .describe("Optional comma-separated testing modes (defaults to all 9 modes)."),
+        lang: langArg,
+      },
+    },
+    async ({ targetUrl, modes, lang }) => ({
+      messages: [
+        embedSkillMessage("millar-autonomous-qa"),
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: [
+              `Run millar-autonomous-qa against non-production target: "${targetUrl}".`,
+              modes ? `Requested testing modes: ${modes}.` : "Run all applicable testing modes across configured roles and tenants.",
+              "Enforce scripts/safety-guard.mjs before active traffic, keep target application repositories strictly read-only, isolate CWD/caches inside the skill workspace, separate confirmed_bug vs spec_gap vs runtime_degraded, verify real downstream outcomes beyond HTTP 200, clean up isolated test resources, and emit a self-contained HTML report.",
               localeLine(lang),
             ]
               .filter(Boolean)
